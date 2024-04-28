@@ -6,6 +6,8 @@ import registration from './registration/Registration';
 import rooms from './rooms/Rooms';
 import { getUser } from '../database/Users';
 import users from './users/Users';
+import connect from './connect/Connect';
+import oauth from './oauth/OAuth';
 
 const api = Router();
 
@@ -15,6 +17,8 @@ api.use('/goals', goals);
 api.use('/registration', registration);
 api.use('/auth', auth);
 api.use('/users', users);
+api.use('/connect', connect);
+api.use('/oauth', oauth);
 
 api.get('/me', async (req, res) => {
     if (!req.session.user) {

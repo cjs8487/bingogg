@@ -3,6 +3,7 @@ import { useContext, useLayoutEffect } from 'react';
 import { UserContext } from '../../../context/UserContext';
 import { redirect } from 'next/navigation';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import Link from 'next/link';
 
 export default function ProfilePage() {
     const { user, loggedIn } = useContext(UserContext);
@@ -52,7 +53,7 @@ export default function ProfilePage() {
                     </div>
                 </Form>
             </Formik>
-            <div>
+            <div className="mb-6">
                 <div className="mb-2 text-xl">Password</div>
                 <button className="mb-1 rounded-md border border-red-500 bg-red-600 px-2 py-1 ">
                     Change Password
@@ -60,6 +61,19 @@ export default function ProfilePage() {
                 <div className="text-xs">
                     Changing your password will end all login sessions.
                 </div>
+            </div>
+            <div>
+                <div className="mb-2 text-xl">Integrations</div>
+                <div>
+                    <div className="text-lg">racetime.gg</div>
+                    <div>Not connected</div>
+                </div>
+                <Link
+                    href={`${process.env.NEXT_PUBLIC_API_PATH}/api/connect/racetime`}
+                    className="rounded-md bg-black px-2 py-1"
+                >
+                    Connect to racetime.gg
+                </Link>
             </div>
         </>
     );
