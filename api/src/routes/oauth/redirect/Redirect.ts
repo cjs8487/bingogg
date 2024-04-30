@@ -5,8 +5,9 @@ import {
     racetimeClientSecret,
     racetimeHost,
 } from '../../../Environment';
+import { getAccessToken, registerUser } from '../../../lib/RacetimeConnector';
 
-interface RacetimeTokenResponse {
+export interface RacetimeTokenResponse {
     access_token: string;
     expires_in: 36000;
     token_type: string;
@@ -21,10 +22,18 @@ interface RacetimeTokenErrorResponse {
 const redirect = Router();
 
 redirect.get('/racetime', async (req, res) => {
+    const { user } = req.session;
+    if (!user) {
+        res.redirect(
+            `${clientUrl}?type=error&message=Unable to connect account`,
+        );
+        return;
+    }
+
     const code = req.query.code;
     if (typeof code !== 'string') {
         res.redirect(
-            `${clientUrl}?type="error"&message=Unable to connect account.`,
+            `${clientUrl}?type=error&message=Unable to connect account.`,
         );
         return;
     }
@@ -42,15 +51,29 @@ redirect.get('/racetime', async (req, res) => {
     if (!tokenRes.ok) {
         const data = (await tokenRes.json()) as RacetimeTokenErrorResponse;
         res.redirect(
-            `${clientUrl}?type="error&message=Unable to connect account - ${data.error}}`,
+            `${clientUrl}?type=error&message=Unable to connect account - ${data.error}}`,
         );
     }
 
     const data = (await tokenRes.json()) as RacetimeTokenResponse;
-    const accessToken = data.access_token;
-    const refreshToken = data.refresh_token;
 
-    res.sendStatus(200);
+    registerUser(user, data.access_token, data.refresh_token, data.expires_in);
+    // console.log(await getAccessToken(user));
+
+    const userRes = await fetch(`${racetimeHost}/o/userinfo`, {
+        headers: { Authorization: `Bearer ${await getAccessToken(user)}` },
+    });
+    if (!userRes.ok) {
+        res.redirect(
+            `${clientUrl}?type=error&message=Unable to connect account`,
+        );
+        return;
+    }
+    const userData = (await userRes.json()) as { full_name: string };
+
+    res.redirect(
+        `${clientUrl}?type=success&message=Successfully connected to racetime.gg user ${userData.full_name}`,
+    );
 });
 
 export default redirect;
