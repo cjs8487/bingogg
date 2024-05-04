@@ -3,7 +3,6 @@ import { prisma } from './Database';
 
 export const createRacetimeConnection = async (
     user: string,
-    accessToken: string,
     refreshToken: string,
 ) => {
     return prisma.connection.create({
@@ -13,5 +12,14 @@ export const createRacetimeConnection = async (
             serviceId: '',
             refreshToken: refreshToken,
         },
+    });
+};
+
+export const getConnectionForUser = (
+    user: string,
+    service: ConnectionService,
+) => {
+    return prisma.connection.findFirst({
+        where: { user: { id: user }, service },
     });
 };
