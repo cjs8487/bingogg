@@ -6,14 +6,26 @@ import RoomChat from '@/components/room/RoomChat';
 import RoomInfo from '@/components/room/RoomInfo';
 import RoomLogin from '@/components/room/RoomLogin';
 import { ConnectionStatus, RoomContext } from '@/context/RoomContext';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import PlayerList from '../../../../components/room/PlayerList';
-import { Box, Button, Card, CardContent, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Typography,
+} from '@mui/material';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 export default function Room() {
-    const { connectionStatus, roomData, nickname, disconnect } =
-        useContext(RoomContext);
+    const {
+        connectionStatus,
+        roomData,
+        nickname,
+        disconnect,
+        createRacetimeRoom,
+    } = useContext(RoomContext);
 
     if (connectionStatus === ConnectionStatus.UNINITIALIZED) {
         return <RoomLogin />;
@@ -72,6 +84,18 @@ export default function Room() {
                                             </Typography>
                                             <ColorSelect />
                                         </Box>
+                                    </CardContent>
+                                </Card>
+                            </Box>
+                            <Box>
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant="h6">
+                                            racetime.gg
+                                        </Typography>
+                                        <Button onClick={createRacetimeRoom}>
+                                            Create racetime.gg race
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             </Box>

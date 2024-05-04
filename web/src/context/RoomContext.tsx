@@ -58,6 +58,7 @@ interface RoomContext {
     changeColor: (color: string) => void;
     regenerateCard: (options?: CardRegenerateOptions) => void;
     disconnect: () => void;
+    createRacetimeRoom: () => void;
 }
 
 export const RoomContext = createContext<RoomContext>({
@@ -76,6 +77,7 @@ export const RoomContext = createContext<RoomContext>({
     changeColor() {},
     regenerateCard() {},
     disconnect() {},
+    createRacetimeRoom() {},
 });
 
 interface RoomContextProps {
@@ -315,6 +317,12 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
         },
         [authToken, sendJsonMessage],
     );
+    const createRacetimeRoom = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/createRacetimeRoom', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+    }, [roomData, authToken]);
 
     // effects
     // slug changed, try to establish initial connection from storage
@@ -375,6 +383,7 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                 changeColor,
                 regenerateCard,
                 disconnect,
+                createRacetimeRoom,
             }}
         >
             {children}
