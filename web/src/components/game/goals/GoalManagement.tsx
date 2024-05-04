@@ -145,47 +145,52 @@ export default function GoalManagement({
                     Upload Goals
                 </button>
             </div>
-            <div className="flex w-full gap-x-4">
-                <div className="w-1/3">
-                    <Select
-                        options={catList}
-                        placeholder="Filter by"
-                        onChange={(options) =>
-                            setShownCats(options.toSpliced(0, 0))
-                        }
-                        isMulti
-                        classNames={{
-                            control: () => 'rounded-md',
-                            menuList: () => 'text-black',
-                            container: () => '',
-                        }}
-                    />
+            <div>
+                <div className="flex w-full gap-x-4">
+                    <div className="w-1/3">
+                        <Select
+                            options={catList}
+                            placeholder="Filter by"
+                            onChange={(options) =>
+                                setShownCats(options.toSpliced(0, 0))
+                            }
+                            isMulti
+                            classNames={{
+                                control: () => 'rounded-md',
+                                menuList: () => 'text-black',
+                                container: () => '',
+                            }}
+                        />
+                    </div>
+                    <div className="flex w-1/3 items-center gap-x-1">
+                        <Select
+                            options={sortOptions}
+                            placeholder="Sort by"
+                            onChange={setSort}
+                            className="grow"
+                            classNames={{
+                                control: () => 'rounded-md',
+                                menuList: () => 'text-black',
+                                container: () => '',
+                            }}
+                        />
+                        <FontAwesomeIcon
+                            icon={reverse ? faSortUp : faSortDown}
+                            className="cursor-pointer rounded-full px-2.5 py-1.5 text-white hover:bg-gray-400"
+                            onClick={() => setReverse(!reverse)}
+                        />
+                    </div>
+                    <div className="w-1/3">
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="h-full w-full rounded-md text-black"
+                        />
+                    </div>
                 </div>
-                <div className="flex w-1/3 items-center gap-x-1">
-                    <Select
-                        options={sortOptions}
-                        placeholder="Sort by"
-                        onChange={setSort}
-                        className="grow"
-                        classNames={{
-                            control: () => 'rounded-md',
-                            menuList: () => 'text-black',
-                            container: () => '',
-                        }}
-                    />
-                    <FontAwesomeIcon
-                        icon={reverse ? faSortUp : faSortDown}
-                        className="cursor-pointer rounded-full px-2.5 py-1.5 text-white hover:bg-gray-400"
-                        onClick={() => setReverse(!reverse)}
-                    />
-                </div>
-                <div className="w-1/3">
-                    <input
-                        type="text"
-                        placeholder="Search"
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="h-full w-full rounded-md text-black"
-                    />
+                <div className="pt-2">
+                    {goals.length} total goals, {shownGoals.length} shown
                 </div>
             </div>
             <div className="flex w-full grow gap-x-5">
