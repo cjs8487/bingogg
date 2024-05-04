@@ -70,9 +70,12 @@ redirect.get('/racetime', async (req, res) => {
         );
         return;
     }
-    const userData = (await userRes.json()) as { full_name: string };
+    const userData = (await userRes.json()) as {
+        id: string;
+        full_name: string;
+    };
 
-    createRacetimeConnection(user, data.refresh_token);
+    createRacetimeConnection(user, userData.id, data.refresh_token);
 
     res.redirect(
         `${clientUrl}?type=success&message=Successfully connected to racetime.gg user ${userData.full_name}`,
