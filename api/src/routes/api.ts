@@ -1,13 +1,14 @@
 import { Router } from 'express';
+import { getUser } from '../database/Users';
 import auth from './auth/Auth';
+import connect from './connect/Connect';
+import connection from './connection/Connection';
 import games from './games/Games';
 import goals from './goals/Goals';
+import oauth from './oauth/OAuth';
 import registration from './registration/Registration';
 import rooms from './rooms/Rooms';
-import { getUser } from '../database/Users';
 import users from './users/Users';
-import connect from './connect/Connect';
-import oauth from './oauth/OAuth';
 
 const api = Router();
 
@@ -19,6 +20,7 @@ api.use('/auth', auth);
 api.use('/users', users);
 api.use('/connect', connect);
 api.use('/oauth', oauth);
+api.use('/connection', connection);
 
 api.get('/me', async (req, res) => {
     if (!req.session.user) {

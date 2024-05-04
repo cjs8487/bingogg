@@ -1,9 +1,10 @@
 'use client';
-import { useContext, useLayoutEffect } from 'react';
+import { Suspense, useContext, useLayoutEffect } from 'react';
 import { UserContext } from '../../../context/UserContext';
 import { redirect } from 'next/navigation';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Link from 'next/link';
+import RacetimeIntegration from './RacetimeIntegration';
 
 export default function ProfilePage() {
     const { user, loggedIn } = useContext(UserContext);
@@ -64,16 +65,9 @@ export default function ProfilePage() {
             </div>
             <div>
                 <div className="mb-2 text-xl">Integrations</div>
-                <div>
-                    <div className="text-lg">racetime.gg</div>
-                    <div>Not connected</div>
-                </div>
-                <Link
-                    href={`${process.env.NEXT_PUBLIC_API_PATH}/api/connect/racetime`}
-                    className="rounded-md bg-black px-2 py-1"
-                >
-                    Connect to racetime.gg
-                </Link>
+                <Suspense>
+                    <RacetimeIntegration />
+                </Suspense>
             </div>
         </>
     );
