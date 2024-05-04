@@ -16,6 +16,21 @@ export const createRacetimeConnection = async (
     });
 };
 
+export const updateRefreshToken = async (
+    user: string,
+    service: ConnectionService,
+    newToken: string,
+) => {
+    const connection = await getConnectionForUser(user, service);
+    if (!connection) {
+        return;
+    }
+    return prisma.connection.update({
+        where: { id: connection.id },
+        data: { refreshToken: newToken },
+    });
+};
+
 export const getConnectionForUser = (
     user: string,
     service: ConnectionService,
