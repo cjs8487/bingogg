@@ -1,9 +1,11 @@
+import { ConnectionService } from '@prisma/client';
 import {
     racetimeClientId,
     racetimeClientSecret,
     racetimeHost,
 } from '../Environment';
 import { logWarn } from '../Logger';
+import { getConnectionForUser } from '../database/Connections';
 import { RacetimeTokenResponse } from '../routes/oauth/redirect/Redirect';
 
 interface RacetimeToken {
@@ -69,7 +71,7 @@ export const registerAndRefreshUser = async (
     refreshToken: string,
 ) => {
     authTokens.set(user, { accessToken: '', refreshToken, refreshAfter: 0 });
-    await refresh(user);
+    return refresh(user);
 };
 
 export const revoke = (user: string) => {
@@ -79,9 +81,22 @@ export const revoke = (user: string) => {
 export const getAccessToken = async (
     user: string,
 ): Promise<string | undefined> => {
-    const token = authTokens.get(user);
+    let token = authTokens.get(user);
     if (!token) {
-        return;
+        const connection = await getConnectionForUser(
+            user,
+            ConnectionService.RACETIME,
+        );
+        if (!connection) {
+            return;
+        }
+        if (!connection.refreshToken) {
+            return;
+        }
+        token = await registerAndRefreshUser(user, connection.refreshToken);
+        if (!token) {
+            return;
+        }
     }
     if (Date.now() > token.refreshAfter) {
         return (await refresh(user))?.accessToken;

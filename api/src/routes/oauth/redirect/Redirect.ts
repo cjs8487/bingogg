@@ -6,6 +6,7 @@ import {
     racetimeHost,
 } from '../../../Environment';
 import { getAccessToken, registerUser } from '../../../lib/RacetimeConnector';
+import { createRacetimeConnection } from '../../../database/Connections';
 
 export interface RacetimeTokenResponse {
     access_token: string;
@@ -58,10 +59,10 @@ redirect.get('/racetime', async (req, res) => {
     const data = (await tokenRes.json()) as RacetimeTokenResponse;
 
     registerUser(user, data.access_token, data.refresh_token, data.expires_in);
-    // console.log(await getAccessToken(user));
+    const token = await getAccessToken(user);
 
     const userRes = await fetch(`${racetimeHost}/o/userinfo`, {
-        headers: { Authorization: `Bearer ${await getAccessToken(user)}` },
+        headers: { Authorization: `Bearer ${token}` },
     });
     if (!userRes.ok) {
         res.redirect(
@@ -70,6 +71,8 @@ redirect.get('/racetime', async (req, res) => {
         return;
     }
     const userData = (await userRes.json()) as { full_name: string };
+
+    createRacetimeConnection(user, data.refresh_token);
 
     res.redirect(
         `${clientUrl}?type=success&message=Successfully connected to racetime.gg user ${userData.full_name}`,
