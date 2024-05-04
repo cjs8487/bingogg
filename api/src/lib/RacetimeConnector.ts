@@ -5,7 +5,10 @@ import {
     racetimeHost,
 } from '../Environment';
 import { logWarn } from '../Logger';
-import { getConnectionForUser } from '../database/Connections';
+import {
+    getConnectionForUser,
+    updateRefreshToken,
+} from '../database/Connections';
 import { RacetimeTokenResponse } from '../routes/oauth/redirect/Redirect';
 
 interface RacetimeToken {
@@ -53,6 +56,11 @@ const refresh = async (user: string): Promise<RacetimeToken | undefined> => {
         refreshAfter: Date.now() + newTokenRes.expires_in * 0.9,
     };
     authTokens.set(user, newToken);
+    await updateRefreshToken(
+        user,
+        ConnectionService.RACETIME,
+        newToken.refreshToken,
+    );
 
     return newToken;
 };
