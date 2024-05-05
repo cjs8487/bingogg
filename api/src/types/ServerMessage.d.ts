@@ -37,6 +37,10 @@ export type ServerMessage = (
   | {
       action: "disconnected";
     }
+  | {
+      action: "updateRoomData";
+      roomData: RoomData;
+    }
 ) & {
   players?: Player[];
 };
@@ -70,6 +74,7 @@ export interface RoomData {
   game: string;
   slug: string;
   gameSlug: string;
+  racetimeUrl?: string;
 }
 export interface Player {
   nickname: string;

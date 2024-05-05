@@ -1,22 +1,22 @@
 'use client';
 import Board from '@/components/board/Board';
 import ColorSelect from '@/components/room/ColorSelect';
-import ConnectionState from '@/components/room/ConnectionState';
 import RoomChat from '@/components/room/RoomChat';
 import RoomInfo from '@/components/room/RoomInfo';
 import RoomLogin from '@/components/room/RoomLogin';
 import { ConnectionStatus, RoomContext } from '@/context/RoomContext';
-import { useCallback, useContext } from 'react';
-import PlayerList from '../../../../components/room/PlayerList';
 import {
     Box,
     Button,
     Card,
     CardContent,
-    CardHeader,
+    Link,
     Typography,
 } from '@mui/material';
+import NextLink from 'next/link';
+import { useContext } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import PlayerList from '../../../../components/room/PlayerList';
 
 export default function Room() {
     const {
@@ -93,9 +93,24 @@ export default function Room() {
                                         <Typography variant="h6">
                                             racetime.gg
                                         </Typography>
-                                        <Button onClick={createRacetimeRoom}>
-                                            Create racetime.gg race
-                                        </Button>
+                                        {!roomData?.racetimeUrl && (
+                                            <Button
+                                                onClick={createRacetimeRoom}
+                                            >
+                                                Create racetime.gg race
+                                            </Button>
+                                        )}
+                                        {roomData?.racetimeUrl && (
+                                            <>
+                                                Connected{' '}
+                                                <Link
+                                                    component={NextLink}
+                                                    href={roomData.racetimeUrl}
+                                                >
+                                                    {roomData.racetimeUrl}
+                                                </Link>
+                                            </>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </Box>

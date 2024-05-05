@@ -13,4 +13,5 @@ export interface RoomData {
   game: string;
   slug: string;
   gameSlug: string;
+  racetimeUrl?: string;
 }

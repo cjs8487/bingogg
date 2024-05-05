@@ -56,11 +56,11 @@ const refresh = async (user: string): Promise<RacetimeToken | undefined> => {
         refreshAfter: Date.now() + newTokenRes.expires_in * 0.9,
     };
     authTokens.set(user, newToken);
-    await updateRefreshToken(
+    updateRefreshToken(
         user,
         ConnectionService.RACETIME,
         newToken.refreshToken,
-    );
+    ).then();
 
     return newToken;
 };

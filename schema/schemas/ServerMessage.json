@@ -59,6 +59,14 @@
             "properties": {
                 "action": "disconnected"
             }
+        },
+        {
+            "required": ["action", "roomData"],
+            "additionalProperties": false,
+            "properties": {
+                "action": "updateRoomData",
+                "roomData": {"$ref": "./RoomData.json"}
+            }
         }
     ]
 }

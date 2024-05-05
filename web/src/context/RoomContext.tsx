@@ -147,6 +147,9 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
         setConnectionStatus(ConnectionStatus.UNAUTHORIZED);
         localStorage.removeItem(`authToken-${slug}`);
     }, [slug]);
+    const onUpdateRoomData = useCallback((roomData: RoomData) => {
+        setRoomData(roomData);
+    }, []);
 
     // websocket
     const { sendJsonMessage } = useWebSocket(
@@ -203,6 +206,12 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                         break;
                     case 'unauthorized':
                         onUnauthorized();
+                        break;
+                    case 'updateRoomData':
+                        if (!payload.roomData) {
+                            return;
+                        }
+                        onUpdateRoomData(payload.roomData);
                         break;
                 }
             },

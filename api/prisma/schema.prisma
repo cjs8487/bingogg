@@ -90,15 +90,16 @@ model Connection {
 }
 
 model Room {
-  id       String       @id @unique @default(cuid())
-  slug     String       @unique
-  name     String
-  private  Boolean
-  password String?
-  history  RoomAction[]
-  game     Game         @relation(fields: [gameId], references: [id])
-  gameId   String
-  board    String[]
+  id           String       @id @unique @default(cuid())
+  slug         String       @unique
+  name         String
+  private      Boolean
+  password     String?
+  history      RoomAction[]
+  game         Game         @relation(fields: [gameId], references: [id])
+  gameId       String
+  board        String[]
+  racetimeRoom String?
 }
 
 model RoomAction {

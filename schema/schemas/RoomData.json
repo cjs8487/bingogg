@@ -8,6 +8,7 @@
         "name": { "type": "string"},
         "game": { "type": "string"},
         "slug": { "type": "string"},
-        "gameSlug": { "type": "string"}
+        "gameSlug": { "type": "string"},
+        "racetimeUrl": {"type": "string"}
     }
 }
