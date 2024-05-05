@@ -121,7 +121,9 @@ rooms.get('/:slug', async (req, res) => {
         dbRoom.slug,
         dbRoom.password ?? '',
         dbRoom.id,
+        dbRoom.racetimeRoom ?? '',
     );
+    console.log(room);
     room.board = {
         board: chunk(
             dbRoom.board.map((goal) => ({

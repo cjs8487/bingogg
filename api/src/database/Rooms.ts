@@ -93,3 +93,7 @@ export const getRoomFromSlug = (slug: string) => {
         include: { history: true, game: true },
     });
 };
+
+export const connectRoomToRacetime = (slug: string, racetimeRoom: string) => {
+    return prisma.room.update({ where: { slug }, data: { racetimeRoom } });
+};

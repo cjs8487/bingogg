@@ -3,6 +3,7 @@ import { verifyRoomToken } from '../../auth/RoomAuth';
 import { allRooms } from '../../core/RoomServer';
 import { getAccessToken } from '../../lib/RacetimeConnector';
 import { racetimeHost } from '../../Environment';
+import { connectRoomToRacetime } from '../../database/Rooms';
 
 const actions = Router();
 
@@ -18,7 +19,8 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         res.status(400).send('Missing required body parameter');
         return;
     }
-    if (!allRooms.get(slug)) {
+    const room = allRooms.get(slug);
+    if (!room) {
         res.sendStatus(404);
         return;
     }
@@ -47,11 +49,31 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         }),
     });
     if (!createRes.ok) {
-        // error case
-    } else {
-        // figure out what the race room is
+        res.status(400).send('Invalid racetime configuration for the category');
+        return;
     }
-    res.status(200).send();
+    if (createRes.status !== 201) {
+        // uh oh
+        res.status(500).send(
+            'Recieved a response from racetime that the server does not know how to handle',
+        );
+        return;
+    }
+
+    const relativePath = createRes.headers.get('Location');
+    if (!relativePath) {
+        res.status(500).send(
+            'Recieved a response from racetime that the server does not know how to handle',
+        );
+        return;
+    }
+    const url = `${racetimeHost}${relativePath}`;
+    connectRoomToRacetime(slug, url).then();
+    room.handleRacetimeRoomCreated(url);
+
+    res.status(200).json({
+        url,
+    });
 });
 
 export default actions;
