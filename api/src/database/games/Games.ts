@@ -7,7 +7,14 @@ export const allGames = () => {
 export const gameForSlug = (slug: string) => {
     return prisma.game.findUnique({
         where: { slug },
-        include: { owners: true, moderators: true },
+        include: {
+            owners: {
+                select: { username: true },
+            },
+            moderators: {
+                select: { username: true },
+            },
+        },
     });
 };
 

@@ -2,11 +2,14 @@ import { randomBytes } from 'crypto';
 import { prisma } from './Database';
 
 export const userByEmail = (email: string) => {
-    return prisma.user.findUnique({ where: { email } });
+    return prisma.user.findUnique({ select: { id: true }, where: { email } });
 };
 
 export const userByUsername = (username: string) => {
-    return prisma.user.findUnique({ where: { username } });
+    return prisma.user.findUnique({
+        select: { id: true },
+        where: { username },
+    });
 };
 
 export const emailUsed = async (email: string) => {
@@ -53,14 +56,10 @@ export const getSiteAuth = async (username: string) => {
 };
 
 export const getUser = async (id: string) => {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) {
-        return undefined;
-    }
-    return {
-        id: user.id,
-        username: user.username,
-    };
+    return prisma.user.findUnique({
+        select: { id: true, username: true },
+        where: { id },
+    });
 };
 
 export const getUserByEmail = (email: string) => {
@@ -68,11 +67,12 @@ export const getUserByEmail = (email: string) => {
 };
 
 export const getAllUsers = async () => {
-    return prisma.user.findMany();
+    return prisma.user.findMany({ select: { id: true, username: true } });
 };
 
 export const getUsersEligibleToModerateGame = (game: string) => {
     return prisma.user.findMany({
+        select: { id: true, username: true },
         where: {
             moderatedGames: { none: { slug: game } },
             ownedGames: { none: { slug: game } },
