@@ -45,18 +45,20 @@ model Variant {
 }
 
 model Game {
-  id          String    @id @unique @default(cuid())
-  name        String
-  slug        String    @unique
-  coverImage  String?
-  variants    Variant[]
-  goals       Goal[]
-  owners      User[]    @relation("GameOwners")
-  moderators  User[]    @relation("GameModerators")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  enableSRLv5 Boolean   @default(false)
-  rooms       Room[]
+  id               String    @id @unique @default(cuid())
+  name             String
+  slug             String    @unique
+  coverImage       String?
+  variants         Variant[]
+  goals            Goal[]
+  owners           User[]    @relation("GameOwners")
+  moderators       User[]    @relation("GameModerators")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  enableSRLv5      Boolean   @default(false)
+  rooms            Room[]
+  racetimeCategory String?
+  racetimeGoal     String?
 }
 
 model User {
