@@ -5,7 +5,7 @@ import {
     TextFieldVariants,
 } from '@mui/material';
 import { OverridableStringUnion } from '@mui/types';
-import { useField } from 'formik';
+import { FieldValidator, useField } from 'formik';
 import { HTMLInputTypeAttribute } from 'react';
 
 interface FormikTextFieldProps {
@@ -34,6 +34,7 @@ interface FormikTextFieldProps {
     disabled?: boolean;
     multiline?: boolean;
     rows?: number;
+    validate?: FieldValidator;
 }
 
 export default function FormikTextField({
@@ -51,8 +52,9 @@ export default function FormikTextField({
     disabled,
     multiline,
     rows,
+    validate,
 }: FormikTextFieldProps) {
-    const [field, meta] = useField<string>(name);
+    const [field, meta] = useField<string>({ name, validate });
     return (
         <TextField
             id={id ?? name}

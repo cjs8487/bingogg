@@ -80,6 +80,24 @@ export const updateSRLv5Enabled = (slug: string, enableSRLv5: boolean) => {
     return prisma.game.update({ where: { slug }, data: { enableSRLv5 } });
 };
 
+export const updateRacetimeCategory = (
+    slug: string,
+    racetimeCategory: string,
+) => {
+    return prisma.game.update({ where: { slug }, data: { racetimeCategory } });
+};
+
+export const updateRacetimeGoal = (slug: string, racetimeGoal: string) => {
+    return prisma.game.update({ where: { slug }, data: { racetimeGoal } });
+};
+
+export const getRacetimeConfiguration = (slug: string) => {
+    return prisma.game.findUnique({
+        select: { racetimeCategory: true, racetimeGoal: true },
+        where: { slug },
+    });
+};
+
 export const addOwners = (slug: string, users: string[]) => {
     return prisma.game.update({
         where: { slug },
