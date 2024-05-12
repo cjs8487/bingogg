@@ -60,6 +60,7 @@ interface RoomContext {
     disconnect: () => void;
     createRacetimeRoom: () => void;
     updateRacetimeRoom: () => void;
+    joinRacetimeRoom: () => void;
 }
 
 export const RoomContext = createContext<RoomContext>({
@@ -80,6 +81,7 @@ export const RoomContext = createContext<RoomContext>({
     disconnect() {},
     createRacetimeRoom() {},
     updateRacetimeRoom() {},
+    joinRacetimeRoom() {},
 });
 
 interface RoomContextProps {
@@ -343,6 +345,12 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
             },
         );
     }, [roomData, authToken]);
+    const joinRacetimeRoom = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/join', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+    }, [roomData, authToken]);
 
     // effects
     // slug changed, try to establish initial connection from storage
@@ -405,6 +413,7 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                 disconnect,
                 createRacetimeRoom,
                 updateRacetimeRoom,
+                joinRacetimeRoom,
             }}
         >
             {children}

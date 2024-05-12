@@ -3,7 +3,7 @@ import { RoomContext } from '../../context/RoomContext';
 import { Box, Paper, Typography } from '@mui/material';
 
 export default function PlayerList() {
-    const { players, roomData } = useContext(RoomContext);
+    const { players, roomData, joinRacetimeRoom } = useContext(RoomContext);
     const racetimeConnected = !!roomData?.racetimeUrl;
 
     return (
@@ -36,6 +36,12 @@ export default function PlayerList() {
                         {racetimeConnected && (
                             <div className="pl-1 pt-1.5 text-sm">
                                 Not connected
+                                <button
+                                    className="ml-2 rounded-md border border-white px-1 py-1 text-sm"
+                                    onClick={joinRacetimeRoom}
+                                >
+                                    Join Race
+                                </button>
                             </div>
                         )}
                     </Box>

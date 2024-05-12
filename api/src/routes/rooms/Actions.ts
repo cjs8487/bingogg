@@ -89,7 +89,7 @@ actions.post('/createRacetimeRoom', async (req, res) => {
     }
     const url = `${racetimeHost}${relativePath}`;
     connectRoomToRacetime(slug, relativePath).then();
-    room.handleRacetimeRoomCreated(url);
+    room.handleRacetimeRoomCreated(relativePath);
 
     res.status(200).json({
         url,
@@ -125,6 +125,36 @@ actions.post('/refreshRacetimeConnection', async (req, res) => {
         room.handleRacetimeRoomDisconnected();
     }
     res.status(200);
+});
+
+actions.post('/racetime/join', async (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug, authToken } = req.body;
+
+    if (!slug || !authToken) {
+        res.status(400).send('Missing required body parameter');
+        return;
+    }
+    const room = allRooms.get(slug);
+    if (!room) {
+        res.sendStatus(404);
+        return;
+    }
+    if (!verifyRoomToken(authToken, slug)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    const token = await getAccessToken(req.session.user);
+    if (!token) {
+        res.sendStatus(403);
+        return;
+    }
+    room.joinRacetimeRoom(token);
 });
 
 export default actions;
