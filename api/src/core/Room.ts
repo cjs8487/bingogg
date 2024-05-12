@@ -8,6 +8,7 @@ import {
     addLeaveAction,
     addMarkAction,
     addUnmarkAction,
+    disconnectRoomFromRacetime,
     setRoomBoard,
 } from '../database/Rooms';
 import { goalsForGame } from '../database/games/Goals';
@@ -30,6 +31,7 @@ import { shuffle } from '../util/Array';
 import { listToBoard } from '../util/RoomUtils';
 import { generateSRLv5 } from './generation/SRLv5';
 import { logError } from '../Logger';
+import { racetimeHost } from '../Environment';
 
 type RoomIdentity = {
     nickname: string;
@@ -61,6 +63,8 @@ export default class Room {
 
     lastGenerationMode: BoardGenerationMode;
 
+    racetimeWebSocket?: WebSocket;
+
     constructor(
         name: string,
         game: string,
@@ -86,6 +90,10 @@ export default class Room {
         this.board = {
             board: [],
         };
+
+        if (this.racetimeUrl) {
+            this.connectRacetimeWebSocket();
+        }
     }
 
     async generateBoard(mode: BoardGenerationMode) {
@@ -334,7 +342,8 @@ export default class Room {
         return false;
     }
 
-    handleRacetimeRoomCreated(url: string) {
+    async handleRacetimeRoomCreated(url: string) {
+        this.racetimeUrl = url;
         this.sendServerMessage({
             action: 'updateRoomData',
             roomData: {
@@ -346,6 +355,7 @@ export default class Room {
             },
         });
         this.sendChat(`Racetime.gg room created ${url}`);
+        this.connectRacetimeWebSocket;
     }
 
     handleRacetimeRoomDisconnected() {
@@ -359,6 +369,7 @@ export default class Room {
                 racetimeUrl: undefined,
             },
         });
+        this.racetimeWebSocket = undefined;
     }
 
     sendChat(message: string): void;
@@ -395,5 +406,40 @@ export default class Room {
                 );
             }
         });
+    }
+
+    // racetime integration related
+    async connectRacetimeWebSocket() {
+        const racetimeRes = await fetch(
+            `${racetimeHost}${this.racetimeUrl}/data`,
+        );
+        if (!racetimeRes.ok) {
+            disconnectRoomFromRacetime(this.slug).then();
+            this.handleRacetimeRoomDisconnected();
+            return;
+        }
+        const data = (await racetimeRes.json()) as {
+            websocket_oauth_url: string;
+        };
+
+        this.racetimeWebSocket = new WebSocket(
+            `${racetimeHost.replace('http', 'ws')}${data.websocket_oauth_url}`,
+            // { headers: { authorization: `Bearer ${creatorAuthToken}}` } },
+        );
+        this.racetimeWebSocket.on('message', (data) =>
+            console.log(data.toString()),
+        );
+    }
+
+    joinRacetimeRoom(token: string) {
+        if (!this.racetimeWebSocket) {
+            return;
+        }
+        this.racetimeWebSocket.send(
+            JSON.stringify({
+                action: 'authenticate',
+                data: { oauth_token: `${token}` },
+            }),
+        );
     }
 }
