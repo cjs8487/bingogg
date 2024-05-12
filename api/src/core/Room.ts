@@ -29,6 +29,7 @@ import {
 import { shuffle } from '../util/Array';
 import { listToBoard } from '../util/RoomUtils';
 import { generateSRLv5 } from './generation/SRLv5';
+import { logError } from '../Logger';
 
 type RoomIdentity = {
     nickname: string;
@@ -88,16 +89,21 @@ export default class Room {
         this.lastGenerationMode = mode;
         const goals = await goalsForGame(this.gameSlug);
         let goalList: Goal[];
-        switch (mode) {
-            case BoardGenerationMode.SRLv5:
-                goalList = generateSRLv5(goals);
-                goalList.shift();
-                break;
-            case BoardGenerationMode.RANDOM:
-            default:
-                shuffle(goals);
-                goalList = goals.splice(0, 25);
-                break;
+        try {
+            switch (mode) {
+                case BoardGenerationMode.SRLv5:
+                    goalList = generateSRLv5(goals);
+                    goalList.shift();
+                    break;
+                case BoardGenerationMode.RANDOM:
+                default:
+                    shuffle(goals);
+                    goalList = goals.splice(0, 25);
+                    break;
+            }
+        } catch {
+            logError(`Failed to generate board for for room ${this.slug}`);
+            return;
         }
 
         this.board = { board: listToBoard(goalList) };
