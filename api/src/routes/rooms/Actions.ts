@@ -3,7 +3,10 @@ import { verifyRoomToken } from '../../auth/RoomAuth';
 import { allRooms } from '../../core/RoomServer';
 import { getAccessToken } from '../../lib/RacetimeConnector';
 import { racetimeHost } from '../../Environment';
-import { connectRoomToRacetime } from '../../database/Rooms';
+import {
+    connectRoomToRacetime,
+    disconnectRoomFromRacetime,
+} from '../../database/Rooms';
 import { getRacetimeConfiguration } from '../../database/games/Games';
 
 const actions = Router();
@@ -85,12 +88,43 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         return;
     }
     const url = `${racetimeHost}${relativePath}`;
-    connectRoomToRacetime(slug, url).then();
+    connectRoomToRacetime(slug, relativePath).then();
     room.handleRacetimeRoomCreated(url);
 
     res.status(200).json({
         url,
     });
+});
+
+actions.post('/refreshRacetimeConnection', async (req, res) => {
+    const { slug, authToken } = req.body;
+
+    if (!slug || !authToken) {
+        res.status(400).send('Missing required body parameter');
+        return;
+    }
+    const room = allRooms.get(slug);
+    if (!room) {
+        res.sendStatus(404);
+        return;
+    }
+    if (!verifyRoomToken(authToken, slug)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    const racetimeRes = await fetch(`${racetimeHost}${room.racetimeUrl}/data`);
+    if (!racetimeRes.ok) {
+        disconnectRoomFromRacetime(slug).then();
+        room.handleRacetimeRoomDisconnected();
+        return;
+    }
+    const data = (await racetimeRes.json()) as { status: { value: string } };
+    if (data.status.value === 'cancelled') {
+        disconnectRoomFromRacetime(slug).then();
+        room.handleRacetimeRoomDisconnected();
+    }
+    res.status(200);
 });
 
 export default actions;

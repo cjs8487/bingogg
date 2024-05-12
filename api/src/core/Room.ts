@@ -348,6 +348,19 @@ export default class Room {
         this.sendChat(`Racetime.gg room created ${url}`);
     }
 
+    handleRacetimeRoomDisconnected() {
+        this.sendServerMessage({
+            action: 'updateRoomData',
+            roomData: {
+                game: this.game,
+                slug: this.slug,
+                name: this.name,
+                gameSlug: this.gameSlug,
+                racetimeUrl: undefined,
+            },
+        });
+    }
+
     sendChat(message: string): void;
     sendChat(message: ChatMessage): void;
 

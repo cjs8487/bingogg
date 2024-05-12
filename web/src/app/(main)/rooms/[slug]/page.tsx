@@ -5,11 +5,13 @@ import RoomChat from '@/components/room/RoomChat';
 import RoomInfo from '@/components/room/RoomInfo';
 import RoomLogin from '@/components/room/RoomLogin';
 import { ConnectionStatus, RoomContext } from '@/context/RoomContext';
+import Refresh from '@mui/icons-material/Refresh';
 import {
     Box,
     Button,
     Card,
     CardContent,
+    IconButton,
     Link,
     Typography,
 } from '@mui/material';
@@ -25,6 +27,7 @@ export default function Room() {
         nickname,
         disconnect,
         createRacetimeRoom,
+        updateRacetimeRoom,
     } = useContext(RoomContext);
 
     if (connectionStatus === ConnectionStatus.UNINITIALIZED) {
@@ -109,6 +112,11 @@ export default function Room() {
                                                 >
                                                     {roomData.racetimeUrl}
                                                 </Link>
+                                                <IconButton
+                                                    onClick={updateRacetimeRoom}
+                                                >
+                                                    <Refresh />
+                                                </IconButton>
                                             </>
                                         )}
                                     </CardContent>
