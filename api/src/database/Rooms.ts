@@ -97,3 +97,10 @@ export const getRoomFromSlug = (slug: string) => {
 export const connectRoomToRacetime = (slug: string, racetimeRoom: string) => {
     return prisma.room.update({ where: { slug }, data: { racetimeRoom } });
 };
+
+export const disconnectRoomFromRacetime = (slug: string) => {
+    return prisma.room.update({
+        where: { slug },
+        data: { racetimeRoom: null },
+    });
+};
