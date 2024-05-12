@@ -16,6 +16,7 @@ export default function TextFit({
 }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const iterations = useRef<number>(0);
 
     const [optimizedFontSize, setOptimizedFontSize] = useState('');
     const [transform, setTransform] = useState('');
@@ -27,17 +28,22 @@ export default function TextFit({
         let scaleX = container.clientWidth / content.clientWidth;
         let scaleY = container.clientHeight / content.clientHeight;
         const fontSize = window.getComputedStyle(content).fontSize;
-        if (scaleY < 0.8 || scaleX < 0.7) {
-            setOptimizedFontSize(`calc(${fontSize} * 0.9)`);
-            return;
+        if (iterations.current <= 10) {
+            if (scaleY < 0.8 || scaleX < 0.7) {
+                setOptimizedFontSize(`calc(${fontSize} * 0.9)`);
+                iterations.current += 1;
+                return;
+            }
+            scaleX = Math.min(1, scaleX);
+            scaleY = Math.min(1, scaleY);
+            setTransform(`scaleX(${scaleX}) scaleY(${scaleY})`);
+            iterations.current = 0;
         }
-        scaleX = Math.min(1, scaleX);
-        scaleY = Math.min(1, scaleY);
-        setTransform(`scaleX(${scaleX}) scaleY(${scaleY})`);
-    }, []);
+    }, [iterations]);
 
     const resetFit = useCallback(() => {
         setOptimizedFontSize('20px');
+        iterations.current = 0;
         fit();
     }, [fit]);
 
