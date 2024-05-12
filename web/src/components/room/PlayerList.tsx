@@ -3,7 +3,9 @@ import { RoomContext } from '../../context/RoomContext';
 import { Box, Paper, Typography } from '@mui/material';
 
 export default function PlayerList() {
-    const { players } = useContext(RoomContext);
+    const { players, roomData } = useContext(RoomContext);
+    const racetimeConnected = !!roomData?.racetimeUrl;
+
     return (
         <Paper
             sx={{
@@ -19,16 +21,23 @@ export default function PlayerList() {
             </Typography>
             <Box display="flex" flexDirection="column" rowGap={3}>
                 {players.map((player) => (
-                    <Box key={player.nickname} display="flex" columnGap={2}>
-                        <Box
-                            px={0.5}
-                            style={{ background: player.color }}
-                            border={1}
-                            borderColor="divider"
-                        >
-                            <Typography>{player.goalCount}</Typography>
+                    <Box key={player.nickname}>
+                        <Box display="flex" columnGap={2}>
+                            <Box
+                                px={0.5}
+                                style={{ background: player.color }}
+                                border={1}
+                                borderColor="divider"
+                            >
+                                <Typography>{player.goalCount}</Typography>
+                            </Box>
+                            <Typography>{player.nickname}</Typography>
                         </Box>
-                        <Typography>{player.nickname}</Typography>
+                        {racetimeConnected && (
+                            <div className="pl-1 pt-1.5 text-sm">
+                                Not connected
+                            </div>
+                        )}
                     </Box>
                 ))}
             </Box>
