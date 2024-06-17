@@ -1,9 +1,15 @@
+import {
+    Card,
+    CardActionArea,
+    CardContent,
+    List,
+    ListItem,
+    Paper,
+    Typography,
+} from '@mui/material';
 import { use } from 'react';
 import { RoomData } from '../types/RoomData';
-import { useUnmount } from 'react-use';
-import { revalidatePath } from 'next/cache';
 import CacheBreaker from './CacheBreaker';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 async function getRooms(): Promise<RoomData[]> {
@@ -19,19 +25,28 @@ export default function ActiveRoomList() {
     }
 
     return (
-        <div className="flex w-full flex-col gap-y-4 overflow-scroll">
+        <List>
             {rooms.map((room) => (
-                <Link
-                    key={room.slug}
-                    className="rounded-md border bg-background p-3"
-                    href={`/rooms/${room.slug}`}
-                >
-                    <div className="pb-1 text-2xl">{room.name}</div>
-                    <div className="pb-2 text-sm">{room.slug}</div>
-                    <div className="text-lg">{room.game}</div>
-                </Link>
+                <ListItem key={room.slug}>
+                    <Card variant="outlined">
+                        <CardActionArea
+                            href={`/rooms/${room.slug}`}
+                            LinkComponent={Link}
+                        >
+                            <CardContent>
+                                <Typography variant="h5">
+                                    {room.name}
+                                </Typography>
+                                <Typography variant="caption">
+                                    {room.slug}
+                                </Typography>
+                                <Typography>{room.game}</Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </ListItem>
             ))}
             <CacheBreaker />
-        </div>
+        </List>
     );
 }
