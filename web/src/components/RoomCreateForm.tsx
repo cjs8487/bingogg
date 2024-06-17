@@ -3,12 +3,31 @@ import { Game } from '@/types/Game';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Disclosure } from '@headlessui/react';
-import { ErrorMessage, Field, Form, Formik, useFormikContext } from 'formik';
+import {
+    ErrorMessage,
+    Field,
+    Form,
+    Formik,
+    FormikConsumer,
+    useField,
+    useFormik,
+    useFormikContext,
+} from 'formik';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { HTMLInputTypeAttribute, ReactNode } from 'react';
 import { useAsync } from 'react-use';
 import * as yup from 'yup';
 import { useApi } from '../lib/Hooks';
+import {
+    Autocomplete,
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+} from '@mui/material';
 
 const roomValidationSchema = yup.object().shape({
     name: yup.string().required('Room name is required'),
@@ -64,6 +83,73 @@ function GenerationModeSelectField() {
     );
 }
 
+interface FormikTextFieldProps {
+    id?: string;
+    name: string;
+    label: string;
+    type?: HTMLInputTypeAttribute;
+}
+
+function FormikTextField({ id, name, label, type }: FormikTextFieldProps) {
+    const [field, meta] = useField<string>(name);
+    return (
+        <TextField
+            id={id ?? name}
+            name={name}
+            label={label}
+            type={type}
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            error={meta.touched && !!meta.error}
+            helperText={meta.touched && meta.error}
+        />
+    );
+}
+
+interface SelectOption {
+    label: string;
+    value: string;
+}
+interface FormikSelectProps {
+    id: string;
+    name: string;
+    label: string;
+    options: SelectOption[];
+    placeholder?: string;
+}
+
+function FormikSelectField({
+    id,
+    name,
+    label,
+    options,
+    placeholder,
+}: FormikSelectProps) {
+    const [field, meta, helpers] = useField<string>(name);
+
+    return (
+        <Autocomplete
+            disablePortal
+            id={id}
+            value={
+                options.find((opt) => opt.value === field.value)?.label ?? ''
+            }
+            onChange={(event, newValue) => {
+                if (newValue) {
+                    helpers.setValue(
+                        options.find((option) => option.label === newValue)
+                            ?.value ?? '',
+                    );
+                }
+            }}
+            onBlur={field.onBlur}
+            options={[...options.map((option) => option.label), '']}
+            renderInput={(params) => <TextField {...params} label={label} />}
+        />
+    );
+}
+
 export default function RoomCreateForm() {
     const { data: games, isLoading } = useApi<Game[]>('/api/games');
     const router = useRouter();
@@ -90,82 +176,50 @@ export default function RoomCreateForm() {
             }}
             validationSchema={roomValidationSchema}
             onSubmit={async (values) => {
-                const res = await fetch('/api/rooms', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(values),
-                });
-                if (!res.ok) {
-                    // handle the error
-                    return;
-                }
-                const { slug, authToken } = await res.json();
-                localStorage.setItem('bingogg.temp.nickname', values.nickname);
-                localStorage.setItem(`authToken-${slug}`, authToken);
-                router.push(`/rooms/${slug}`);
+                // const res = await fetch('/api/rooms', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify(values),
+                // });
+                // if (!res.ok) {
+                //     // handle the error
+                //     return;
+                // }
+                // const { slug, authToken } = await res.json();
+                // localStorage.setItem('bingogg.temp.nickname', values.nickname);
+                // localStorage.setItem(`authToken-${slug}`, authToken);
+                // router.push(`/rooms/${slug}`);
+                console.log(values);
             }}
         >
-            <Form className="flex flex-col gap-y-3">
-                <div>
-                    <label>
-                        <div>Room Name</div>
-                        <Field name="name" className="w-full" />
-                    </label>
-                    <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="mt-1 text-xs text-error-content"
+            <Form>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        rowGap: 2.5,
+                    }}
+                >
+                    <FormikTextField name="name" label="Room Name" />
+                    <FormikTextField name="nickname" label="Nickname" />
+                    <FormikTextField
+                        id="roomPassword"
+                        type="password"
+                        name="password"
+                        label="Password"
                     />
-                </div>
-
-                <div>
-                    <label>
-                        <div>Nickname</div>
-                        <Field name="nickname" className="w-full" />
-                    </label>
-                    <ErrorMessage
-                        name="nickname"
-                        component="div"
-                        className="mt-1 text-xs text-error-content"
-                    />
-                </div>
-
-                <div>
-                    <label>
-                        <div>Password</div>
-                        <Field
-                            type="password"
-                            name="password"
-                            className="w-full"
-                        />
-                    </label>
-                    <ErrorMessage
+                    <FormikSelectField
+                        id="gameSelect"
                         name="game"
-                        component="div"
-                        className="mt-1 text-xs text-error-content"
+                        label="Game"
+                        options={games.map((game) => ({
+                            label: game.name,
+                            value: game.slug,
+                        }))}
                     />
-                </div>
-                <div>
-                    <label>
-                        <div>Game</div>
-                        <Field as="select" name="game" className="w-full">
-                            <option value="">Select Game</option>
-                            {games.map((game) => (
-                                <option key={game.slug} value={game.slug}>
-                                    {game.name}
-                                </option>
-                            ))}
-                        </Field>
-                    </label>
-                    <ErrorMessage
-                        name="game"
-                        component="div"
-                        className="mt-1 text-xs text-error-content"
-                    />
-                </div>
-                {/* <div className="flex gap-x-4">
+                    {/* <div className="flex gap-x-4">
                     <div className="w-1/2">
                         <label>
                             <div>Variant</div>
@@ -194,56 +248,45 @@ export default function RoomCreateForm() {
                         />
                     </div>
                 </div> */}
-                <div className="rounded-md border border-text-lighter bg-foreground px-3 py-2 shadow-lg shadow-text-lighter/10">
-                    <Disclosure>
-                        {({ open }) => (
-                            <>
-                                <Disclosure.Button className="flex w-full items-center justify-between gap-x-4 text-left text-sm font-medium">
-                                    <span>Advanced Generation Options</span>
-                                    <FontAwesomeIcon
-                                        icon={
-                                            open ? faChevronUp : faChevronDown
-                                        }
-                                    />
-                                </Disclosure.Button>
-                                <Disclosure.Panel className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text">
-                                    <label>
-                                        <div>Seed</div>
-                                        <Field
-                                            type="number"
-                                            name="seed"
-                                            pattern="[0-9]*"
-                                            inputMode="numeric"
-                                            className="no-step w-full"
+                    <div className="rounded-md border border-text-lighter bg-foreground px-3 py-2 shadow-lg shadow-text-lighter/10">
+                        <Disclosure>
+                            {({ open }) => (
+                                <>
+                                    <Disclosure.Button className="flex w-full items-center justify-between gap-x-4 text-left text-sm font-medium">
+                                        <span>Advanced Generation Options</span>
+                                        <FontAwesomeIcon
+                                            icon={
+                                                open
+                                                    ? faChevronUp
+                                                    : faChevronDown
+                                            }
                                         />
-                                    </label>
-                                    <GenerationModeSelectField />
-                                </Disclosure.Panel>
-                            </>
-                        )}
-                    </Disclosure>
-                </div>
-                <div className="flex">
-                    <div className="grow" />
-                    <button className="rounded-md bg-primary px-2 py-1 transition-all duration-200 hover:bg-primary-light">
-                        Create Room
-                    </button>
-                </div>
+                                    </Disclosure.Button>
+                                    <Disclosure.Panel className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text">
+                                        <label>
+                                            <div>Seed</div>
+                                            <Field
+                                                type="number"
+                                                name="seed"
+                                                pattern="[0-9]*"
+                                                inputMode="numeric"
+                                                className="no-step w-full"
+                                            />
+                                        </label>
+                                        <GenerationModeSelectField />
+                                    </Disclosure.Panel>
+                                </>
+                            )}
+                        </Disclosure>
+                    </div>
+                    <Box display="flex">
+                        <Box flexGrow={1} />
+                        <Button variant="contained" type="submit">
+                            Create Room
+                        </Button>
+                    </Box>
+                </Box>
             </Form>
         </Formik>
-    );
-}
-
-interface InlineLabelProps {
-    label: string;
-    children: ReactNode;
-}
-
-function InlineLabel({ label, children }: InlineLabelProps) {
-    return (
-        <label className="flex justify-center gap-x-8 text-xl">
-            <span className="w-1/2 text-right">{label}</span>
-            <div className="grow text-black">{children}</div>
-        </label>
     );
 }
