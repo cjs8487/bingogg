@@ -1,24 +1,10 @@
 'use client';
 import { Game } from '@/types/Game';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Disclosure } from '@headlessui/react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-    ErrorMessage,
-    Field,
-    Form,
-    Formik,
-    FormikConsumer,
-    useField,
-    useFormik,
-    useFormikContext,
-} from 'formik';
-import { useRouter } from 'next/navigation';
-import { HTMLInputTypeAttribute, ReactNode } from 'react';
-import { useAsync } from 'react-use';
-import * as yup from 'yup';
-import { useApi } from '../lib/Hooks';
-import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Autocomplete,
     Box,
     Button,
@@ -28,6 +14,12 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import { Field, Form, Formik, useField, useFormikContext } from 'formik';
+import { useRouter } from 'next/navigation';
+import { HTMLInputTypeAttribute } from 'react';
+import { useAsync } from 'react-use';
+import * as yup from 'yup';
+import { useApi } from '../lib/Hooks';
 
 const roomValidationSchema = yup.object().shape({
     name: yup.string().required('Room name is required'),
@@ -45,6 +37,7 @@ function GenerationModeSelectField() {
     const {
         values: { game },
     } = useFormikContext<{ game: string }>();
+    const [field, meta] = useField<string>('generationMode');
 
     const modes = useAsync(async () => {
         if (!game) {
@@ -69,17 +62,24 @@ function GenerationModeSelectField() {
     }
 
     return (
-        <label>
-            <div>Generation Mode</div>
-            <Field as="select" name="generationMode" className="w-full">
-                <option value="">Select Generation Mode</option>
+        <FormControl>
+            <InputLabel id="generationMode-label">Generation Mode</InputLabel>
+            <Select
+                id="generationMode"
+                labelId="generationMode-label"
+                name="generationMode"
+                value={field.value}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+                fullWidth
+            >
                 {modes.value.map((mode) => (
-                    <option key={mode} value={mode}>
+                    <MenuItem key={mode} value={mode}>
                         {mode}
-                    </option>
+                    </MenuItem>
                 ))}
-            </Field>
-        </label>
+            </Select>
+        </FormControl>
     );
 }
 
@@ -88,9 +88,26 @@ interface FormikTextFieldProps {
     name: string;
     label: string;
     type?: HTMLInputTypeAttribute;
+    pattern?: string;
+    inputMode?:
+        | 'none'
+        | 'text'
+        | 'tel'
+        | 'url'
+        | 'email'
+        | 'numeric'
+        | 'decimal'
+        | 'search';
 }
 
-function FormikTextField({ id, name, label, type }: FormikTextFieldProps) {
+function FormikTextField({
+    id,
+    name,
+    label,
+    type,
+    pattern,
+    inputMode,
+}: FormikTextFieldProps) {
     const [field, meta] = useField<string>(name);
     return (
         <TextField
@@ -98,6 +115,7 @@ function FormikTextField({ id, name, label, type }: FormikTextFieldProps) {
             name={name}
             label={label}
             type={type}
+            inputProps={{ pattern, inputMode }}
             value={field.value}
             onChange={field.onChange}
             onBlur={field.onBlur}
@@ -239,37 +257,34 @@ export default function RoomCreateForm() {
                         />
                     </div>
                 </div> */}
-                    <div className="rounded-md border border-text-lighter bg-foreground px-3 py-2 shadow-lg shadow-text-lighter/10">
-                        <Disclosure>
-                            {({ open }) => (
-                                <>
-                                    <Disclosure.Button className="flex w-full items-center justify-between gap-x-4 text-left text-sm font-medium">
-                                        <span>Advanced Generation Options</span>
-                                        <FontAwesomeIcon
-                                            icon={
-                                                open
-                                                    ? faChevronUp
-                                                    : faChevronDown
-                                            }
-                                        />
-                                    </Disclosure.Button>
-                                    <Disclosure.Panel className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text">
-                                        <label>
-                                            <div>Seed</div>
-                                            <Field
-                                                type="number"
-                                                name="seed"
-                                                pattern="[0-9]*"
-                                                inputMode="numeric"
-                                                className="no-step w-full"
-                                            />
-                                        </label>
-                                        <GenerationModeSelectField />
-                                    </Disclosure.Panel>
-                                </>
-                            )}
-                        </Disclosure>
-                    </div>
+                    <Accordion>
+                        {/* <Disclosure.Button className="flex w-full items-center justify-between gap-x-4 text-left text-sm font-medium">
+                            <span>Advanced Generation Options</span>
+                            <FontAwesomeIcon
+                                icon={open ? faChevronUp : faChevronDown}
+                            />
+                        </Disclosure.Button> */}
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            Advanced Generation Options
+                        </AccordionSummary>
+                        <AccordionDetails
+                            sx={{ display: 'flex', columnGap: 3 }}
+                            className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text"
+                        >
+                            <Box sx={{ width: '50%' }}>
+                                <FormikTextField
+                                    type="number"
+                                    name="seed"
+                                    label="Seed"
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                />
+                            </Box>
+                            <Box sx={{ width: '50%' }}>
+                                <GenerationModeSelectField />
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
                     <Box display="flex">
                         <Box flexGrow={1} />
                         <Button variant="contained" type="submit">
