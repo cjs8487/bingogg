@@ -9,6 +9,7 @@ import { ReactNode } from 'react';
 import { useAsync } from 'react-use';
 import * as yup from 'yup';
 import { useApi } from '../lib/Hooks';
+import { alertError } from '@/lib/Utils';
 
 const roomValidationSchema = yup.object().shape({
     name: yup.string().required('Room name is required'),
@@ -98,7 +99,10 @@ export default function RoomCreateForm() {
                     body: JSON.stringify(values),
                 });
                 if (!res.ok) {
-                    // handle the error
+                    const error = await res.text();
+                    alertError(
+                        `Unable to create room - ${error}`,
+                    );
                     return;
                 }
                 const { slug, authToken } = await res.json();
