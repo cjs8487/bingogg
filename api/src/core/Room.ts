@@ -1,4 +1,4 @@
-import { Goal } from '@prisma/client';
+import { Goal, RoomStatus } from '@prisma/client';
 import { OPEN, WebSocket } from 'ws';
 import { RoomTokenPayload, invalidateToken } from '../auth/RoomAuth';
 import {
@@ -9,6 +9,9 @@ import {
     addMarkAction,
     addUnmarkAction,
     setRoomBoard,
+    setRoomClosed,
+    setRoomFinished,
+    setRoomRunning,
 } from '../database/Rooms';
 import { goalsForGame } from '../database/games/Goals';
 import {
@@ -41,6 +44,8 @@ export enum BoardGenerationMode {
     SRLv5 = 'SRLv5',
 }
 
+const INACTIVITY_THRESHOLD = 1000 * 60 * 60 * 2; // 2 hours
+
 /**
  * Represents a room in the bingo.gg service. A room is container for a single
  * "game" of bingo, containing the board, game state, history, and all other
@@ -52,6 +57,8 @@ export default class Room {
     gameSlug: string;
     password: string;
     slug: string;
+    status: RoomStatus;
+    updatedAt: Date = new Date();
     connections: Map<string, WebSocket>;
     board: Board;
     identities: Map<string, RoomIdentity>;
@@ -65,7 +72,7 @@ export default class Room {
         game: string,
         gameSlug: string,
         slug: string,
-        password: string,
+        password: string = '',
         id: string,
     ) {
         this.name = name;
@@ -73,10 +80,12 @@ export default class Room {
         this.gameSlug = gameSlug;
         this.password = password;
         this.slug = slug;
+        this.status = "OPEN";
         this.identities = new Map();
         this.connections = new Map();
         this.chatHistory = [];
         this.id = id;
+        this.updatedAt = new Date();
 
         this.lastGenerationMode = BoardGenerationMode.RANDOM;
 
@@ -160,6 +169,9 @@ export default class Room {
         ]);
         this.connections.set(auth.uuid, socket);
         addJoinAction(this.id, identity.nickname, identity.color).then();
+        // set last updatedAt to now
+        this.updatedAt = new Date();
+
         return {
             action: 'connected',
             board: this.board,
@@ -174,6 +186,15 @@ export default class Room {
             },
             players: this.getPlayers(),
         };
+
+
+    }
+
+    handleReveal() {
+        // placeholder to reveal the board
+        this.status = "RUNNING";	// set the room status to RUNNING
+        setRoomRunning(this.id);	// update the room status in the database to RUNNING
+        // this.sendServerMessage({ action: 'reveal', board: this.board });	
     }
 
     handleLeave(
@@ -213,6 +234,8 @@ export default class Room {
             identity.color,
             chatMessage,
         ).then();
+
+        this.updatedAt = new Date();
     }
 
     handleMark(
@@ -243,6 +266,8 @@ export default class Room {
             row,
             col,
         ).then();
+
+        this.updatedAt = new Date();
     }
 
     handleUnmark(
@@ -270,6 +295,8 @@ export default class Room {
             unRow,
             unCol,
         ).then();
+
+        this.updatedAt = new Date();
     }
 
     handleChangeColor(
@@ -299,6 +326,8 @@ export default class Room {
             identity.color,
             color,
         ).then();
+
+        this.updatedAt = new Date();
     }
 
     handleNewCard(action: NewCardAction) {
@@ -327,6 +356,35 @@ export default class Room {
             addLeaveAction(this.id, identity.nickname, identity.color).then();
             return true;
         }
+        return false;
+    }
+
+    handleFinish() {
+        this.status = RoomStatus.FINISHED;
+
+        // Update the room status in the database to FINISHED
+        setRoomFinished(this.id); // probably no need to await this
+    }
+
+    handleInactive() {
+        // Notify all connections about the room becoming inactive and close them
+        this.connections.forEach((ws) => {
+            ws.send(JSON.stringify({ action: 'roomInactive' }));
+            ws.close();
+        });
+
+        // Update the room status in the database to CLOSED
+        setRoomClosed(this.id); // probably no need to await this
+
+        // Clear the connections map for this room
+        this.connections.clear();
+    }
+
+    shouldSetInactive() {
+        const now = new Date();
+        const twoHoursAgo = new Date(now.getTime() - INACTIVITY_THRESHOLD);
+        if (this.connections.size === 0) return true; // also set inactive when somehow everyone lost connection?
+        if (this.updatedAt < twoHoursAgo && this.status !== RoomStatus.ARCHIVED && this.status === "OPEN") return true;
         return false;
     }
 
