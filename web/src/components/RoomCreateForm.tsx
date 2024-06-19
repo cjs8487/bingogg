@@ -102,13 +102,7 @@ interface FormikSelectProps {
     placeholder?: string;
 }
 
-function FormikSelectField({
-    id,
-    name,
-    label,
-    options,
-    placeholder,
-}: FormikSelectProps) {
+function FormikSelectField({ id, name, label, options }: FormikSelectProps) {
     const [field, meta, helpers] = useField<string>(name);
 
     return (
@@ -119,15 +113,13 @@ function FormikSelectField({
                 options.find((opt) => opt.value === field.value)?.label ?? ''
             }
             onChange={(event, newValue) => {
-                if (newValue) {
-                    helpers.setValue(
-                        options.find((option) => option.label === newValue)
-                            ?.value ?? '',
-                    );
-                }
+                helpers.setValue(
+                    options.find((option) => option.label === newValue)
+                        ?.value ?? '',
+                );
             }}
             onBlur={field.onBlur}
-            options={[...options.map((option) => option.label), '']}
+            options={options.map((option) => option.label)}
             renderInput={(params) => <TextField {...params} label={label} />}
         />
     );
@@ -150,7 +142,7 @@ export default function RoomCreateForm() {
             initialValues={{
                 name: '',
                 nickname: '',
-                game: '',
+                game: null,
                 password: '',
                 variant: '',
                 mode: '',
