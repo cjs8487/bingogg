@@ -368,6 +368,7 @@ export default class Room {
 
     handleInactive() {
         // Notify all connections about the room becoming inactive and close them
+        this.status = RoomStatus.CLOSED;
         this.connections.forEach((ws) => {
             ws.send(JSON.stringify({ action: 'roomInactive' }));
             ws.close();
