@@ -119,13 +119,7 @@ interface FormikSelectProps {
     placeholder?: string;
 }
 
-function FormikSelectField({
-    id,
-    name,
-    label,
-    options,
-    placeholder,
-}: FormikSelectProps) {
+function FormikSelectField({ id, name, label, options }: FormikSelectProps) {
     const [field, meta, helpers] = useField<string>(name);
 
     return (
@@ -136,15 +130,13 @@ function FormikSelectField({
                 options.find((opt) => opt.value === field.value)?.label ?? ''
             }
             onChange={(event, newValue) => {
-                if (newValue) {
-                    helpers.setValue(
-                        options.find((option) => option.label === newValue)
-                            ?.value ?? '',
-                    );
-                }
+                helpers.setValue(
+                    options.find((option) => option.label === newValue)
+                        ?.value ?? '',
+                );
             }}
             onBlur={field.onBlur}
-            options={[...options.map((option) => option.label), '']}
+            options={options.map((option) => option.label)}
             renderInput={(params) => <TextField {...params} label={label} />}
         />
     );
@@ -167,7 +159,7 @@ export default function RoomCreateForm() {
             initialValues={{
                 name: '',
                 nickname: '',
-                game: '',
+                game: null,
                 password: '',
                 variant: '',
                 mode: '',
@@ -176,22 +168,21 @@ export default function RoomCreateForm() {
             }}
             validationSchema={roomValidationSchema}
             onSubmit={async (values) => {
-                // const res = await fetch('/api/rooms', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify(values),
-                // });
-                // if (!res.ok) {
-                //     // handle the error
-                //     return;
-                // }
-                // const { slug, authToken } = await res.json();
-                // localStorage.setItem('bingogg.temp.nickname', values.nickname);
-                // localStorage.setItem(`authToken-${slug}`, authToken);
-                // router.push(`/rooms/${slug}`);
-                console.log(values);
+                const res = await fetch('/api/rooms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(values),
+                });
+                if (!res.ok) {
+                    // handle the error
+                    return;
+                }
+                const { slug, authToken } = await res.json();
+                localStorage.setItem('bingogg.temp.nickname', values.nickname);
+                localStorage.setItem(`authToken-${slug}`, authToken);
+                router.push(`/rooms/${slug}`);
             }}
         >
             <Form>
