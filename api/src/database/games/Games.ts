@@ -9,10 +9,10 @@ export const gameForSlug = (slug: string) => {
         where: { slug },
         include: {
             owners: {
-                select: { username: true },
+                select: { id: true, username: true },
             },
             moderators: {
-                select: { username: true },
+                select: { id: true, username: true },
             },
         },
     });
