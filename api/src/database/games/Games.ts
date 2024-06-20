@@ -45,7 +45,7 @@ export const deleteGame = (slug: string) => {
     return prisma.game.delete({ where: { slug } });
 };
 
-export const goalNumber = async (slug: string) => {
+export const goalCount = async (slug: string) => {
     const game = await gameForSlug(slug)
     if (!game) {
         return -1;
