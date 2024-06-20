@@ -1,5 +1,5 @@
-import { SRLv5UploadForm } from './uploadForms/srlv5';
-import { ListUploadForm } from './uploadForms/list';
+import { SRLv5UploadForm } from './uploadForms/Srlv5';
+import { ListUploadForm } from './uploadForms/List';
 import { Dialog, Tab, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -83,13 +83,16 @@ export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
                                                             />
                                                         </div>
                                                         <div>
-                                                            Please ensure that the list
-                                                            you upload is a proper json array.
-                                                            If you have troubles with the data format,
-                                                            verify that it is correctly formatted at
-                                                            <a href='https://jsonlint.com'> jsonlint.com </a>
-                                                            Please refresh the page afterwards to see the changes.
-                                                        </div>   
+                                                            <p>Please ensure that the list
+                                                            you upload is a proper json array.</p>
+                                                            <p>If you have troubles with the data format,
+                                                                verify that it is correctly formatted at
+                                                                <a className="underline text-blue-600 hover:text-blue-800"
+                                                                   href='https://jsonlint.com'> jsonlint.com
+                                                                </a>
+                                                            </p>
+                                                            <p>Please refresh the page afterwards to see the changes.</p>
+                                                        </div>
                                                     </div>
                                                     <ListUploadForm
                                                         slug={slug}
@@ -110,7 +113,7 @@ export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
                                                             Only use this upload method
                                                             if you trust the author of
                                                             the goal list.
-                                                        </div>   
+                                                        </div>
                                                     </div>
                                                 <SRLv5UploadForm
                                                     slug={slug}
