@@ -29,7 +29,8 @@ registration.post('/register', async (req, res, next) => {
         res.status(400).send('Invalid email - unable to parse');
         return;
     }
-    if (!email.match(/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+    // Currently longest tld has 24 characters
+    if (!email.match(/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,24}$/)) {
         res.status(400).send('Invalid email - invalid format');
         return;
     }
