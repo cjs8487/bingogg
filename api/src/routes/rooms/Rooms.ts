@@ -8,8 +8,7 @@ import {
     getFullRoomList,
     getRoomFromSlug,
 } from '../../database/Rooms';
-import { gameForSlug } from '../../database/games/Games';
-import { prisma } from '../../database/Database';
+import { gameForSlug, goalNumber } from '../../database/games/Games';
 import { chunk } from '../../util/Array';
 
 const MIN_ROOM_GOALS_REQUIRED = 25;
@@ -65,9 +64,7 @@ rooms.post('/', async (req, res) => {
     }
 
     // Might be better as a frontend check, but also way more imperformant
-    const goalsNumber = await prisma.goal.count({
-        where: { gameId: gameData.id }
-    });
+    const goalsNumber = await goalNumber(game)
 
     if (goalsNumber < MIN_ROOM_GOALS_REQUIRED) {
         res.status(400).send(
