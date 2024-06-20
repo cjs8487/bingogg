@@ -1,107 +1,22 @@
+import { SRLv5UploadForm } from './uploadForms/Srlv5';
+import { ListUploadForm } from './uploadForms/List';
 import { Dialog, Tab, Transition } from '@headlessui/react';
-import { Field, Form, Formik } from 'formik';
 import { Fragment } from 'react';
-import { parseSRLv5BingoList } from '../../../lib/goals/SRLv5Parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamation } from '@fortawesome/free-solid-svg-icons';
-import { alertError } from '../../../lib/Utils';
 
-interface UploadFormProps {
+export interface UploadFormProps {
     slug: string;
     close: () => void;
 }
 
-function SRLv5UploadForm({ slug, close }: UploadFormProps) {
-    return (
-        <Formik
-            initialValues={{ data: '' }}
-            onSubmit={async ({ data }) => {
-                const parsedList = parseSRLv5BingoList(data);
-                if (!parsedList) {
-                    alertError('Unable to parse file contents');
-                    return;
-                }
-
-                let invalid = false;
-                const goals = parsedList
-                    .map((goalList, difficulty) => {
-                        if (invalid) {
-                            return [];
-                        }
-                        if (difficulty < 1 || difficulty > 25) {
-                            invalid = true;
-                            return [];
-                        }
-                        return goalList.map((goal) => {
-                            if (!goal.name) {
-                                invalid = true;
-                            }
-                            return {
-                                goal: goal.name,
-                                difficulty,
-                                categories: goal.types,
-                            };
-                        });
-                    })
-                    .flat();
-                if (invalid) {
-                    alertError('The data entered is invalid.');
-                    return;
-                }
-                const res = await fetch('/api/goals/upload/srlv5', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        slug,
-                        goals,
-                    }),
-                });
-                if (!res.ok) {
-                    const error = await res.text();
-                    alertError(`Could not upload results - ${error}`);
-                    return;
-                }
-                close();
-            }}
-        >
-            <Form>
-                <label>
-                    Data
-                    <Field
-                        name="data"
-                        as="textarea"
-                        className="h-full w-full p-2 text-black"
-                        rows={10}
-                    />
-                </label>
-                <div className="mt-5">
-                    <button
-                        type="button"
-                        className="rounded-md border border-transparent bg-error px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                        onClick={close}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="float-right rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-                    >
-                        Submit
-                    </button>
-                </div>
-            </Form>
-        </Formik>
-    );
-}
 interface GoalUploadProps {
     isOpen: boolean;
     close: () => void;
     slug: string;
 }
 
-const uploadModes = ['SRLv5'];
+const uploadModes = ['List', 'SRLv5'];
 
 export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
     return (
@@ -156,25 +71,57 @@ export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
                                         ))}
                                     </Tab.List>
                                     <Tab.Panels className="mt-2 h-full">
-                                        <Tab.Panel className="h-full rounded-xl p-3">
-                                            <div className="mb-2.5 flex items-center gap-x-3 rounded-md bg-yellow-300 px-2 py-1 text-sm text-black">
+                                        {uploadModes.map((tab) => (
+                                        <Tab.Panel key={tab} className="h-full rounded-xl p-3">
+                                            {tab === 'List' && (
                                                 <div>
-                                                    <FontAwesomeIcon
-                                                        icon={faExclamation}
-                                                        className="mt-1 rounded-full border border-black px-3 py-1 text-lg"
+                                                    <div className="mb-2.5 flex items-center gap-x-3 rounded-md bg-yellow-300 px-2 py-1 text-sm text-black">
+                                                        <div>
+                                                            <FontAwesomeIcon
+                                                                icon={faExclamation}
+                                                                className="mt-1 rounded-full border border-black px-3 py-1 text-lg"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p>Please ensure that the list
+                                                            you upload is a proper json array.</p>
+                                                            <p>If you have troubles with the data format,
+                                                                verify that it is correctly formatted at
+                                                                <a className="underline text-blue-600 hover:text-blue-800"
+                                                                   href='https://jsonlint.com'> jsonlint.com
+                                                                </a>
+                                                            </p>
+                                                            <p>Please refresh the page afterwards to see the changes.</p>
+                                                        </div>
+                                                    </div>
+                                                    <ListUploadForm
+                                                        slug={slug}
+                                                        close={close}
                                                     />
                                                 </div>
+                                            )}
+                                            {tab === 'SRLv5' && (
                                                 <div>
-                                                    Only use this upload method
-                                                    if you trust the author of
-                                                    the goal list.
-                                                </div>
-                                            </div>
-                                            <SRLv5UploadForm
-                                                slug={slug}
-                                                close={close}
+                                                    <div className="mb-2.5 flex items-center gap-x-3 rounded-md bg-yellow-300 px-2 py-1 text-sm text-black">
+                                                        <div>
+                                                            <FontAwesomeIcon
+                                                                icon={faExclamation}
+                                                                className="mt-1 rounded-full border border-black px-3 py-1 text-lg"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            Only use this upload method
+                                                            if you trust the author of
+                                                            the goal list.
+                                                        </div>
+                                                    </div>
+                                                <SRLv5UploadForm
+                                                    slug={slug}
+                                                    close={close}
                                             />
-                                        </Tab.Panel>
+                                            </div>
+                                            )}
+                                        </Tab.Panel>))}
                                     </Tab.Panels>
                                 </Tab.Group>
                             </Dialog.Panel>
