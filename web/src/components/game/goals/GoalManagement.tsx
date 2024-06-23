@@ -1,18 +1,41 @@
 import { useApi } from '@/lib/Hooks';
 import { Goal } from '@/types/Goal';
-import {
-    faAdd,
-    faSortDown,
-    faSortUp,
-    faTrash,
-    faUpload,
-} from '@fortawesome/free-solid-svg-icons';
+import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useCallback, useEffect, useState } from 'react';
-import GoalEditor from './GoalEditor';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import UploadIcon from '@mui/icons-material/Upload';
+import {
+    Box,
+    Button,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText,
+    TextField,
+    Typography,
+    styled,
+} from '@mui/material';
+import { forwardRef, useCallback, useEffect, useState } from 'react';
 import Select from 'react-select';
-import GoalUpload from './GoalUpload';
+import { Virtuoso } from 'react-virtuoso';
 import { alertError } from '../../../lib/Utils';
+import GoalEditor from './GoalEditor';
+import GoalUpload from './GoalUpload';
+
+const ListItemHiddenSecondary = styled(ListItem)(() => ({
+    '.MuiListItemSecondaryAction-root': {
+        visibility: 'hidden',
+    },
+    '&.MuiListItem-root': {
+        '&:hover .MuiListItemSecondaryAction-root': {
+            visibility: 'inherit',
+        },
+    },
+}));
 
 enum SortOptions {
     DEFAULT,
@@ -91,6 +114,22 @@ export default function GoalManagement({
 
     const [goalUploadOpen, setGoalUploadOpen] = useState(false);
 
+    const [sizeMap, setSizeMap] = useState<number[]>([]);
+    const setSize = useCallback((index: number, size: number) => {
+        setSizeMap((curr) => {
+            curr[index] = size;
+            return curr;
+        });
+    }, []);
+    const getSize = useCallback(
+        (index: number) => {
+            // console.log(sizeMap);
+            console.log(sizeMap[index]);
+            return sizeMap[index] || 50;
+        },
+        [sizeMap],
+    );
+
     if (!goals || goalsLoading) {
         return null;
     }
@@ -132,22 +171,45 @@ export default function GoalManagement({
     }
 
     return (
-        <div className="flex h-full grow flex-col gap-y-3">
-            <div className="relative flex items-center justify-center">
-                <div className="text-center text-2xl">Goal Management</div>
-                <button
+        <Box
+            sx={{
+                display: 'flex',
+                flexGrow: 1,
+                flexDirection: 'column',
+                rowGap: 3,
+            }}
+            className="flex h-full grow flex-col gap-y-3"
+        >
+            <Box
+                sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Typography variant="h5" align="center">
+                    Goal Management
+                </Typography>
+                <Button
+                    sx={{
+                        position: 'absolute',
+                        right: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}
                     className="absolute right-0 flex items-center gap-x-2 rounded-md bg-text-lighter px-2 py-1 text-black hover:bg-text-light/50"
                     onClick={() => {
                         setGoalUploadOpen(true);
                     }}
+                    startIcon={<UploadIcon />}
                 >
-                    <FontAwesomeIcon icon={faUpload} />
                     Upload Goals
-                </button>
-            </div>
-            <div>
-                <div className="flex w-full gap-x-4">
-                    <div className="w-1/3">
+                </Button>
+            </Box>
+            <Box>
+                <Box sx={{ display: 'flex', columnGap: 4, width: '100%' }}>
+                    <Box width="33%" className="w-1/3">
                         <Select
                             options={catList}
                             placeholder="Filter by"
@@ -161,8 +223,16 @@ export default function GoalManagement({
                                 container: () => '',
                             }}
                         />
-                    </div>
-                    <div className="flex w-1/3 items-center gap-x-1">
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            width: '33%',
+                            alignItems: 'center',
+                            columnGap: 1,
+                        }}
+                        className="flex w-1/3 items-center gap-x-1"
+                    >
                         <Select
                             options={sortOptions}
                             placeholder="Sort by"
@@ -179,59 +249,115 @@ export default function GoalManagement({
                             className="cursor-pointer rounded-full px-2.5 py-1.5 text-white hover:bg-gray-400"
                             onClick={() => setReverse(!reverse)}
                         />
-                    </div>
-                    <div className="w-1/3">
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="h-full w-full rounded-md text-black"
-                        />
-                    </div>
-                </div>
+                    </Box>
+                    <TextField
+                        type="text"
+                        placeholder="Search"
+                        onChange={(e) => setSearch(e.target.value)}
+                        variant="standard"
+                        sx={{ width: '33%' }}
+                    />
+                </Box>
                 <div className="pt-2">
                     {goals.length} total goals, {shownGoals.length} shown
                 </div>
-            </div>
-            <div className="flex w-full grow gap-x-5">
-                <div className="flex w-1/3 flex-col rounded-md border-2 border-white/40 px-3">
-                    <div className="h-px grow overflow-y-auto">
-                        {shownGoals.map((goal) => (
-                            <div key={goal.id} className="border-b py-2">
-                                <div
-                                    className="group/item flex cursor-pointer items-center rounded-md px-2 py-1 hover:bg-gray-400 hover:bg-opacity-60"
-                                    onClick={() => setSelectedGoal(goal)}
-                                >
-                                    {goal.goal}
-                                    <div className="grow" />
-                                    {canModerate && <FontAwesomeIcon
-                                        icon={faTrash}
-                                        className="group/edit invisible rounded-full p-2.5 hover:bg-black group-hover/item:visible"
-                                        onClick={(e) => {
-                                            deleteGoal(goal.id);
-                                            e.preventDefault();
-                                            e.stopPropagation();
+            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    columnGap: 5,
+                }}
+                className="flex w-full grow gap-x-5"
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexGrow: 1,
+                        maxWidth: '33%',
+                    }}
+                >
+                    <Virtuoso<Goal>
+                        components={{
+                            // eslint-disable-next-line react/display-name
+                            List: forwardRef(({ style, children }, listRef) => {
+                                return (
+                                    <List
+                                        style={{
+                                            padding: 0,
+                                            ...style,
+                                            margin: 0,
                                         }}
-                                    />}
-                                </div>
-                            </div>
-                        ))}
-                        {canModerate && (
-                            <div className="py-2">
-                                <div
-                                    className="cursor-pointer rounded-md px-2 py-2 hover:bg-gray-400 hover:bg-opacity-60"
-                                    onClick={() => setNewGoal(true)}
+                                        component="div"
+                                        ref={listRef}
+                                    >
+                                        {children}
+                                    </List>
+                                );
+                            }),
+                            Item: ({ children, ...props }) => {
+                                return (
+                                    <ListItemHiddenSecondary
+                                        components={{ Root: 'div' }}
+                                        disableGutters
+                                        disablePadding
+                                        {...props}
+                                        style={{
+                                            margin: 0,
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        {children}
+                                    </ListItemHiddenSecondary>
+                                );
+                            },
+                            Footer: () =>
+                                canModerate && (
+                                    <ListItem disableGutters disablePadding>
+                                        <ListItemButton
+                                            className="cursor-pointer rounded-md px-2 py-2 hover:bg-gray-400 hover:bg-opacity-60"
+                                            onClick={() => setNewGoal(true)}
+                                            alignItems="flex-start"
+                                        >
+                                            <ListItemIcon>
+                                                <AddIcon />
+                                            </ListItemIcon>
+                                            <ListItemText>
+                                                New Goal
+                                            </ListItemText>
+                                        </ListItemButton>
+                                    </ListItem>
+                                ),
+                        }}
+                        data={shownGoals}
+                        style={{ flexGrow: 1 }}
+                        itemContent={(index, goal) => (
+                            <>
+                                <ListItemButton
+                                    onClick={() => setSelectedGoal(goal)}
+                                    selected={selectedGoal === goal}
+                                    divider
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faAdd}
-                                        className="pr-2 text-green-500"
-                                    />
-                                    New Goal
-                                </div>
-                            </div>
+                                    <ListItemText>{goal.goal}</ListItemText>
+                                </ListItemButton>
+                                {canModerate && (
+                                    <ListItemSecondaryAction>
+                                        <IconButton
+                                            aria-label="delete"
+                                            onClick={(e) => {
+                                                deleteGoal(goal.id);
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                )}
+                            </>
                         )}
-                    </div>
-                </div>
+                    />
+                </Box>
                 <div className="grow text-center">
                     {!newGoal && selectedGoal && (
                         <GoalEditor
@@ -261,7 +387,7 @@ export default function GoalManagement({
                     }}
                     slug={slug}
                 />
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

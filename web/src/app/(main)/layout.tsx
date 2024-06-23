@@ -44,7 +44,9 @@ export default function CoreLayout({ children }: { children: ReactNode }) {
                 This website uses cookies to provide some parts of it&#39;s
                 functionality.
             </CookieConsent>
-            <Box flexGrow={1}>{children}</Box>
+            <Box flexGrow={1} height="100%" display="flex">
+                {children}
+            </Box>
             <Paper component="footer">
                 <Box sx={{ display: 'flex', alignItems: 'end', p: 2 }}>
                     <Box flexGrow={1}>
