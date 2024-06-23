@@ -1,10 +1,12 @@
-import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useCallback, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import { mutate } from 'swr';
 import { Game } from '../../types/Game';
 import UserSearch from '../UserSearch';
 import { alertError } from '../../lib/Utils';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 interface PermissionsManagementProps {
     slug: string;
@@ -24,22 +26,28 @@ export default function PermissionsManagement({
     }, [slug]);
 
     return (
-        <div>
-            <div className="pb-5">
-                <div className="text-xl">Owners</div>
-                <div className="pb-3 text-xs">
+        <Box>
+            <Box pb={3}>
+                <Typography variant="h6">Owners</Typography>
+                <Typography pb={3} variant="caption">
                     Owners have full moderation powers over a game, including
                     appointing additional owners and moderators.
-                </div>
-                <div>
+                </Typography>
+                <Box>
                     {gameData.owners?.map((owner) => (
-                        <div key={owner.id} className="flex items-center">
-                            <div>{owner.username}</div>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            key={owner.id}
+                            className="flex items-center"
+                        >
+                            <Typography variant="body1">
+                                {owner.username}
+                            </Typography>
                             {gameData.owners?.length &&
                                 gameData.owners.length > 1 && (
-                                    <FontAwesomeIcon
-                                        icon={faTrash}
-                                        className="ml-1 cursor-pointer rounded-full p-2 hover:bg-gray-500 hover:bg-opacity-60"
+                                    <IconButton
+                                        size="small"
                                         onClick={async () => {
                                             const res = await fetch(
                                                 `/api/games/${slug}/owners`,
@@ -63,21 +71,20 @@ export default function PermissionsManagement({
                                             }
                                             updateData();
                                         }}
-                                    />
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
                                 )}
-                        </div>
+                        </Box>
                     ))}
-                </div>
-                <div
+                </Box>
+                <Button
                     className="flex max-w-fit cursor-pointer items-center rounded-md px-2 py-1 text-sm hover:bg-gray-500 hover:bg-opacity-60"
                     onClick={() => setSearchOpenOwner(true)}
+                    startIcon={<AddIcon />}
                 >
-                    <FontAwesomeIcon
-                        icon={faAdd}
-                        className="mr-2 text-green-400"
-                    />
                     Add new owner
-                </div>
+                </Button>
                 <UserSearch
                     isOpen={searchOpenOwner}
                     close={() => setSearchOpenOwner(false)}
@@ -96,21 +103,27 @@ export default function PermissionsManagement({
                     }}
                     listPath={`/api/games/${slug}/eligibleMods`}
                 />
-            </div>
-            <div>
-                <div className="text-xl">Moderators</div>
-                <div className="pb-3 text-xs">
+            </Box>
+            <Box>
+                <Typography variant="h5">Moderators</Typography>
+                <Typography variant="caption" pb={3}>
                     Moderators have the power to modify goal lists and create
                     game modes and variants, as well as modify some game
                     settings.
-                </div>
+                </Typography>
                 <div>
                     {gameData.moderators?.map((mod) => (
-                        <div key={mod.id} className="flex items-center">
-                            <div>{mod.username}</div>
-                            <FontAwesomeIcon
-                                icon={faTrash}
-                                className="ml-1 cursor-pointer rounded-full p-2 hover:bg-gray-500 hover:bg-opacity-60"
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            key={mod.id}
+                            className="flex items-center"
+                        >
+                            <Typography variant="body1">
+                                {mod.username}
+                            </Typography>
+                            <IconButton
+                                size="small"
                                 onClick={async () => {
                                     const res = await fetch(
                                         `/api/games/${slug}/moderators`,
@@ -134,20 +147,19 @@ export default function PermissionsManagement({
                                     }
                                     updateData();
                                 }}
-                            />
-                        </div>
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
                     ))}
                 </div>
-                <div
+                <Button
                     className="flex max-w-fit cursor-pointer items-center rounded-md px-2 py-1 text-sm hover:bg-gray-500 hover:bg-opacity-60"
                     onClick={() => setSearchOpenMod(true)}
+                    startIcon={<AddIcon />}
                 >
-                    <FontAwesomeIcon
-                        icon={faAdd}
-                        className="mr-2 text-green-400"
-                    />
                     Add new moderator
-                </div>
+                </Button>
                 <UserSearch
                     isOpen={searchOpenMod}
                     close={() => setSearchOpenMod(false)}
@@ -171,7 +183,7 @@ export default function PermissionsManagement({
                     }}
                     listPath={`/api/games/${slug}/eligibleMods`}
                 />
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

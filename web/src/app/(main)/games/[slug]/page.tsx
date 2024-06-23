@@ -3,7 +3,9 @@ import { useApi } from '@/lib/Hooks';
 import { Game } from '@/types/Game';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { Box, Container, Tab } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLayoutEffect, useState } from 'react';
 import { mutate } from 'swr';
@@ -12,8 +14,6 @@ import PermissionsManagement from '../../../../components/game/PermissionsManage
 import GoalManagement from '../../../../components/game/goals/GoalManagement';
 import Toggle from '../../../../components/input/Toggle';
 import { alertError } from '../../../../lib/Utils';
-import { Box, Container, Paper, Tab, tabClasses } from '@mui/material';
-import Image from 'next/image';
 
 export default function GamePage({
     params: { slug },
@@ -54,8 +54,6 @@ export default function GamePage({
         tabs.push('Permissions');
         tabs.push('Settings');
     }
-
-    console.log(gameData.coverImage);
 
     return (
         <Container
@@ -118,13 +116,19 @@ export default function GamePage({
                         ))}
                     </TabList>
                 </Box>
-                <TabPanel value="Goals" sx={{ display: 'flex', flexGrow: 1 }}>
+                <TabPanel
+                    value="Goals"
+                    sx={{
+                        display: tab === 'Goals' ? 'flex' : 'none',
+                        flexGrow: 1,
+                    }}
+                >
                     <GoalManagement slug={slug} canModerate={canModerate} />
                 </TabPanel>
-                <TabPanel value="Permissions" sx={{ flexGrow: 1 }}>
+                <TabPanel value="Permissions">
                     <PermissionsManagement slug={slug} gameData={gameData} />
                 </TabPanel>
-                <TabPanel value="Settings" sx={{ flexGrow: 1 }}>
+                <TabPanel value="Settings">
                     <div>
                         <div className="text-center text-2xl">
                             Game Settings
