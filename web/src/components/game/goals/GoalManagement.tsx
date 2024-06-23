@@ -114,22 +114,6 @@ export default function GoalManagement({
 
     const [goalUploadOpen, setGoalUploadOpen] = useState(false);
 
-    const [sizeMap, setSizeMap] = useState<number[]>([]);
-    const setSize = useCallback((index: number, size: number) => {
-        setSizeMap((curr) => {
-            curr[index] = size;
-            return curr;
-        });
-    }, []);
-    const getSize = useCallback(
-        (index: number) => {
-            // console.log(sizeMap);
-            console.log(sizeMap[index]);
-            return sizeMap[index] || 50;
-        },
-        [sizeMap],
-    );
-
     if (!goals || goalsLoading) {
         return null;
     }
