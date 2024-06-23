@@ -3,10 +3,9 @@ import { useApi } from '@/lib/Hooks';
 import { Game } from '@/types/Game';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Container, Tab } from '@mui/material';
+import { Box, Container, Link, Tab, Typography } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useLayoutEffect, useState } from 'react';
 import { mutate } from 'swr';
 import HoverIcon from '../../../../components/HoverIcon';
@@ -14,6 +13,7 @@ import PermissionsManagement from '../../../../components/game/PermissionsManage
 import GoalManagement from '../../../../components/game/goals/GoalManagement';
 import Toggle from '../../../../components/input/Toggle';
 import { alertError } from '../../../../lib/Utils';
+import NextLink from 'next/link';
 
 export default function GamePage({
     params: { slug },
@@ -61,8 +61,8 @@ export default function GamePage({
                 flexGrow: 1,
                 display: 'flex',
                 flexDirection: 'column',
+                pt: 2,
             }}
-            className="flex h-full gap-x-3"
         >
             <Box display="flex">
                 <Box position="fixed" mr={4}>
@@ -82,28 +82,36 @@ export default function GamePage({
                         </div>
                     )}
                 </Box>
-                <div className="grow">
-                    <Link className="text-sm underline" href={`/games/${slug}`}>
+                <Box flexGrow={1}>
+                    <Link
+                        component={NextLink}
+                        className="text-sm underline"
+                        href={`/games/${slug}`}
+                    >
                         {gameData.slug}
                     </Link>
-                    <div className="text-xl">{gameData.name}</div>
-                </div>
-                <div className="w-2/5">
-                    <div>
-                        <div className="text-lg underline">Owners</div>
-                        <div className="">
-                            {gameData.owners?.map((o) => o.username).join(', ')}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-lg underline">Moderators</div>
-                        <div className="text-sm">
-                            {gameData.moderators
-                                ?.map((o) => o.username)
-                                .join(', ')}
-                        </div>
-                    </div>
-                </div>
+                    <Typography variant="h6">{gameData.name}</Typography>
+                </Box>
+                <Box minWidth="30%">
+                    <Typography
+                        variant="body1"
+                        sx={{ textDecoration: 'underline' }}
+                    >
+                        Owners
+                    </Typography>
+                    <Typography variant="body2">
+                        {gameData.owners?.map((o) => o.username).join(', ')}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{ textDecoration: 'underline' }}
+                    >
+                        Moderators
+                    </Typography>
+                    <Typography variant="body2" className="text-sm">
+                        {gameData.moderators?.map((o) => o.username).join(', ')}
+                    </Typography>
+                </Box>
             </Box>
             <TabContext value={tab}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
