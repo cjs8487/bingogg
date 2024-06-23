@@ -1,4 +1,4 @@
-import { RoomActionType } from '@prisma/client';
+import { RoomActionType, RoomStatus } from '@prisma/client';
 import { prisma } from './Database';
 import { JsonObject } from '@prisma/client/runtime/library';
 
@@ -8,6 +8,7 @@ export const createRoom = (
     game: string,
     isPrivate: boolean,
     password: string,
+    status: RoomStatus = "OPEN",
 ) => {
     return prisma.room.create({
         data: {
@@ -16,6 +17,7 @@ export const createRoom = (
             private: isPrivate,
             game: { connect: { id: game } },
             password,
+            status,
         },
     });
 };
@@ -79,12 +81,34 @@ export const setRoomBoard = async (room: string, board: string[]) => {
     await prisma.room.update({ where: { id: room }, data: { board } });
 };
 
+export const setRoomOpen = async (room: string) => {
+    await prisma.room.update({ where: { id: room }, data: { status: "OPEN" } });
+}
+
+export const setRoomClosed = async (room: string) => {
+    await prisma.room.update({ where: { id: room }, data: { status: "CLOSED" } });
+}
+
+export const setRoomRunning = async (room: string) => {
+    await prisma.room.update({ where: { id: room }, data: { status: "RUNNING" } });
+}
+
+export const setRoomFinished = async (room: string) => {
+    await prisma.room.update({ where: { id: room }, data: { status: "FINISHED" } });
+}
+
+export const setRoomArchived = async (room: string) => {
+    await prisma.room.update({ where: { id: room }, data: { status: "ARCHIVED" } });
+}
+
 export const getFullRoomList = () => {
-    return prisma.room.findMany({ include: { game: true } });
+    // exclude archived rooms, they are not relevant for the client
+    return prisma.room.findMany({ include: { game: true }, where: { status: { not: "ARCHIVED" } } }); 
 };
 
 export const getAllRooms = () => {
-    return prisma.room.findMany({ include: { history: true } });
+    // exclude archived rooms, they are not relevant for the client
+    return prisma.room.findMany({ include: { history: true }, where: { status: { not: "ARCHIVED" } } });
 };
 
 export const getRoomFromSlug = (slug: string) => {

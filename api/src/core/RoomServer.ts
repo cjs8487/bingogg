@@ -2,6 +2,7 @@ import { WebSocketServer } from 'ws';
 import { verifyRoomToken } from '../auth/RoomAuth';
 import { RoomAction } from '../types/RoomAction';
 import Room from './Room';
+import { logger } from 'Logger';
 
 export const roomWebSocketServer: WebSocketServer = new WebSocketServer({
     noServer: true,
@@ -19,31 +20,16 @@ roomWebSocketServer.on('connection', (ws, req) => {
     segments.shift(); // remove leading empty segment
     const [, slug] = segments;
 
-    // create timeout for uninitialized connections
     const timeout = setTimeout(() => {
         ws.send(JSON.stringify({ action: 'unauthorized' }));
         ws.close();
     }, 1000);
 
-    // const pingTimeout = setTimeout(
-    //     () => {
-    //         let found = false;
-    //         allRooms.forEach((room) => {
-    //             if (found) return;
-    //             found = room.handleSocketClose(ws);
-    //         });
-    //         ws.close();
-    //     },
-    //     5 * 60 * 1000,
-    // );
-
-    // handlers
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
         const messageString = message.toString();
 
         if (messageString === 'ping') {
             ws.send('pong');
-            // pingTimeout.refresh();
             return;
         }
 
@@ -65,11 +51,7 @@ roomWebSocketServer.on('connection', (ws, req) => {
 
         switch (action.action) {
             case 'leave':
-                ws.send(
-                    JSON.stringify(
-                        room.handleLeave(action, payload, action.authToken),
-                    ),
-                );
+                ws.send(JSON.stringify(room.handleLeave(action, payload, action.authToken)));
                 ws.close();
                 break;
             case 'mark':
@@ -91,10 +73,7 @@ roomWebSocketServer.on('connection', (ws, req) => {
                 }
                 break;
             case 'changeColor':
-                const changeColorResult = room.handleChangeColor(
-                    action,
-                    payload,
-                );
+                const changeColorResult = room.handleChangeColor(action, payload);
                 if (changeColorResult) {
                     ws.send(JSON.stringify(changeColorResult));
                 }
@@ -104,10 +83,8 @@ roomWebSocketServer.on('connection', (ws, req) => {
                 break;
         }
     });
+
     ws.on('close', () => {
-        // cleanup
-        // attempt to close the connection from the room, in case the connection
-        // is closed unexpectedly without a leave message
         let found = false;
         allRooms.forEach((room) => {
             if (found) return;
@@ -115,6 +92,22 @@ roomWebSocketServer.on('connection', (ws, req) => {
         });
     });
 });
+
 roomWebSocketServer.on('close', () => {
-    // cleanup
+    // Cleanup
 });
+
+const checkInactiveRooms = async () => {
+    allRooms.forEach(async (room) => {
+        // probably better to do this in batches in the future, but for now it's fine
+        if (room.shouldSetInactive()) {
+            room.handleInactive();
+        }
+    });
+};
+
+setInterval(() => {
+    checkInactiveRooms().catch((e) => {
+        logger.error('Error checking inactive rooms', e);
+    });
+}, 10 * 60 * 1000); // Check every 10 minutes
