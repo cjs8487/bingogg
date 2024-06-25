@@ -5,7 +5,7 @@ import { Box, Paper, Typography } from '@mui/material';
 
 export default async function Home() {
     return (
-        <>
+        <Box flexGrow={1}>
             <Box mt={2} pb={4}>
                 <Typography variant="h3" textAlign="center">
                     Welcome to bingo.gg
@@ -43,6 +43,6 @@ export default async function Home() {
                     <RoomCreateForm />
                 </Paper>
             </Box>
-        </>
+        </Box>
     );
 }
