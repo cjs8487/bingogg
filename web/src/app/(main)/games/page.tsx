@@ -11,6 +11,7 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
+    Container,
     Typography,
 } from '@mui/material';
 import Masonry from '@mui/lab/Masonry';
@@ -29,14 +30,16 @@ export default function Games() {
     }
 
     return (
-        <>
+        <div>
             <Box
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
                     mb: 4,
-                    p: 1,
-                    borderBottom: '1px solid',
+                    py: 1,
+                    px: 2,
+                    borderBottom: 2,
+                    borderColor: 'divider',
                 }}
                 className="flex items-center border-b pb-4"
             >
@@ -54,63 +57,62 @@ export default function Games() {
                     </div>
                 )}
             </Box>
-            <Box p={0}>
-                <Masonry
-                    columns={{ xs: 1, sm: 2, md: 4, lg: 5, xl: 6 }}
-                    spacing={2}
-                >
-                    {games.map((game) => (
-                        <Card key={game.slug}>
-                            <CardActionArea
-                                href={`/games/${game.slug}`}
-                                LinkComponent={Link}
-                            >
-                                {game.coverImage && (
-                                    <CardMedia
-                                        component="img"
-                                        image={game.coverImage}
-                                    />
-                                )}
-                                {!game.coverImage && (
-                                    <Box
+            <Masonry
+                columns={{ xs: 1, sm: 2, md: 4, lg: 5, xl: 6 }}
+                spacing={2}
+                sx={{ px: 2 }}
+            >
+                {games.map((game) => (
+                    <Card key={game.slug}>
+                        <CardActionArea
+                            href={`/games/${game.slug}`}
+                            LinkComponent={Link}
+                        >
+                            {game.coverImage && (
+                                <CardMedia
+                                    component="img"
+                                    image={game.coverImage}
+                                />
+                            )}
+                            {!game.coverImage && (
+                                <Box
+                                    sx={{
+                                        position: 'relative',
+                                        display: 'flex',
+                                        border: '1px',
+                                        pt: '80%',
+                                        boxShadow: 'inset 0 0 12px',
+                                    }}
+                                >
+                                    <Typography
                                         sx={{
-                                            position: 'relative',
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            top: 0,
                                             display: 'flex',
-                                            border: '1px',
-                                            pt: '80%',
-                                            boxShadow: 'inset 0 0 12px',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
                                         }}
                                     >
-                                        <Typography
-                                            sx={{
-                                                position: 'absolute',
-                                                bottom: 0,
-                                                left: 0,
-                                                right: 0,
-                                                top: 0,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            {game.slug}
-                                        </Typography>
-                                    </Box>
-                                )}
-                                <CardContent>
-                                    <Typography
-                                        variant="h6"
-                                        textAlign="center"
-                                        // pt={2}
-                                    >
-                                        {game.name}
+                                        {game.slug}
                                     </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    ))}
-                </Masonry>
-            </Box>
-        </>
+                                </Box>
+                            )}
+                            <CardContent>
+                                <Typography
+                                    variant="h6"
+                                    textAlign="center"
+                                    // pt={2}
+                                >
+                                    {game.name}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                ))}
+            </Masonry>
+        </div>
     );
 }
