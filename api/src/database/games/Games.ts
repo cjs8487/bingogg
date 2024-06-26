@@ -1,18 +1,19 @@
-import { prisma } from '../Database';
+import {prisma} from '../Database';
 
 export const allGames = () => {
     return prisma.game.findMany();
 };
 
 export const gameForSlug = (slug: string) => {
+    // noinspection TypeScriptValidateJSTypes
     return prisma.game.findUnique({
         where: { slug },
         include: {
             owners: {
-                select: { username: true },
+                select: { id: true, username: true },
             },
             moderators: {
-                select: { username: true },
+                select: { id: true, username: true },
             },
         },
     });
@@ -43,6 +44,16 @@ export const createGame = (
 export const deleteGame = (slug: string) => {
     return prisma.game.delete({ where: { slug } });
 };
+
+export const goalCount = async (slug: string) => {
+    const game = await gameForSlug(slug)
+    if (!game) {
+        return -1;
+    }
+    return prisma.goal.count({
+        where: {gameId: game.id}
+    });
+}
 
 export const updateGameName = (slug: string, name: string) => {
     return prisma.game.update({ where: { slug }, data: { name } });

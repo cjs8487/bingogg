@@ -132,6 +132,7 @@ export default function PermissionsManagement({
                                         );
                                         return;
                                     }
+                                    updateData();
                                 }}
                             />
                         </div>
