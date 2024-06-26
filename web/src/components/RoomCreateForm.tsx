@@ -21,6 +21,8 @@ import { HTMLInputTypeAttribute } from 'react';
 import { useAsync } from 'react-use';
 import * as yup from 'yup';
 import { useApi } from '../lib/Hooks';
+import FormikTextField from './input/FormikTextField';
+import FormikSelectFieldAutocomplete from './input/FormikSelectFieldAutocomplete';
 
 const roomValidationSchema = yup.object().shape({
     name: yup.string().required('Room name is required'),
@@ -84,83 +86,6 @@ function GenerationModeSelectField() {
     );
 }
 
-interface FormikTextFieldProps {
-    id?: string;
-    name: string;
-    label: string;
-    type?: HTMLInputTypeAttribute;
-    pattern?: string;
-    inputMode?:
-        | 'none'
-        | 'text'
-        | 'tel'
-        | 'url'
-        | 'email'
-        | 'numeric'
-        | 'decimal'
-        | 'search';
-}
-
-function FormikTextField({
-    id,
-    name,
-    label,
-    type,
-    pattern,
-    inputMode,
-}: FormikTextFieldProps) {
-    const [field, meta] = useField<string>(name);
-    return (
-        <TextField
-            id={id ?? name}
-            name={name}
-            label={label}
-            type={type}
-            inputProps={{ pattern, inputMode }}
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            error={meta.touched && !!meta.error}
-            helperText={meta.touched && meta.error}
-        />
-    );
-}
-
-interface SelectOption {
-    label: string;
-    value: string;
-}
-interface FormikSelectProps {
-    id: string;
-    name: string;
-    label: string;
-    options: SelectOption[];
-    placeholder?: string;
-}
-
-function FormikSelectField({ id, name, label, options }: FormikSelectProps) {
-    const [field, meta, helpers] = useField<string>(name);
-
-    return (
-        <Autocomplete
-            disablePortal
-            id={id}
-            value={
-                options.find((opt) => opt.value === field.value)?.label ?? ''
-            }
-            onChange={(event, newValue) => {
-                helpers.setValue(
-                    options.find((option) => option.label === newValue)
-                        ?.value ?? '',
-                );
-            }}
-            onBlur={field.onBlur}
-            options={options.map((option) => option.label)}
-            renderInput={(params) => <TextField {...params} label={label} />}
-        />
-    );
-}
-
 export default function RoomCreateForm() {
     const { data: games, isLoading } = useApi<Game[]>('/api/games');
     const router = useRouter();
@@ -221,7 +146,7 @@ export default function RoomCreateForm() {
                         name="password"
                         label="Password"
                     />
-                    <FormikSelectField
+                    <FormikSelectFieldAutocomplete
                         id="gameSelect"
                         name="game"
                         label="Game"
@@ -260,12 +185,6 @@ export default function RoomCreateForm() {
                     </div>
                 </div> */}
                     <Accordion>
-                        {/* <Disclosure.Button className="flex w-full items-center justify-between gap-x-4 text-left text-sm font-medium">
-                            <span>Advanced Generation Options</span>
-                            <FontAwesomeIcon
-                                icon={open ? faChevronUp : faChevronDown}
-                            />
-                        </Disclosure.Button> */}
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             Advanced Generation Options
                         </AccordionSummary>
