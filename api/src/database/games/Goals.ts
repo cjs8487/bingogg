@@ -82,3 +82,14 @@ export const createGoals = async (slug: string, goals: GoalInput[]) => {
         },
     });
 };
+
+export const gameForGoal = async (goalId: string) => {
+    const goal = await prisma.goal.findUnique({
+        where: { id: goalId },
+        include: {
+            game: true,
+        },
+    });
+
+    return goal?.game;
+}

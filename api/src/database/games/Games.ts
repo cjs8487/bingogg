@@ -19,13 +19,16 @@ export const gameForSlug = (slug: string) => {
     });
 };
 
-export const createGame = (
+export const createGame = async (
     name: string,
     slug: string,
     coverImage?: string,
     owners?: string[],
     moderators?: string[],
 ) => {
+    if (await gameForSlug(slug)) {
+        return null;
+    }
     return prisma.game.create({
         data: {
             name,
