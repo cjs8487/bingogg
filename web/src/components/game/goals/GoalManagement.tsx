@@ -204,7 +204,7 @@ export default function GoalManagement({
                                 >
                                     {goal.goal}
                                     <div className="grow" />
-                                    <FontAwesomeIcon
+                                    {canModerate && <FontAwesomeIcon
                                         icon={faTrash}
                                         className="group/edit invisible rounded-full p-2.5 hover:bg-black group-hover/item:visible"
                                         onClick={(e) => {
@@ -212,7 +212,7 @@ export default function GoalManagement({
                                             e.preventDefault();
                                             e.stopPropagation();
                                         }}
-                                    />
+                                    />}
                                 </div>
                             </div>
                         ))}

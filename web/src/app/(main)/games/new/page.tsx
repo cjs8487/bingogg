@@ -50,7 +50,7 @@ export default function NewGame() {
                         });
                         if (!res.ok) {
                             const error = await res.text();
-                            alertError(`Unable to create game - ${error}}`);
+                            alertError(`Unable to create game - ${error}`);
                             return;
                         }
                         router.push('/');

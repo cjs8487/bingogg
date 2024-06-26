@@ -48,6 +48,11 @@ games.post('/', async (req, res) => {
         return;
     }
     const result = await createGame(name, slug, coverImage, [req.session.user]);
+    if (!result) {
+        res.status(400).send('A Game with this slug already exists');
+        return;
+    }
+
     res.status(200).json(result);
 });
 
