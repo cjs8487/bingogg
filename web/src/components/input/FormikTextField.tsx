@@ -1,4 +1,10 @@
-import { TextField } from '@mui/material';
+import {
+    SxProps,
+    TextField,
+    TextFieldPropsSizeOverrides,
+    TextFieldVariants,
+} from '@mui/material';
+import { OverridableStringUnion } from '@mui/types';
 import { useField } from 'formik';
 import { HTMLInputTypeAttribute } from 'react';
 
@@ -17,6 +23,14 @@ interface FormikTextFieldProps {
         | 'numeric'
         | 'decimal'
         | 'search';
+    variant?: TextFieldVariants;
+    size?: OverridableStringUnion<
+        'small' | 'medium',
+        TextFieldPropsSizeOverrides
+    >;
+    fullWidth?: boolean;
+    autoComplete?: string;
+    sx?: SxProps;
 }
 
 export default function FormikTextField({
@@ -26,6 +40,11 @@ export default function FormikTextField({
     type,
     pattern,
     inputMode,
+    variant,
+    size,
+    fullWidth,
+    autoComplete,
+    sx,
 }: FormikTextFieldProps) {
     const [field, meta] = useField<string>(name);
     return (
@@ -40,6 +59,11 @@ export default function FormikTextField({
             onBlur={field.onBlur}
             error={meta.touched && !!meta.error}
             helperText={meta.touched && meta.error}
+            variant={variant}
+            size={size}
+            fullWidth={fullWidth}
+            autoComplete={autoComplete}
+            sx={sx}
         />
     );
 }
