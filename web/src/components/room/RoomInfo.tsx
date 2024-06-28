@@ -7,6 +7,14 @@ import { useAsync, useCopyToClipboard } from 'react-use';
 import { RoomContext } from '../../context/RoomContext';
 import { Game } from '../../types/Game';
 import { toast } from 'react-toastify';
+import {
+    Box,
+    Card,
+    CardActionArea,
+    CardContent,
+    Typography,
+} from '@mui/material';
+import ConnectionState from './ConnectionState';
 
 export default function RoomInfo() {
     const { roomData, regenerateCard, board } = useContext(RoomContext);
@@ -51,21 +59,32 @@ export default function RoomInfo() {
 
     return (
         <>
-            <div
-                className="cursor-pointer rounded-md border-2 border-border bg-foreground px-4 py-2 text-center shadow-lg shadow-border/40"
-                onClick={() => {
-                    setShowControlModal(true);
-                }}
-            >
-                <div className="text-2xl font-semibold">{roomData.name}</div>
-                <div className="text">{roomData.game}</div>
-                <div className=/*"pb-4 */ "text-xs">{roomData.slug}</div>
-                {/* <div className="flex text-xs">
-                    <div>Variant</div>
-                    <div className="grow" />
-                    <div>Mode</div>
-                </div> */}
-            </div>
+            <Card className="cursor-pointer rounded-md border-2 border-border bg-foreground px-4 py-2 text-center shadow-lg shadow-border/40">
+                <CardActionArea
+                    onClick={() => {
+                        setShowControlModal(true);
+                    }}
+                >
+                    <CardContent sx={{ textAlign: 'center' }}>
+                        <Typography
+                            variant="h5"
+                            className="text-2xl font-semibold"
+                        >
+                            {roomData.name}
+                        </Typography>
+                        <Typography>{roomData.game}</Typography>
+                        <Typography component="div" variant="caption" mb={2}>
+                            {roomData.slug}
+                        </Typography>
+                        {/* <div className="flex text-xs">
+                            <div>Variant</div>
+                            <div className="grow" />
+                            <div>Mode</div>
+                        </div> */}
+                        <ConnectionState />
+                    </CardContent>
+                </CardActionArea>
+            </Card>
             <Transition appear show={showControlModal} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={close}>
                     <Transition.Child
