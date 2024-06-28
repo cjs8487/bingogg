@@ -26,7 +26,7 @@ export default function Room() {
     }
 
     return (
-        <Box flex="column 1">
+        <Box flex="column" flexGrow={1}>
             <Box display="flex" className="flex h-[30%] gap-x-4 pb-4">
                 <Box>
                     <RoomInfo />
@@ -66,10 +66,10 @@ export default function Room() {
                     </Card>
                 </Box>
             </Box>
-            <Box display="flex">
-                <div className="max-h-full max-w-[50%] grow">
+            <Box display="flex" flexGrow={1}>
+                <Box maxHeight="100%" maxWidth="50%" flexGrow={1}>
                     <Board />
-                </div>
+                </Box>
                 <div>
                     <RoomChat />
                 </div>
