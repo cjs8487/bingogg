@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { ConnectionStatus, RoomContext } from '../../context/RoomContext';
+import { Box, Card, CardContent, Paper, Typography } from '@mui/material';
 
 export default function ConnectionState() {
     const { connectionStatus } = useContext(RoomContext);
@@ -22,9 +23,9 @@ export default function ConnectionState() {
         );
     } else if (connectionStatus === ConnectionStatus.CONNECTED) {
         contents = (
-            <div className={`${padding} rounded-md bg-green-400 bg-opacity-60`}>
+            <Typography bgcolor="success.main" textAlign="center">
                 Connected
-            </div>
+            </Typography>
         );
     } else if (connectionStatus === ConnectionStatus.UNAUTHORIZED) {
         contents = (
@@ -55,8 +56,8 @@ export default function ConnectionState() {
     }
 
     return (
-        <div className="rounded-md border border-border text-center">
+        <Paper elevation={8} sx={{ py: 2 }}>
             {contents}
-        </div>
+        </Paper>
     );
 }
