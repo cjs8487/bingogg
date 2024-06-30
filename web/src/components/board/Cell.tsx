@@ -1,15 +1,9 @@
 'use client';
-import { useCallback, useContext, useState } from 'react';
+import { Box, Tooltip } from '@mui/material';
+import { useCallback, useContext } from 'react';
+import { RoomContext } from '../../context/RoomContext';
 import { Cell } from '../../types/Cell';
 import TextFit from '../TextFit';
-import { RoomContext } from '../../context/RoomContext';
-import {
-    useFloating,
-    useHover,
-    useInteractions,
-    useTransitionStyles,
-} from '@floating-ui/react';
-import { Box } from '@mui/material';
 
 interface CellProps {
     cell: Cell;
@@ -34,26 +28,27 @@ export default function BoardCell({
         }
     }, [row, col, markGoal, unmarkGoal, color, colors]);
 
-    // description tooltip
-    const [descriptionOpen, setDescriptionOpen] = useState(false);
-    const { refs, floatingStyles, context } = useFloating({
-        open: descriptionOpen,
-        onOpenChange: setDescriptionOpen,
-    });
-    const hover = useHover(context, { restMs: 500 });
-    const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
-    const { isMounted, styles } = useTransitionStyles(context, {
-        initial: {
-            opacity: 0,
-        },
-        duration: 200,
-    });
-
     // calculations
     const colorPortion = 360 / colors.length;
 
     return (
-        <>
+        <Tooltip
+            title={description}
+            arrow
+            slotProps={{
+                popper: {
+                    modifiers: [
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [0, -14],
+                            },
+                        },
+                    ],
+                },
+            }}
+            enterDelay={1000}
+        >
             <Box
                 sx={{
                     position: 'relative',
@@ -72,9 +67,6 @@ export default function BoardCell({
                     },
                 }}
                 onClick={toggleSpace}
-                ref={refs.setReference}
-                {...getReferenceProps()}
-                // style={{ width: 50 }}
             >
                 <Box
                     sx={{
@@ -114,16 +106,6 @@ export default function BoardCell({
 
                 {/* <div className="box absolute h-full w-full origin-top skew-x-[-0.84007rad] bg-green-400" /> */}
             </Box>
-            {isMounted && description.length > 0 && (
-                <div
-                    ref={refs.setFloating}
-                    style={{ ...floatingStyles, ...styles }}
-                    {...getFloatingProps()}
-                    className="z-20 max-w-md rounded-lg border border-gray-300 bg-slate-100 p-2 text-sm text-slate-700 shadow-md"
-                >
-                    {description}
-                </div>
-            )}
-        </>
+        </Tooltip>
     );
 }
