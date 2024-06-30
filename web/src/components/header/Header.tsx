@@ -92,7 +92,7 @@ export default function Header() {
                         </Menu>
                     </Box>
                 ) : (
-                    <LinkButton href="login">Login</LinkButton>
+                    <LinkButton href="/login">Login</LinkButton>
                 )}
             </Toolbar>
         </AppBar>
