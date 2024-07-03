@@ -1,6 +1,6 @@
 import { Router } from 'express';
+import { isModerator } from '../../database/games/Games';
 import { deleteGoal, editGoal, gameForGoal } from '../../database/games/Goals';
-import { isModerator, isOwner } from '../../database/games/Games';
 import upload from './Upload';
 
 const goals = Router();
@@ -23,10 +23,7 @@ goals.post('/:id', async (req, res) => {
         return;
     }
 
-    const [owner, mod] = 
-        await Promise.all([isOwner(game.slug, req.session.user), isModerator(game.slug, req.session.user)]);
-
-    if (!(owner || mod)) {
+    if (!(await isModerator(game.slug, req.session.user))) {
         res.sendStatus(403);
         return;
     }
@@ -65,10 +62,7 @@ goals.delete('/:id', async (req, res) => {
         return;
     }
 
-    const [owner, mod] = 
-        await Promise.all([isOwner(game.slug, req.session.user), isModerator(game.slug, req.session.user)]);
-
-    if (!(owner || mod)) {
+    if (!(await isModerator(game.slug, req.session.user))) {
         res.sendStatus(403);
         return;
     }

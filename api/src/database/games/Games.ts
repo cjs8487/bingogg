@@ -1,4 +1,14 @@
-import {prisma} from '../Database';
+import { Prisma } from '@prisma/client';
+import { logError } from '../../Logger';
+import { prisma } from '../Database';
+
+interface DbGame {
+    id: string;
+    name: string;
+    slug: string;
+    coverImage: string | null;
+    enableSRLv5: boolean;
+}
 
 export const allGames = () => {
     return prisma.game.findMany();
@@ -26,22 +36,32 @@ export const createGame = async (
     owners?: string[],
     moderators?: string[],
 ) => {
-    if (await gameForSlug(slug)) {
-        return null;
+    let game : DbGame | null = null;
+    try {
+        game = await prisma.game.create({
+            data: {
+                name,
+                slug,
+                coverImage,
+                owners: {
+                    connect: owners?.map((o) => ({ id: o })),
+                },
+                moderators: {
+                    connect: moderators?.map((m) => ({ id: m })),
+                },
+            },
+        });
+    } catch (error: unknown) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return {statusCode: 400, message: "Game with this slug already exists"}
+            }
+            logError(`Database Known Client error - ${error.message}`);
+            return {statusCode: 500, message: "Database error"}
+        }
+        logError(`Database Unknown error - ${error}`);       
     }
-    return prisma.game.create({
-        data: {
-            name,
-            slug,
-            coverImage,
-            owners: {
-                connect: owners?.map((o) => ({ id: o })),
-            },
-            moderators: {
-                connect: moderators?.map((m) => ({ id: m })),
-            },
-        },
-    });
+    return game;
 };
 
 export const deleteGame = (slug: string) => {
@@ -106,6 +126,12 @@ export const isOwner = async (slug: string, user: string) => {
     );
 };
 
+/**
+ * Checks if the user is at least a moderator of the game
+ * @param slug the game's slug for which to check user permissions
+ * @param user the user's id to check permissions for'
+ * @returns true if the user is a moderator or owner of the game, false otherwise
+ */
 export const isModerator = async (slug: string, user: string) => {
     return (
         (await prisma.game.count({
