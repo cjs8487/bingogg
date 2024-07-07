@@ -67,17 +67,13 @@ export default function GoalManagement({
     const [selectedGoal, setSelectedGoal] = useState<Goal>();
     const [newGoal, setNewGoal] = useState(false);
 
-    const [catList, setCatList] = useState<{ label: string; value: string }[]>(
-        [],
-    );
+    const [catList, setCatList] = useState<string[]>([]);
 
     const [sort, setSort] = useState<{
         label: string;
         value: SortOptions;
     } | null>(null);
-    const [shownCats, setShownCats] = useState<
-        { label: string; value: string }[]
-    >([]);
+    const [shownCats, setShownCats] = useState<string[]>([]);
     const [reverse, setReverse] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -91,7 +87,7 @@ export default function GoalManagement({
             }
         });
         cats.sort();
-        setCatList(cats.map((cat) => ({ label: cat, value: cat })));
+        setCatList(cats);
     }, [goals]);
 
     const deleteGoal = useCallback(
@@ -122,9 +118,7 @@ export default function GoalManagement({
         .filter((goal) => {
             let shown = true;
             if (shownCats.length > 0) {
-                shown = shownCats.some(
-                    (cat) => goal.categories?.includes(cat.value),
-                );
+                shown = shownCats.some((cat) => goal.categories?.includes(cat));
             }
             if (!shown) {
                 return false;
@@ -161,6 +155,7 @@ export default function GoalManagement({
                 flexGrow: 1,
                 flexDirection: 'column',
                 rowGap: 3,
+                maxWidth: '100%',
             }}
             className="flex h-full grow flex-col gap-y-3"
         >
@@ -342,7 +337,10 @@ export default function GoalManagement({
                         )}
                     />
                 </Box>
-                <div className="grow text-center">
+                <Box
+                    sx={{ flexGrow: 1, maxWidth: '67%' }}
+                    className="grow text-center"
+                >
                     {!newGoal && selectedGoal && (
                         <GoalEditor
                             slug={slug}
@@ -363,7 +361,7 @@ export default function GoalManagement({
                             canModerate={canModerate}
                         />
                     )}
-                </div>
+                </Box>
                 <GoalUpload
                     isOpen={goalUploadOpen}
                     close={() => {

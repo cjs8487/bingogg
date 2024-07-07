@@ -31,6 +31,9 @@ interface FormikTextFieldProps {
     fullWidth?: boolean;
     autoComplete?: string;
     sx?: SxProps;
+    disabled?: boolean;
+    multiline?: boolean;
+    rows?: number;
 }
 
 export default function FormikTextField({
@@ -45,6 +48,9 @@ export default function FormikTextField({
     fullWidth,
     autoComplete,
     sx,
+    disabled,
+    multiline,
+    rows,
 }: FormikTextFieldProps) {
     const [field, meta] = useField<string>(name);
     return (
@@ -64,6 +70,9 @@ export default function FormikTextField({
             fullWidth={fullWidth}
             autoComplete={autoComplete}
             sx={sx}
+            disabled={disabled}
+            multiline={multiline}
+            rows={rows}
         />
     );
 }
