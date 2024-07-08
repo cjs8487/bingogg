@@ -2,14 +2,6 @@ import { Prisma } from '@prisma/client';
 import { logError } from '../../Logger';
 import { prisma } from '../Database';
 
-interface DbGame {
-    id: string;
-    name: string;
-    slug: string;
-    coverImage: string | null;
-    enableSRLv5: boolean;
-}
-
 export const allGames = () => {
     return prisma.game.findMany();
 };
@@ -36,9 +28,8 @@ export const createGame = async (
     owners?: string[],
     moderators?: string[],
 ) => {
-    let game : DbGame | null = null;
     try {
-        game = await prisma.game.create({
+        return prisma.game.create({
             data: {
                 name,
                 slug,
@@ -59,9 +50,8 @@ export const createGame = async (
             logError(`Database Known Client error - ${error.message}`);
             return {statusCode: 500, message: "Database error"}
         }
-        logError(`Database Unknown error - ${error}`);       
+        logError(`Database Unknown error - ${error}`);
     }
-    return game;
 };
 
 export const deleteGame = (slug: string) => {
