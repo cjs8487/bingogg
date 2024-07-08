@@ -11,6 +11,7 @@ const roboto = Roboto({
 const theme = createTheme({
     palette: {
         mode: 'dark',
+        contrastThreshold: 4.5,
     },
     typography: {
         fontFamily: roboto.style.fontFamily,
