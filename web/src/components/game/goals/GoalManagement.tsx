@@ -1,26 +1,34 @@
 import { useApi } from '@/lib/Hooks';
 import { Goal } from '@/types/Goal';
-import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UploadIcon from '@mui/icons-material/Upload';
 import {
+    Autocomplete,
     Box,
     Button,
+    Checkbox,
+    FormControl,
     IconButton,
+    InputLabel,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemSecondaryAction,
     ListItemText,
+    MenuItem,
+    Select,
     TextField,
+    Tooltip,
     Typography,
     styled,
 } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
-import Select from 'react-select';
 import { Virtuoso } from 'react-virtuoso';
 import { alertError } from '../../../lib/Utils';
 import GoalEditor from './GoalEditor';
@@ -54,6 +62,9 @@ interface GoalManagementParams {
     canModerate?: boolean;
 }
 
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
 export default function GoalManagement({
     slug,
     canModerate,
@@ -69,10 +80,7 @@ export default function GoalManagement({
 
     const [catList, setCatList] = useState<string[]>([]);
 
-    const [sort, setSort] = useState<{
-        label: string;
-        value: SortOptions;
-    } | null>(null);
+    const [sort, setSort] = useState<SortOptions | null>(null);
     const [shownCats, setShownCats] = useState<string[]>([]);
     const [reverse, setReverse] = useState(false);
     const [search, setSearch] = useState('');
@@ -133,7 +141,7 @@ export default function GoalManagement({
             return shown;
         })
         .sort((a, b) => {
-            switch (sort?.value) {
+            switch (sort) {
                 case SortOptions.DEFAULT:
                     return 1;
                 case SortOptions.NAME:
@@ -174,10 +182,7 @@ export default function GoalManagement({
                     sx={{
                         position: 'absolute',
                         right: 0,
-                        display: 'flex',
-                        alignItems: 'center',
                     }}
-                    className="absolute right-0 flex items-center gap-x-2 rounded-md bg-text-lighter px-2 py-1 text-black hover:bg-text-light/50"
                     onClick={() => {
                         setGoalUploadOpen(true);
                     }}
@@ -189,18 +194,31 @@ export default function GoalManagement({
             <Box>
                 <Box sx={{ display: 'flex', columnGap: 4, width: '100%' }}>
                     <Box width="33%" className="w-1/3">
-                        <Select
+                        <Autocomplete
+                            multiple
+                            id="filter-categories"
                             options={catList}
-                            placeholder="Filter by"
-                            onChange={(options) =>
-                                setShownCats(options.toSpliced(0, 0))
-                            }
-                            isMulti
-                            classNames={{
-                                control: () => 'rounded-md',
-                                menuList: () => 'text-black',
-                                container: () => '',
+                            onChange={(_, newValue) => {
+                                setShownCats(newValue);
                             }}
+                            disableCloseOnSelect
+                            renderOption={(props, option, { selected }) => {
+                                return (
+                                    <li {...props}>
+                                        <Checkbox
+                                            icon={icon}
+                                            checkedIcon={checkedIcon}
+                                            style={{ marginRight: 8 }}
+                                            checked={selected}
+                                        />
+                                        {option}
+                                    </li>
+                                );
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Categories" />
+                            )}
+                            fullWidth
                         />
                     </Box>
                     <Box
@@ -212,28 +230,38 @@ export default function GoalManagement({
                         }}
                         className="flex w-1/3 items-center gap-x-1"
                     >
-                        <Select
-                            options={sortOptions}
-                            placeholder="Sort by"
-                            onChange={setSort}
-                            className="grow"
-                            classNames={{
-                                control: () => 'rounded-md',
-                                menuList: () => 'text-black',
-                                container: () => '',
-                            }}
-                        />
-                        <FontAwesomeIcon
-                            icon={reverse ? faSortUp : faSortDown}
-                            className="cursor-pointer rounded-full px-2.5 py-1.5 text-white hover:bg-gray-400"
-                            onClick={() => setReverse(!reverse)}
-                        />
+                        <FormControl fullWidth>
+                            <InputLabel id="filter-sort-by-label">
+                                Sort by
+                            </InputLabel>
+                            <Select
+                                id="filter-sort-by"
+                                labelId="filter-sort-by-label"
+                                value={sort}
+                                onChange={(e) => {
+                                    setSort(e.target.value as SortOptions);
+                                }}
+                                label="Sort by"
+                            >
+                                {sortOptions.map((opt) => (
+                                    <MenuItem key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Tooltip title="Toggle sort direction">
+                            <IconButton
+                                onClick={() => setReverse((curr) => !curr)}
+                            >
+                                {reverse ? <ArrowUpward /> : <ArrowDownward />}
+                            </IconButton>
+                        </Tooltip>
                     </Box>
                     <TextField
                         type="text"
-                        placeholder="Search"
+                        label="Search"
                         onChange={(e) => setSearch(e.target.value)}
-                        variant="standard"
                         sx={{ width: '33%' }}
                     />
                 </Box>
