@@ -1,19 +1,20 @@
 'use client';
 import { useApi } from '@/lib/Hooks';
 import { Game } from '@/types/Game';
-import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import Info from '@mui/icons-material/Info';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Container, Link, Tab, Typography } from '@mui/material';
-import { Field, Form, Formik } from 'formik';
+import { Box, Button, Container, Link, Tab, Typography } from '@mui/material';
+import { Form, Formik } from 'formik';
 import Image from 'next/image';
+import NextLink from 'next/link';
 import { useLayoutEffect, useState } from 'react';
 import { mutate } from 'swr';
 import HoverIcon from '../../../../components/HoverIcon';
 import PermissionsManagement from '../../../../components/game/PermissionsManagement';
 import GoalManagement from '../../../../components/game/goals/GoalManagement';
-import Toggle from '../../../../components/input/Toggle';
+import FormikSwitch from '../../../../components/input/FormikSwitch';
+import FormikTextField from '../../../../components/input/FormikTextField';
 import { alertError } from '../../../../lib/Utils';
-import NextLink from 'next/link';
 
 export default function GamePage({
     params: { slug },
@@ -138,9 +139,9 @@ export default function GamePage({
                 </TabPanel>
                 <TabPanel value="Settings">
                     <div>
-                        <div className="text-center text-2xl">
+                        <Typography variant="h5" align="center">
                             Game Settings
-                        </div>
+                        </Typography>
                         <Formik
                             initialValues={{
                                 name: gameData.name,
@@ -170,57 +171,59 @@ export default function GamePage({
                                 mutate(`/api/games/${slug}`);
                             }}
                         >
-                            <Form className="flex w-full flex-col justify-center gap-y-3 pt-3">
-                                <div className="w-1/2">
-                                    <label className="flex gap-x-4">
-                                        <span className="w-1/3">Game Name</span>
-                                        <Field
-                                            name="name"
-                                            className="w-full text-black"
-                                        />
-                                    </label>
-                                </div>
-                                <div className="w-1/2">
-                                    <label className="flex gap-x-4">
-                                        <span className="w-1/3">
-                                            Cover Image
-                                        </span>
-                                        <Field
-                                            name="coverImage"
-                                            className="w-full text-black"
-                                        />
-                                    </label>
-                                </div>
-                                <label className="flex items-center gap-x-3">
-                                    <Field
-                                        name="enableSRLv5"
-                                        component={Toggle}
+                            <Form>
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    justifyItems="center"
+                                    rowGap={2}
+                                    pt={2}
+                                >
+                                    <FormikTextField
+                                        id="game-name"
+                                        name="name"
+                                        label="Name"
                                     />
-                                    <span className="flex items-center gap-x-1">
-                                        Enable SRLv5 Board Generation{' '}
-                                        <HoverIcon icon={faInfo}>
-                                            SRLv5 generation requires goals to
-                                            have a difficulty value assigned to
-                                            them in order to be used in
-                                            generation. The generator uses the
-                                            difficulty value to balance each
-                                            row, column, and diagonal, by having
-                                            the difficulty of goals in each sum
-                                            to the same value. It also tries to
-                                            minimize synergy between goals in
-                                            the same line by minimizing the
-                                            category overlap.
+                                    <FormikTextField
+                                        id="game-cover-image"
+                                        name="coverImage"
+                                        label="Cover Image"
+                                    />
+                                    <Box display="flex" alignItems="center">
+                                        <FormikSwitch
+                                            id="game-srlv5-generation-switch"
+                                            label="Enable SRLv5 Board Generation"
+                                            name="enableSRLv5"
+                                        />
+                                        <HoverIcon icon={<Info />}>
+                                            <Typography variant="caption">
+                                                SRLv5 generation requires goals
+                                                to have a difficulty value
+                                                assigned to them in order to be
+                                                used in generation. The
+                                                generator uses the difficulty
+                                                value to balance each row,
+                                                column, and diagonal, by having
+                                                the difficulty of goals in each
+                                                sum to the same value. It also
+                                                tries to minimize synergy
+                                                between goals in the same line
+                                                by minimizing the category
+                                                overlap.
+                                            </Typography>
                                         </HoverIcon>
-                                    </span>
-                                </label>
-                                <div className="pt-3">
-                                    <button
-                                        type="submit"
-                                        className="float-right rounded-md bg-green-400 px-4 py-2 text-center text-sm font-medium text-black hover:bg-green-300 disabled:bg-gray-300"
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
+                                    </Box>
+                                    <Box pt={1} display="flex">
+                                        <Box flexGrow={1} />
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            color="success"
+                                        >
+                                            Save Changes
+                                        </Button>
+                                    </Box>
+                                </Box>
                             </Form>
                         </Formik>
                     </div>
