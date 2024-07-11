@@ -25,7 +25,14 @@ export default async function Home() {
                 justifyContent="center"
             >
                 <Paper
-                    sx={{ textAlign: 'center', px: 12, py: 4 }}
+                    sx={{
+                        textAlign: 'center',
+                        px: 12,
+                        py: 4,
+                        animation: '2s 1 slidein',
+                        animationDelay: '2s',
+                        animationFillMode: 'backwards',
+                    }}
                     elevation={2}
                 >
                     <Typography variant="h4">Join an Existing Room</Typography>
@@ -34,7 +41,14 @@ export default async function Home() {
                     </Suspense>
                 </Paper>
                 <Paper
-                    sx={{ textAlign: 'center', px: 12, py: 4 }}
+                    sx={{
+                        textAlign: 'center',
+                        px: 12,
+                        py: 4,
+                        animation: '2s 1 slidein',
+                        animationDelay: '2.3s',
+                        animationFillMode: 'backwards',
+                    }}
                     elevation={2}
                 >
                     <Typography variant="h4" mb={2}>

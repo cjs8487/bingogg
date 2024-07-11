@@ -62,8 +62,15 @@ export default function Games() {
                 spacing={2}
                 sx={{ px: 2 }}
             >
-                {games.map((game) => (
-                    <Card key={game.slug}>
+                {games.map((game, index) => (
+                    <Card
+                        key={game.slug}
+                        sx={{
+                            animation: '1.5s 1 slidein',
+                            animationDelay: `${1 + index * 0.1}s`,
+                            animationFillMode: 'backwards',
+                        }}
+                    >
                         <CardActionArea
                             href={`/games/${game.slug}`}
                             LinkComponent={Link}
