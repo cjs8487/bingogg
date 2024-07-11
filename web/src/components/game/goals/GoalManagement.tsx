@@ -327,7 +327,7 @@ export default function GoalManagement({
                                             alignItems="flex-start"
                                         >
                                             <ListItemIcon>
-                                                <AddIcon />
+                                                <AddIcon color="success" />
                                             </ListItemIcon>
                                             <ListItemText>
                                                 New Goal
