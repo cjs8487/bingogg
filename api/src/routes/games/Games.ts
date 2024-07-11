@@ -48,6 +48,15 @@ games.post('/', async (req, res) => {
         return;
     }
     const result = await createGame(name, slug, coverImage, [req.session.user]);
+    if(!result) {
+        res.status(500).send('Failed to create game');
+        return
+    }
+    if ('statusCode' in result)  {
+        res.status(result.statusCode).send(result.message);
+        return;
+    }
+
     res.status(200).json(result);
 });
 

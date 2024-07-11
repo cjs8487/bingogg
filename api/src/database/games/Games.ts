@@ -1,4 +1,6 @@
-import {prisma} from '../Database';
+import { Prisma } from '@prisma/client';
+import { logError } from '../../Logger';
+import { prisma } from '../Database';
 
 export const allGames = () => {
     return prisma.game.findMany();
@@ -19,26 +21,37 @@ export const gameForSlug = (slug: string) => {
     });
 };
 
-export const createGame = (
+export const createGame = async (
     name: string,
     slug: string,
     coverImage?: string,
     owners?: string[],
     moderators?: string[],
 ) => {
-    return prisma.game.create({
-        data: {
-            name,
-            slug,
-            coverImage,
-            owners: {
-                connect: owners?.map((o) => ({ id: o })),
+    try {
+        return prisma.game.create({
+            data: {
+                name,
+                slug,
+                coverImage,
+                owners: {
+                    connect: owners?.map((o) => ({ id: o })),
+                },
+                moderators: {
+                    connect: moderators?.map((m) => ({ id: m })),
+                },
             },
-            moderators: {
-                connect: moderators?.map((m) => ({ id: m })),
-            },
-        },
-    });
+        });
+    } catch (error: unknown) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return {statusCode: 400, message: "Game with this slug already exists"}
+            }
+            logError(`Database Known Client error - ${error.message}`);
+            return {statusCode: 500, message: "Database error"}
+        }
+        logError(`Database Unknown error - ${error}`);
+    }
 };
 
 export const deleteGame = (slug: string) => {
@@ -103,6 +116,12 @@ export const isOwner = async (slug: string, user: string) => {
     );
 };
 
+/**
+ * Checks if the user is at least a moderator of the game
+ * @param slug the game's slug for which to check user permissions
+ * @param user the user's id to check permissions for'
+ * @returns true if the user is a moderator or owner of the game, false otherwise
+ */
 export const isModerator = async (slug: string, user: string) => {
     return (
         (await prisma.game.count({
