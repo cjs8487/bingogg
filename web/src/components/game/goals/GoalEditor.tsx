@@ -91,11 +91,12 @@ export default function GoalEditor({
     categories,
     canModerate,
 }: GoalEditorProps) {
+    console.log(goal);
     return (
         <Formik
             initialValues={{
                 goal: goal.goal,
-                description: goal.description,
+                description: goal.description ?? '',
                 categories: goal.categories ?? [],
                 difficulty: goal.difficulty ?? 0,
             }}
