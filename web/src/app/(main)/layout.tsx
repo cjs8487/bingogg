@@ -55,7 +55,15 @@ export default function CoreLayout({ children }: { children: ReactNode }) {
                 {children}
             </Box>
             <Paper component="footer">
-                <Box sx={{ display: 'flex', alignItems: 'end', p: 2 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'end',
+                        px: 2,
+                        pt: 2,
+                        pb: 0.5,
+                    }}
+                >
                     <Box flexGrow={1}>
                         <Box
                             sx={{
