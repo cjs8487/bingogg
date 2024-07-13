@@ -23,7 +23,6 @@ export default function FormikSelectFieldAutocomplete({
 
     return (
         <Autocomplete
-            disablePortal
             id={id}
             value={
                 options.find((opt) => opt.value === field.value)?.label ?? null

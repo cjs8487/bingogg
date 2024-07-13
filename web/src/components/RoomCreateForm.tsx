@@ -6,23 +6,20 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Autocomplete,
     Box,
     Button,
     FormControl,
     InputLabel,
     MenuItem,
     Select,
-    TextField,
 } from '@mui/material';
 import { Form, Formik, useField, useFormikContext } from 'formik';
 import { useRouter } from 'next/navigation';
-import { HTMLInputTypeAttribute } from 'react';
 import { useAsync } from 'react-use';
 import * as yup from 'yup';
 import { useApi } from '../lib/Hooks';
-import FormikTextField from './input/FormikTextField';
 import FormikSelectFieldAutocomplete from './input/FormikSelectFieldAutocomplete';
+import FormikTextField from './input/FormikTextField';
 
 const roomValidationSchema = yup.object().shape({
     name: yup.string().required('Room name is required'),
@@ -189,21 +186,22 @@ export default function RoomCreateForm() {
                             Advanced Generation Options
                         </AccordionSummary>
                         <AccordionDetails
-                            sx={{ display: 'flex', columnGap: 3 }}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                rowGap: 3,
+                            }}
                             className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text"
                         >
-                            <Box sx={{ width: '50%' }}>
-                                <FormikTextField
-                                    type="number"
-                                    name="seed"
-                                    label="Seed"
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
-                                />
-                            </Box>
-                            <Box sx={{ width: '50%' }}>
-                                <GenerationModeSelectField />
-                            </Box>
+                            <FormikTextField
+                                type="number"
+                                name="seed"
+                                label="Seed"
+                                pattern="[0-9]*"
+                                inputMode="numeric"
+                                fullWidth
+                            />
+                            <GenerationModeSelectField />
                         </AccordionDetails>
                     </Accordion>
                     <Box display="flex">
