@@ -74,6 +74,7 @@ export default function Rooms() {
                     flexWrap: 'wrap',
                     justifyContent: 'space-around',
                     alignItems: 'center',
+                    rowGap: 2,
                 }}
             >
                 {roomList.map((room) => (
