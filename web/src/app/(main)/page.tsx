@@ -1,7 +1,7 @@
 import RoomCreateForm from '@/components/RoomCreateForm';
 import { Suspense } from 'react';
 import ActiveRoomList from '../../components/ActiveRoomList';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, CircularProgress, Paper, Typography } from '@mui/material';
 
 export default async function Home() {
     return (
@@ -21,33 +21,36 @@ export default async function Home() {
             <Box
                 display="flex"
                 columnGap={8}
+                rowGap={1}
+                flexWrap="wrap"
                 width="100%"
                 justifyContent="center"
+                px={4}
             >
                 <Paper
                     sx={{
                         textAlign: 'center',
-                        px: 12,
+                        px: { xs: 2, md: 12 },
                         py: 4,
                         mb: 4,
-                        animation: '2s 1 slidein',
+                        animation: '1.5s 1 slidein',
                         animationDelay: '1s',
                         animationFillMode: 'backwards',
                     }}
                     elevation={2}
                 >
                     <Typography variant="h4">Join an Existing Room</Typography>
-                    <Suspense fallback={<>Loading...</>}>
+                    <Suspense fallback={<CircularProgress />}>
                         <ActiveRoomList />
                     </Suspense>
                 </Paper>
                 <Paper
                     sx={{
                         textAlign: 'center',
-                        px: 12,
+                        px: { xs: 2, sm: 6, md: 12 },
                         py: 4,
                         mb: 4,
-                        animation: '2s 1 slidein',
+                        animation: '1.8s 1 slidein',
                         animationDelay: '1.3s',
                         animationFillMode: 'backwards',
                     }}

@@ -8,6 +8,7 @@ import {
     AccordionSummary,
     Box,
     Button,
+    CircularProgress,
     FormControl,
     InputLabel,
     MenuItem,
@@ -88,7 +89,7 @@ export default function RoomCreateForm() {
     const router = useRouter();
 
     if (isLoading) {
-        return null;
+        return <CircularProgress />;
     }
 
     if (!games) {
