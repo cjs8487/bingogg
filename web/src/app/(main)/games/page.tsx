@@ -30,7 +30,7 @@ export default function Games() {
     }
 
     return (
-        <div>
+        <Box flexGrow={1}>
             <Box
                 sx={{
                     display: 'flex',
@@ -120,6 +120,6 @@ export default function Games() {
                     </Card>
                 ))}
             </Masonry>
-        </div>
+        </Box>
     );
 }
