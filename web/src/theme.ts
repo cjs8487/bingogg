@@ -11,21 +11,45 @@ const roboto = Roboto({
 const theme = createTheme({
     palette: {
         mode: 'dark',
+        primary: {
+            main: '#627fbe',
+        },
+        secondary: {
+            main: '#600011',
+        },
+        info: {
+            main: '#627fbe',
+        },
         contrastThreshold: 4.5,
     },
     typography: {
         fontFamily: roboto.style.fontFamily,
     },
     components: {
-        MuiAlert: {
-            styleOverrides: {
-                root: ({ ownerState }) => ({
-                    ...(ownerState.severity === 'info' && {
-                        backgroundColor: '#60a5fa',
-                    }),
-                }),
+        MuiAppBar: {
+            defaultProps: {
+                color: 'secondary',
+                enableColorOnDark: true,
             },
         },
+        MuiIcon: {
+            defaultProps: {
+                color: 'action',
+            },
+        },
+        MuiDialog: {
+            defaultProps: {
+                transitionDuration: 500,
+            },
+        },
+        MuiBadge: {
+            defaultProps: {
+                color: 'primary',
+            },
+        },
+    },
+    shape: {
+        borderRadius: 8,
     },
 });
 

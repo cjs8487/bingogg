@@ -68,7 +68,6 @@ function CategorySelect({ categories }: CategorySelectProps) {
 
                 return filtered;
             }}
-            sx={{ maxWidth: '50%' }}
         />
     );
 }
@@ -188,15 +187,19 @@ export default function GoalEditor({
                             fullWidth
                         />
                         <Box display="flex" columnGap={2}>
-                            <CategorySelect categories={categories} />
-                            <NumberInput
-                                id="goal-difficulty"
-                                name="difficulty"
-                                label="Difficulty"
-                                disabled={!canModerate}
-                                min={0}
-                                max={25}
-                            />
+                            <Box flexGrow={3}>
+                                <CategorySelect categories={categories} />
+                            </Box>
+                            <Box flexGrow={1}>
+                                <NumberInput
+                                    id="goal-difficulty"
+                                    name="difficulty"
+                                    label="Difficulty"
+                                    disabled={!canModerate}
+                                    min={0}
+                                    max={25}
+                                />
+                            </Box>
                         </Box>
                     </Box>
                     {canModerate && (

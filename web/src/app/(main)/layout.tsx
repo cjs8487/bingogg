@@ -13,7 +13,14 @@ import CookieConsent from 'react-cookie-consent';
 import { ToastContainer } from 'react-toastify';
 import Header from '../../components/header/Header';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Container, Link, Paper, Typography } from '@mui/material';
+import {
+    Box,
+    Container,
+    IconButton,
+    Link,
+    Paper,
+    Typography,
+} from '@mui/material';
 
 const icons: { icon: IconDefinition; url: string }[] = [
     { icon: faGithub, url: 'https://github.com/cjs8487/bingogg' },
@@ -59,12 +66,17 @@ export default function CoreLayout({ children }: { children: ReactNode }) {
                             }}
                         >
                             {icons.map(({ icon, url }) => (
-                                <Link key={icon.iconName} href={url}>
+                                <IconButton
+                                    key={icon.iconName}
+                                    href={url}
+                                    LinkComponent={NextLink}
+                                    size="small"
+                                >
                                     <FontAwesomeIcon
                                         icon={icon}
                                         className="fa-fw aspect-square rounded-full px-1 py-1.5 hover:bg-primary-content hover:bg-opacity-40"
                                     />
-                                </Link>
+                                </IconButton>
                             ))}
                         </Box>
                         <Typography variant="caption">

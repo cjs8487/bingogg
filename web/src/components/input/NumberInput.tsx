@@ -59,7 +59,11 @@ export default function NumberInput({
                     disabled={
                         disabled || (min !== undefined ? value <= min : false)
                     }
-                    sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                    sx={{
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
+                        minWidth: 0,
+                    }}
                 >
                     -
                 </Button>
@@ -79,6 +83,7 @@ export default function NumberInput({
                             root: { style: { borderRadius: 0 } },
                         },
                     }}
+                    sx={{ flexGrow: 1 }}
                 />
                 <Button
                     type="button"
@@ -87,7 +92,11 @@ export default function NumberInput({
                     disabled={
                         disabled || (max !== undefined ? value >= max : false)
                     }
-                    sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                    sx={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        minWidth: 0,
+                    }}
                 >
                     +
                 </Button>

@@ -29,8 +29,9 @@ export default async function Home() {
                         textAlign: 'center',
                         px: 12,
                         py: 4,
+                        mb: 4,
                         animation: '2s 1 slidein',
-                        animationDelay: '2s',
+                        animationDelay: '1s',
                         animationFillMode: 'backwards',
                     }}
                     elevation={2}
@@ -45,8 +46,9 @@ export default async function Home() {
                         textAlign: 'center',
                         px: 12,
                         py: 4,
+                        mb: 4,
                         animation: '2s 1 slidein',
-                        animationDelay: '2.3s',
+                        animationDelay: '1.3s',
                         animationFillMode: 'backwards',
                     }}
                     elevation={2}

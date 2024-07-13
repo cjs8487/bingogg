@@ -42,7 +42,7 @@ export default function Header() {
     };
 
     return (
-        <AppBar position="static" color="secondary">
+        <AppBar position="static">
             <Toolbar>
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1 }}>
                     <DesktopMenu />

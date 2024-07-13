@@ -72,7 +72,7 @@ export default function PermissionsManagement({
                                             updateData();
                                         }}
                                     >
-                                        <DeleteIcon />
+                                        <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 )}
                         </Box>
