@@ -24,7 +24,7 @@ function LargeFooter() {
                 px: 2,
                 pt: 2,
                 pb: 0.5,
-                display: { sm: 'none', md: 'flex' },
+                display: { xs: 'none', md: 'flex' },
             }}
         >
             <Box flexGrow={1}>
