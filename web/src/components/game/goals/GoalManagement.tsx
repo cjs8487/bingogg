@@ -12,6 +12,7 @@ import {
     Box,
     Button,
     Checkbox,
+    Chip,
     FormControl,
     IconButton,
     InputLabel,
@@ -44,6 +45,26 @@ const ListItemHiddenSecondary = styled(ListItem)(() => ({
         },
     },
 }));
+
+function GoalListItemSecondary({ goal }: { goal: Goal }) {
+    return (
+        <>
+            {goal.difficulty && (
+                <>
+                    <Typography variant="body2" component="span">
+                        Difficulty:{' '}
+                    </Typography>
+                    {goal.difficulty}
+                </>
+            )}
+            <Box pt={0.5}>
+                {goal.categories?.map((cat) => (
+                    <Chip key={cat} label={cat} size="small" sx={{ mr: 0.5 }} />
+                ))}
+            </Box>
+        </>
+    );
+}
 
 enum SortOptions {
     DEFAULT,
@@ -345,7 +366,14 @@ export default function GoalManagement({
                                     selected={selectedGoal === goal}
                                     divider
                                 >
-                                    <ListItemText>{goal.goal}</ListItemText>
+                                    <ListItemText
+                                        primary={goal.goal}
+                                        secondary={
+                                            <GoalListItemSecondary
+                                                goal={goal}
+                                            />
+                                        }
+                                    />
                                 </ListItemButton>
                                 {canModerate && (
                                     <ListItemSecondaryAction>
