@@ -1,8 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { logError } from '../Logger';
+import { overrideRoomDeletion } from './DatabaseExtensions';
 
-export const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 let connected = false;
+
+prisma.$extends(overrideRoomDeletion);
+
+export { prisma };
 
 export const connect = async () => {
     try {

@@ -93,12 +93,16 @@ model Room {
   id       String       @id @unique @default(cuid())
   slug     String       @unique
   name     String
+  status   RoomStatus   @default(OPEN)
   private  Boolean
   password String?
   history  RoomAction[]
   game     Game         @relation(fields: [gameId], references: [id])
   gameId   String
   board    String[]
+  updatedAt DateTime     @updatedAt
+
+  @@index([updatedAt]) // TODO: not sure if this is needed, updatedAt might always be indexed, must check
 }
 
 model RoomAction {
@@ -107,6 +111,14 @@ model RoomAction {
   action  RoomActionType
   payload Json
   roomId  String
+}
+
+enum RoomStatus {
+  OPEN
+  CLOSED
+  RUNNING
+  FINISHED
+  ARCHIVED
 }
 
 enum RoomActionType {
