@@ -15,6 +15,7 @@ import GoalManagement from '../../../../components/game/goals/GoalManagement';
 import FormikSwitch from '../../../../components/input/FormikSwitch';
 import FormikTextField from '../../../../components/input/FormikTextField';
 import { alertError } from '../../../../lib/Utils';
+import { GoalManagerContextProvider } from '../../../../context/GoalManagerContext';
 
 export default function GamePage({
     params: { slug },
@@ -132,7 +133,12 @@ export default function GamePage({
                         flexGrow: 1,
                     }}
                 >
-                    <GoalManagement slug={slug} canModerate={canModerate} />
+                    <GoalManagerContextProvider
+                        slug={slug}
+                        canModerate={canModerate}
+                    >
+                        <GoalManagement />
+                    </GoalManagerContextProvider>
                 </TabPanel>
                 <TabPanel value="Permissions">
                     <PermissionsManagement slug={slug} gameData={gameData} />
