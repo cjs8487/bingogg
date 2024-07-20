@@ -70,7 +70,7 @@ export function SRLv5UploadForm({ slug, close }: UploadFormProps) {
                     fullWidth
                 />
                 <Box mt={2} display="flex">
-                    <Button type="button" color="error" ack onClick={close}>
+                    <Button type="button" color="error" onClick={close}>
                         Cancel
                     </Button>
                     <Box flexGrow={1} />
