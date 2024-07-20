@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
         `${process.env.NEXT_PUBLIC_API_PATH}/${request.nextUrl.pathname}${
             request.nextUrl.search ? `?${request.nextUrl.search}` : ''
         }`,
-        { headers },
+        { request: { headers } },
     );
 }
 
