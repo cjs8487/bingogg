@@ -35,12 +35,7 @@ export default function RoomLogin() {
                 >
                     <Form>
                         {error && (
-                            <Typography
-                                pb={1}
-                                color="error"
-                                variant="body2"
-                                className="pb-1 text-sm text-red-500"
-                            >
+                            <Typography pb={1} color="error" variant="body2">
                                 {error}
                             </Typography>
                         )}
@@ -59,12 +54,7 @@ export default function RoomLogin() {
                         </Box>
                         <Box display="flex">
                             <Box flexGrow={1} />
-                            <Button
-                                type="submit"
-                                className="float-right rounded-md bg-primary px-3 py-1.5"
-                            >
-                                Join Room
-                            </Button>
+                            <Button type="submit">Join Room</Button>
                         </Box>
                     </Form>
                 </Formik>

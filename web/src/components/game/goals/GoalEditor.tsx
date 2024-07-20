@@ -207,7 +207,6 @@ export default function GoalEditor({
                             <Button
                                 type="button"
                                 color="error"
-                                className="rounded-md bg-error px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-600"
                                 onClick={() => {
                                     if (isNew && cancelNew) {
                                         cancelNew();
@@ -219,7 +218,6 @@ export default function GoalEditor({
                             </Button>
                             <Box flexGrow={1} />
                             <Button
-                                className="rounded-md bg-success px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-500 disabled:bg-gray-300"
                                 type="submit"
                                 disabled={isSubmitting || isValidating}
                             >

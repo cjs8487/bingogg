@@ -153,22 +153,21 @@ export default function RoomCreateForm() {
                             value: game.slug,
                         }))}
                     />
-                    {/* <div className="flex gap-x-4">
-                    <div className="w-1/2">
+                    {/* <div>
+                    <div>
                         <label>
                             <div>Variant</div>
-                            <Field name="variant" className="w-full" />
+                            <Field name="variant" />
                         </label>
                         <ErrorMessage
                             name="variant"
                             component="div"
-                            className="mt-1 text-xs text-error-content"
                         />
                     </div>
-                    <div className="w-1/2">
+                    <div>
                         <label>
                             <div>Game Mode</div>
-                            <Field as="select" name="mode" className="w-full">
+                            <Field as="select" name="mode">
                                 <option value="">Select Game Mode</option>
                                 <option value="lines">Lines</option>
                                 <option value="blackout">Blackout</option>
@@ -178,7 +177,6 @@ export default function RoomCreateForm() {
                         <ErrorMessage
                             name="mode"
                             component="div"
-                            className="mt-1 text-xs text-error-content"
                         />
                     </div>
                 </div> */}
@@ -192,7 +190,6 @@ export default function RoomCreateForm() {
                                 flexDirection: 'column',
                                 rowGap: 3,
                             }}
-                            className="flex gap-x-3 px-4 pb-2 pt-4 text-sm text-text"
                         >
                             <FormikTextField
                                 type="number"

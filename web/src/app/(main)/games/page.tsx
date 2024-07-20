@@ -41,17 +41,12 @@ export default function Games() {
                     borderBottom: 2,
                     borderColor: 'divider',
                 }}
-                className="flex items-center border-b pb-4"
             >
                 <Typography>{games.length} games loaded</Typography>
                 <Box flexGrow={1} />
                 {loggedIn && (
                     <div>
-                        <Button
-                            className="rounded-md border bg-green-700 p-2"
-                            href="/games/new"
-                            LinkComponent={Link}
-                        >
+                        <Button href="/games/new" LinkComponent={Link}>
                             Create a new game
                         </Button>
                     </div>

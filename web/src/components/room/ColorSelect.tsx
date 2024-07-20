@@ -31,7 +31,6 @@ export default function ColorSelect() {
             justifyContent="center"
             columnGap={2}
             rowGap={1}
-            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
         >
             {colors.map((colorItem) => (
                 <Box
@@ -48,9 +47,6 @@ export default function ColorSelect() {
                         },
                     }}
                     bgcolor={colorItem}
-                    className={`${
-                        color === colorItem ? 'border-4 border-white' : ''
-                    } cursor-pointer rounded-md px-2 py-1 hover:scale-110 hover:bg-opacity-50`}
                     onClick={() => changeColor(colorItem)}
                 >
                     {colorItem}

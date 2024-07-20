@@ -103,8 +103,6 @@ export default function BoardCell({
                         }}
                     />
                 ))}
-
-                {/* <div className="box absolute h-full w-full origin-top skew-x-[-0.84007rad] bg-green-400" /> */}
             </Box>
         </Tooltip>
     );

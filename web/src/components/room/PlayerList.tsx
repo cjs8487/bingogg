@@ -22,7 +22,6 @@ export default function PlayerList() {
                     <Box key={player.nickname} display="flex" columnGap={2}>
                         <Box
                             px={0.5}
-                            className="rounded-md border px-3"
                             style={{ background: player.color }}
                             border={1}
                             borderColor="divider"

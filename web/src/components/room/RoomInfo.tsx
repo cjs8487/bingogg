@@ -17,34 +17,31 @@ export default function RoomInfo() {
 
     if (!roomData) {
         return (
-            <div className="rounded-md border border-white p-2 text-center">
-                No Room Data found.
-            </div>
+            <Card>
+                <CardContent sx={{ textAlign: 'center' }}>
+                    No Room Data found.
+                </CardContent>
+            </Card>
         );
     }
 
     return (
         <>
-            <Card className="cursor-pointer rounded-md border-2 border-border bg-foreground px-4 py-2 text-center shadow-lg shadow-border/40">
+            <Card>
                 <CardActionArea
                     onClick={() => {
                         setShowControlModal(true);
                     }}
                 >
                     <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography
-                            variant="h5"
-                            className="text-2xl font-semibold"
-                        >
-                            {roomData.name}
-                        </Typography>
+                        <Typography variant="h5">{roomData.name}</Typography>
                         <Typography>{roomData.game}</Typography>
                         <Typography component="div" variant="caption" mb={2}>
                             {roomData.slug}
                         </Typography>
-                        {/* <div className="flex text-xs">
+                        {/* <div>
                             <div>Variant</div>
-                            <div className="grow" />
+                            <div />
                             <div>Mode</div>
                         </div> */}
                         <ConnectionState />

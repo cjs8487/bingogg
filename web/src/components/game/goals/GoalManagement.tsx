@@ -18,12 +18,6 @@ import GoalUpload from './GoalUpload';
 import Search from './Search';
 import GoalList from './GoalList';
 
-enum SortOptions {
-    DEFAULT,
-    NAME,
-    DIFFICULTY,
-}
-
 export default function GoalManagement() {
     const {
         slug,
@@ -33,7 +27,6 @@ export default function GoalManagement() {
         shownGoals,
         catList,
         settings,
-        searchParams: { reverse, search, shownCats, sort },
         mutateGoals,
         setSettings,
         newGoal,
@@ -85,9 +78,9 @@ export default function GoalManagement() {
                     <Box sx={{ display: 'flex', columnGap: 4, width: '100%' }}>
                         <Search />
                     </Box>
-                    <div className="pt-2">
+                    <Typography>
                         {goals.length} total goals, {shownGoals.length} shown
-                    </div>
+                    </Typography>
                 </Box>
                 <Box
                     sx={{
@@ -95,7 +88,6 @@ export default function GoalManagement() {
                         flexGrow: 1,
                         columnGap: 5,
                     }}
-                    className="flex w-full grow gap-x-5"
                 >
                     <Box
                         sx={{
@@ -106,10 +98,7 @@ export default function GoalManagement() {
                     >
                         <GoalList />
                     </Box>
-                    <Box
-                        sx={{ flexGrow: 1, maxWidth: '67%' }}
-                        className="grow text-center"
-                    >
+                    <Box sx={{ flexGrow: 1, maxWidth: '67%' }}>
                         {!newGoal && selectedGoal && (
                             <GoalEditor
                                 slug={slug}

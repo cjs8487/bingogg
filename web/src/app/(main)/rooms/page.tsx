@@ -94,9 +94,9 @@ export default function Rooms() {
                                     {room.slug}
                                 </Typography>
                                 <Typography>{room.game}</Typography>
-                                {/* <div className="flex text-sm">
+                                {/* <div>
                                     <div>Variant</div>
-                                    <div className="grow" />
+                                    <div />
                                     <div>Mode</div>
                                 </div> */}
                             </CardContent>
@@ -123,7 +123,7 @@ export default function Rooms() {
                 onClose={() => setShowNewRoomModal(false)}
             >
                 <DialogTitle>Create a Room</DialogTitle>
-                <DialogContent className="w-full max-w-md transform overflow-hidden rounded-2xl border border-border bg-foreground p-6 text-left align-middle text-white shadow-lg shadow-border/10 transition-all">
+                <DialogContent>
                     <RoomCreateForm />
                 </DialogContent>
             </Dialog>

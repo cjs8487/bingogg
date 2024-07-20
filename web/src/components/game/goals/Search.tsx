@@ -40,7 +40,7 @@ export default function GoalSearch() {
     } = useGoalManagerContext();
     return (
         <>
-            <Box width="33%" className="w-1/3">
+            <Box width="33%">
                 <Autocomplete
                     multiple
                     id="filter-categories"
@@ -75,7 +75,6 @@ export default function GoalSearch() {
                     alignItems: 'center',
                     columnGap: 1,
                 }}
-                className="flex w-1/3 items-center gap-x-1"
             >
                 <FormControl fullWidth>
                     <InputLabel id="filter-sort-by-label">Sort by</InputLabel>

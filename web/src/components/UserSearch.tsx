@@ -153,19 +153,10 @@ export default function UserSearch({
                 </AutoSizer>
             </DialogContent>
             <DialogActions>
-                <Button
-                    color="error"
-                    className="rounded-md border border-transparent bg-error px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                    onClick={cancel}
-                >
+                <Button color="error" onClick={cancel}>
                     Cancel
                 </Button>
-                <Button
-                    type="button"
-                    color="success"
-                    className="float-right rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-                    onClick={onSubmit}
-                >
+                <Button type="button" color="success" onClick={onSubmit}>
                     Submit
                 </Button>
             </DialogActions>

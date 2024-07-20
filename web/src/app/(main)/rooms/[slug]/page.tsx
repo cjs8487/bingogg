@@ -46,7 +46,7 @@ export default function Room() {
                                 <RoomInfo />
                             </Box>
                             <Box>
-                                <Card className="flex h-fit flex-col gap-y-3 rounded-md border border-border bg-foreground p-3">
+                                <Card>
                                     <CardContent>
                                         <Box
                                             display="flex"
@@ -56,22 +56,18 @@ export default function Room() {
                                             <Typography
                                                 variant="h6"
                                                 flexGrow={1}
-                                                className="float-left text-lg font-semibold"
                                             >
                                                 Playing as {nickname}
                                             </Typography>
                                             {connectionStatus !==
                                                 ConnectionStatus.CLOSED && (
-                                                <Button
-                                                    className="float-right rounded-md border bg-background px-2 py-1 shadow-md shadow-white/20 hover:bg-border"
-                                                    onClick={disconnect}
-                                                >
+                                                <Button onClick={disconnect}>
                                                     Disconnect
                                                 </Button>
                                             )}
                                         </Box>
-                                        <Box className="rounded-md border bg-background p-2 shadow-md shadow-white/20">
-                                            <Typography className="pb-1 font-semibold">
+                                        <Box>
+                                            <Typography>
                                                 Choose your color
                                             </Typography>
                                             <ColorSelect />

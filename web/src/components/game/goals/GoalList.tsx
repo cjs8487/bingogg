@@ -99,7 +99,6 @@ export default function GoalList() {
                     canModerate && (
                         <ListItem disableGutters disablePadding>
                             <ListItemButton
-                                className="cursor-pointer rounded-md px-2 py-2 hover:bg-gray-400 hover:bg-opacity-60"
                                 onClick={() => setNewGoal(true)}
                                 alignItems="flex-start"
                             >

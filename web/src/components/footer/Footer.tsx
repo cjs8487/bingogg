@@ -49,11 +49,7 @@ function LargeFooter() {
                 </Box>
                 <Typography variant="caption">
                     © Copyright 2024 - 2024 Bingothon | All Rights Reserved |{' '}
-                    <Link
-                        href="/legal/privacy"
-                        component={NextLink}
-                        className="underline"
-                    >
+                    <Link href="/legal/privacy" component={NextLink}>
                         Privacy Policy
                     </Link>
                 </Typography>
@@ -105,7 +101,6 @@ function SmallFooter() {
                     <Link
                         href="/legal/privacy"
                         component={NextLink}
-                        className="underline"
                         variant="caption"
                     >
                         Privacy Policy

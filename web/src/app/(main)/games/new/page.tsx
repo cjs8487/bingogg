@@ -80,14 +80,9 @@ export default function NewGame() {
                             name="coverImage"
                             label="Cover Image"
                         />
-                        <Box display="flex" className="flex w-full pt-2">
+                        <Box display="flex">
                             <Box flexGrow={1} />
-                            <Button
-                                type="submit"
-                                className="rounded-md border bg-green-700 px-2 py-1"
-                            >
-                                Submit
-                            </Button>
+                            <Button type="submit">Submit</Button>
                         </Box>
                     </Box>
                 </Form>

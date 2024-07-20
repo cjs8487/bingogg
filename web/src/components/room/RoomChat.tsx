@@ -32,7 +32,6 @@ export default function RoomChat() {
                     overflowY: 'auto',
                     px: 1,
                 }}
-                className="mb-1.5 h-full grow overflow-y-auto px-1"
             >
                 {messages.map((message, index) => (
                     <div key={index}>
@@ -59,11 +58,7 @@ export default function RoomChat() {
                 ))}
                 <div ref={chatDivRef} />
             </Box>
-            <Box
-                display="flex"
-                columnGap={1}
-                className="flex gap-x-2 text-black"
-            >
+            <Box display="flex" columnGap={1}>
                 <TextField
                     size="small"
                     variant="outlined"

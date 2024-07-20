@@ -63,7 +63,6 @@ export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
                                     px: 2,
                                     py: 1,
                                 }}
-                                className="mb-2.5 flex items-center gap-x-3 rounded-md bg-yellow-300 px-2 py-1 text-sm text-black"
                             >
                                 <Warning />
                                 <Box color="warning.contrastText">
@@ -104,7 +103,6 @@ export default function GoalUpload({ isOpen, close, slug }: GoalUploadProps) {
                                     px: 2,
                                     py: 1,
                                 }}
-                                className="mb-2.5 flex items-center gap-x-3 rounded-md bg-yellow-300 px-2 py-1 text-sm text-black"
                             >
                                 <Warning />
                                 <Typography

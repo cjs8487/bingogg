@@ -130,27 +130,19 @@ export default function RoomControlDialog({
                                     </Box>
                                 </AccordionDetails>
                             </Accordion>
-                            <Button
-                                type="submit"
-                                className="rounded-md border p-2 hover:bg-gray-700"
-                            >
-                                Regenerate Card
-                            </Button>
+                            <Button type="submit">Regenerate Card</Button>
                         </Form>
                     )}
                 </Formik>
                 <Box pt={2}>
-                    <Typography variant="h6" className="text-lg font-semibold">
-                        Local Actions
-                    </Typography>
-                    <Typography variant="caption" className="pt-1 text-xs">
+                    <Typography variant="h6">Local Actions</Typography>
+                    <Typography variant="caption">
                         These actions are potentially destructive and should
                         only be used if the application is exhibiting strange or
                         incorrect behavior
                     </Typography>
                     <Box display="flex">
                         <Button
-                            className="rounded-md border p-2 hover:bg-gray-700"
                             onClick={() => {
                                 window.dispatchEvent(new Event('resize'));
                             }}
@@ -161,7 +153,6 @@ export default function RoomControlDialog({
                 </Box>
                 <Box pt={2}>
                     <Button
-                        className="rounded-md border p-2 hover:bg-gray-700"
                         onClick={() => {
                             const data = board.board
                                 .map((row) =>

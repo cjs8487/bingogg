@@ -35,12 +35,7 @@ export default function PermissionsManagement({
                 </Typography>
                 <Box>
                     {gameData.owners?.map((owner) => (
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            key={owner.id}
-                            className="flex items-center"
-                        >
+                        <Box display="flex" alignItems="center" key={owner.id}>
                             <Typography variant="body1">
                                 {owner.username}
                             </Typography>
@@ -79,7 +74,6 @@ export default function PermissionsManagement({
                     ))}
                 </Box>
                 <Button
-                    className="flex max-w-fit cursor-pointer items-center rounded-md px-2 py-1 text-sm hover:bg-gray-500 hover:bg-opacity-60"
                     onClick={() => setSearchOpenOwner(true)}
                     startIcon={<AddIcon />}
                 >
@@ -113,12 +107,7 @@ export default function PermissionsManagement({
                 </Typography>
                 <div>
                     {gameData.moderators?.map((mod) => (
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            key={mod.id}
-                            className="flex items-center"
-                        >
+                        <Box display="flex" alignItems="center" key={mod.id}>
                             <Typography variant="body1">
                                 {mod.username}
                             </Typography>
@@ -154,7 +143,6 @@ export default function PermissionsManagement({
                     ))}
                 </div>
                 <Button
-                    className="flex max-w-fit cursor-pointer items-center rounded-md px-2 py-1 text-sm hover:bg-gray-500 hover:bg-opacity-60"
                     onClick={() => setSearchOpenMod(true)}
                     startIcon={<AddIcon />}
                 >

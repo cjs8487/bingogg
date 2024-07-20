@@ -104,11 +104,7 @@ export default function Register() {
                     </Typography>
                     <Typography variant="caption">
                         Already have an account?{' '}
-                        <Link
-                            href="/login"
-                            component={NextLink}
-                            className="underline"
-                        >
+                        <Link href="/login" component={NextLink}>
                             Log in instead
                         </Link>
                     </Typography>
@@ -248,11 +244,10 @@ export default function Register() {
                                 autoComplete="new-password"
                                 fullWidth
                             />
-                            <Box textAlign="right" className="w-full pt-4">
+                            <Box textAlign="right">
                                 <Button
                                     type="submit"
                                     disabled={!isValid || isSubmitting}
-                                    className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light disabled:bg-gray-600 disabled:hover:shadow-sm"
                                 >
                                     Register
                                 </Button>

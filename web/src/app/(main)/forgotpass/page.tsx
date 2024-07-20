@@ -49,7 +49,7 @@ export default function ForgotPassword() {
                     }}
                 >
                     {({ isValid, isSubmitting }) => (
-                        <Form className="flex w-full flex-col gap-y-4">
+                        <Form>
                             <FormikTextField
                                 id="email"
                                 name="email"
@@ -69,7 +69,6 @@ export default function ForgotPassword() {
                                     type="submit"
                                     disabled={!isValid || isSubmitting}
                                     variant="contained"
-                                    className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light disabled:bg-gray-600"
                                 >
                                     Reset Password
                                 </Button>
@@ -79,11 +78,11 @@ export default function ForgotPassword() {
                 </Formik>
             )}
             {success && (
-                <div>
+                <Typography>
                     We&#39;ve sent you an email with further details on
                     resetting your password. If you don&#39;t receive it soon,
                     be sure to check your spam folder.
-                </div>
+                </Typography>
             )}
         </Box>
     );

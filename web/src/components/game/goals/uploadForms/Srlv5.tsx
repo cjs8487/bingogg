@@ -70,21 +70,11 @@ export function SRLv5UploadForm({ slug, close }: UploadFormProps) {
                     fullWidth
                 />
                 <Box mt={2} display="flex">
-                    <Button
-                        type="button"
-                        color="error"
-                        className="rounded-md border border-transparent bg-error px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                        onClick={close}
-                    >
+                    <Button type="button" color="error" ack onClick={close}>
                         Cancel
                     </Button>
                     <Box flexGrow={1} />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="success"
-                        className="float-right rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-                    >
+                    <Button type="submit" variant="contained" color="success">
                         Submit
                     </Button>
                 </Box>

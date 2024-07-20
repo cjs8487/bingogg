@@ -69,27 +69,16 @@ export default function GamePage({
             <Box display="flex">
                 <Box position="fixed" mr={4}>
                     {gameData.coverImage && (
-                        <Image
-                            src={gameData.coverImage}
-                            alt=""
-                            fill
-                            className="h-32 w-20 bg-cover bg-center bg-no-repeat"
-                        />
+                        <Image src={gameData.coverImage} alt="" fill />
                     )}
                     {!gameData.coverImage && (
-                        <div className="relative flex h-32 w-20 border shadow-[inset_0_0_8px_white]">
-                            <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center">
-                                {slug}
-                            </div>
+                        <div>
+                            <div>{slug}</div>
                         </div>
                     )}
                 </Box>
                 <Box flexGrow={1}>
-                    <Link
-                        component={NextLink}
-                        className="text-sm underline"
-                        href={`/games/${slug}`}
-                    >
+                    <Link component={NextLink} href={`/games/${slug}`}>
                         {gameData.slug}
                     </Link>
                     <Typography variant="h6">{gameData.name}</Typography>
@@ -110,7 +99,7 @@ export default function GamePage({
                     >
                         Moderators
                     </Typography>
-                    <Typography variant="body2" className="text-sm">
+                    <Typography variant="body2">
                         {gameData.moderators?.map((o) => o.username).join(', ')}
                     </Typography>
                 </Box>
@@ -235,7 +224,6 @@ export default function GamePage({
                     </div>
                 </TabPanel>
             </TabContext>
-            {/* <div className="w-1/4 rounded-2xl border-4 p-5"></div> */}
         </Container>
     );
 }

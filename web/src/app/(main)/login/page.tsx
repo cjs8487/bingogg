@@ -93,11 +93,7 @@ export default function Login() {
                                 </Link>
                             </Box>
                             <Box textAlign="right">
-                                <Button
-                                    href="/register"
-                                    component={NextLink}
-                                    className="float-left rounded-md bg-primary px-4 py-2 hover:bg-primary-light"
-                                >
+                                <Button href="/register" component={NextLink}>
                                     Register
                                 </Button>
                                 <Button type="submit" variant="contained">
