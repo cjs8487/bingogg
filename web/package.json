@@ -12,6 +12,7 @@
         "@emotion/cache": "^11.11.0",
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
+        "@floating-ui/react": "^0.26.19",
         "@fortawesome/fontawesome-svg-core": "^6.5.1",
         "@fortawesome/free-brands-svg-icons": "^6.5.1",
         "@fortawesome/free-solid-svg-icons": "^6.5.1",
