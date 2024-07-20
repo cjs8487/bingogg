@@ -1,6 +1,8 @@
 import { Field, Form, Formik } from 'formik';
 import { alertError } from '../../../../lib/Utils';
 import type { UploadFormProps } from '../GoalUpload';
+import FormikTextField from '../../../input/FormikTextField';
+import { Box, Button } from '@mui/material';
 
 export function ListUploadForm({ slug, close }: UploadFormProps) {
     return (
@@ -34,30 +36,23 @@ export function ListUploadForm({ slug, close }: UploadFormProps) {
             }}
         >
             <Form>
-                <label>
-                    Data
-                    <Field
-                        name="data"
-                        as="textarea"
-                        className="h-full w-full p-2 text-black"
-                        rows={10}
-                    />
-                </label>
-                <div className="mt-5">
-                    <button
-                        type="button"
-                        className="rounded-md border border-transparent bg-error px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                        onClick={close}
-                    >
+                <FormikTextField
+                    id="list-upload-data"
+                    name="data"
+                    label="Data"
+                    multiline
+                    rows={10}
+                    fullWidth
+                />
+                <Box mt={2} display="flex">
+                    <Button type="button" color="error" onClick={close}>
                         Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="float-right rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-                    >
+                    </Button>
+                    <Box flexGrow={1} />
+                    <Button type="submit" variant="contained" color="success">
                         Submit
-                    </button>
-                </div>
+                    </Button>
+                </Box>
             </Form>
         </Formik>
     );
@@ -65,4 +60,4 @@ export function ListUploadForm({ slug, close }: UploadFormProps) {
 
 function parseList(data: string): string[] {
     return JSON.parse(data);
-};
+}

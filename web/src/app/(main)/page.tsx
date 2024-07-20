@@ -1,28 +1,67 @@
 import RoomCreateForm from '@/components/RoomCreateForm';
 import { Suspense } from 'react';
 import ActiveRoomList from '../../components/ActiveRoomList';
+import { Box, CircularProgress, Paper, Typography } from '@mui/material';
 
 export default async function Home() {
     return (
-        <div className="h-full ">
-            <div className="pb-8">
-                <div className="text-center text-5xl">Welcome to bingo.gg</div>
-                <div className="mt-0.5 text-center italic">
+        <Box flexGrow={1}>
+            <Box mt={2} pb={4}>
+                <Typography variant="h3" textAlign="center">
+                    Welcome to bingo.gg
+                </Typography>
+                <Typography
+                    variant="subtitle1"
+                    fontStyle="italic"
+                    textAlign="center"
+                >
                     The new way to bingo.
-                </div>
-            </div>
-            <div className="flex max-h-[40rem] gap-x-8">
-                <div className="flex max-h-full grow basis-1/2 flex-col items-center gap-y-4 rounded-md border-4 border-border bg-foreground px-16 py-4 shadow-lg shadow-border/20">
-                    <div className="pb-2 text-3xl">Join an Existing Room</div>
-                    <Suspense fallback={<>Loading...</>}>
+                </Typography>
+            </Box>
+            <Box
+                display="flex"
+                columnGap={8}
+                rowGap={1}
+                flexWrap="wrap"
+                width="100%"
+                justifyContent="center"
+                px={4}
+            >
+                <Paper
+                    sx={{
+                        textAlign: 'center',
+                        px: { xs: 2, md: 12 },
+                        py: 4,
+                        mb: 4,
+                        animation: '1.5s 1 slidein',
+                        animationDelay: '1s',
+                        animationFillMode: 'backwards',
+                    }}
+                    elevation={2}
+                >
+                    <Typography variant="h4">Join an Existing Room</Typography>
+                    <Suspense fallback={<CircularProgress />}>
                         <ActiveRoomList />
                     </Suspense>
-                </div>
-                <div className="flex h-fit grow basis-1/2 flex-col items-center justify-center gap-y-4 rounded-md border-4 border-border bg-foreground px-16 py-4 shadow-lg shadow-border/20">
-                    <div className="pb-2 text-4xl">Create a New Room</div>
+                </Paper>
+                <Paper
+                    sx={{
+                        textAlign: 'center',
+                        px: { xs: 2, sm: 6, md: 12 },
+                        py: 4,
+                        mb: 4,
+                        animation: '1.8s 1 slidein',
+                        animationDelay: '1.3s',
+                        animationFillMode: 'backwards',
+                    }}
+                    elevation={2}
+                >
+                    <Typography variant="h4" mb={2}>
+                        Create a New Room
+                    </Typography>
                     <RoomCreateForm />
-                </div>
-            </div>
-        </div>
+                </Paper>
+            </Box>
+        </Box>
     );
 }

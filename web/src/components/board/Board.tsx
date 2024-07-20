@@ -1,15 +1,30 @@
 import { useContext } from 'react';
 import { RoomContext } from '../../context/RoomContext';
 import Cell from './Cell';
+import { Box } from '@mui/material';
 
 export default function Board() {
     const { board } = useContext(RoomContext);
     return (
-        <div className="aspect-square max-h-full max-w-full border">
+        <Box
+            sx={{
+                aspectRatio: '1 / 1',
+                maxHeight: '100%',
+                maxWidth: '100%',
+                border: 1,
+                borderColor: 'divider',
+            }}
+        >
             {board.board.map((row, rowIndex) => (
-                <div
+                <Box
                     key={rowIndex}
-                    className="flex h-1/5 items-center justify-center text-center"
+                    sx={{
+                        display: 'flex',
+                        height: '20%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                    }}
                 >
                     {row.map((goal, colIndex) => (
                         <Cell
@@ -19,8 +34,8 @@ export default function Board() {
                             cell={goal}
                         />
                     ))}
-                </div>
+                </Box>
             ))}
-        </div>
+        </Box>
     );
 }

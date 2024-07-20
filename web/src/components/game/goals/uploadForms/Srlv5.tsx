@@ -2,6 +2,8 @@ import { Field, Form, Formik } from 'formik';
 import { parseSRLv5BingoList } from '../../../../lib/goals/SRLv5Parser';
 import { alertError } from '../../../../lib/Utils';
 import type { UploadFormProps } from '../GoalUpload';
+import { Box, Button } from '@mui/material';
+import FormikTextField from '../../../input/FormikTextField';
 
 export function SRLv5UploadForm({ slug, close }: UploadFormProps) {
     return (
@@ -59,30 +61,23 @@ export function SRLv5UploadForm({ slug, close }: UploadFormProps) {
             }}
         >
             <Form>
-                <label>
-                    Data
-                    <Field
-                        name="data"
-                        as="textarea"
-                        className="h-full w-full p-2 text-black"
-                        rows={10}
-                    />
-                </label>
-                <div className="mt-5">
-                    <button
-                        type="button"
-                        className="rounded-md border border-transparent bg-error px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                        onClick={close}
-                    >
+                <FormikTextField
+                    id="srlv5-upload-data"
+                    name="data"
+                    label="Data"
+                    multiline
+                    rows={10}
+                    fullWidth
+                />
+                <Box mt={2} display="flex">
+                    <Button type="button" color="error" onClick={close}>
                         Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="float-right rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-                    >
+                    </Button>
+                    <Box flexGrow={1} />
+                    <Button type="submit" variant="contained" color="success">
                         Submit
-                    </button>
-                </div>
+                    </Button>
+                </Box>
             </Form>
         </Formik>
     );

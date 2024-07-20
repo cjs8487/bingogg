@@ -1,7 +1,9 @@
 'use client';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import { Form, Formik } from 'formik';
 import { useContext, useState } from 'react';
 import { RoomContext } from '../../context/RoomContext';
-import { Field, Form, Formik } from 'formik';
+import FormikTextField from '../input/FormikTextField';
 
 export default function RoomLogin() {
     // context
@@ -11,8 +13,17 @@ export default function RoomLogin() {
     const [error, setError] = useState<string>();
 
     return (
-        <div className="flex justify-center">
-            <div className="w-fit rounded-md border border-border bg-foreground p-4">
+        <Box
+            display="flex"
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+        >
+            <Paper
+                sx={{
+                    p: 4,
+                }}
+            >
                 <Formik
                     initialValues={{ nickname: '', password: '' }}
                     onSubmit={async ({ nickname, password }) => {
@@ -24,40 +35,30 @@ export default function RoomLogin() {
                 >
                     <Form>
                         {error && (
-                            <div className="pb-1 text-sm text-red-500">
+                            <Typography pb={1} color="error" variant="body2">
                                 {error}
-                            </div>
+                            </Typography>
                         )}
-                        <div className="flex flex-col gap-y-4">
-                            <label>
-                                <div>Nickname</div>
-                                <Field
-                                    id="nickname"
-                                    name="nickname"
-                                    className="text-black"
-                                />
-                            </label>
-                            <label>
-                                <div>Password</div>
-                                <Field
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    className="text-black"
-                                />
-                            </label>
-                            <div>
-                                <button
-                                    type="submit"
-                                    className="float-right rounded-md bg-primary px-3 py-1.5"
-                                >
-                                    Join Room
-                                </button>
-                            </div>
-                        </div>
+                        <Box display="flex" flexDirection="column" rowGap={2}>
+                            <FormikTextField
+                                id="nickname"
+                                name="nickname"
+                                label="Nickname"
+                            />
+                            <FormikTextField
+                                id="password"
+                                name="password"
+                                type="password"
+                                label="Password"
+                            />
+                        </Box>
+                        <Box display="flex">
+                            <Box flexGrow={1} />
+                            <Button type="submit">Join Room</Button>
+                        </Box>
                     </Form>
                 </Formik>
-            </div>
-        </div>
+            </Paper>
+        </Box>
     );
 }

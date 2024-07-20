@@ -3,6 +3,8 @@ import { Formik, Form, Field, ErrorMessage, FastField } from 'formik';
 import { useSearchParams } from 'next/navigation';
 import * as yup from 'yup';
 import { alertError } from '../../../lib/Utils';
+import { Box, Button, Container, Typography } from '@mui/material';
+import FormikTextField from '../../../components/input/FormikTextField';
 
 const validationSchema = yup.object({
     password: yup
@@ -32,123 +34,123 @@ export default function ResetPassword() {
     }
 
     return (
-        <div className="flex h-full items-center justify-center">
-            <div className="flex max-w-[50%] grow flex-col items-center rounded-3xl border-4 border-border bg-foreground px-8 py-6 shadow-lg shadow-border/30">
-                <div className="pb-1 text-3xl font-bold">Reset Password</div>
-                <Formik
-                    initialValues={{ password: '', passwordConfirm: '' }}
-                    validationSchema={validationSchema}
-                    onSubmit={async ({ password }) => {
-                        const res = await fetch('/api/auth/resetPassword', {
-                            method: 'POST',
-                            body: JSON.stringify({ token, password }),
-                        });
-                        if (!res.ok) {
-                            const error = await res.text();
-                            alertError(
-                                `Unable to submit reset request - ${error}. You may need to request a new reset link.`,
-                            );
-                            return;
-                        }
-                    }}
-                >
-                    {({ isValid, isSubmitting, values: { password } }) => (
-                        <Form className="flex w-full flex-col gap-y-4">
-                            <div className="w-full">
-                                <label>
-                                    <div>New Password</div>
-                                    <FastField
-                                        type="password"
-                                        name="password"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
-                                    name="password"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
-                                />
-                                <div className="w-full pb-2 pl-0.5 pt-1 text-xs">
-                                    Your password must contain the following:
-                                    <ul className=" list-disc pl-4">
-                                        <li
-                                            className={
-                                                password.length >= 8
-                                                    ? 'text-success-content'
-                                                    : ''
-                                            }
-                                        >
-                                            At least 8 characters
-                                        </li>
-                                        <li
-                                            className={
-                                                password.match(/[a-z]+/)
-                                                    ? 'text-success-content'
-                                                    : ''
-                                            }
-                                        >
-                                            One lowercase letter
-                                        </li>
-                                        <li
-                                            className={
-                                                password.match(/[A-Z]+/)
-                                                    ? 'text-success-content'
-                                                    : ''
-                                            }
-                                        >
-                                            One uppercase letter
-                                        </li>
-                                        <li
-                                            className={
-                                                password.match(/[0-9]+/)
-                                                    ? 'text-success-content'
-                                                    : ''
-                                            }
-                                        >
-                                            A number
-                                        </li>
-                                        <li
-                                            className={
-                                                password.match(
-                                                    /[*.!@$%^&(){}\[\]:;<>,.?\/~_\+\-=|\\]+/,
-                                                )
-                                                    ? 'text-success-content'
-                                                    : ''
-                                            }
-                                        >
-                                            A symbol
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="w-full">
-                                <label>
-                                    <div>Confirm New Password</div>
-                                    <Field
-                                        type="password"
-                                        name="passwordConfirmation"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
-                                    name="passwordConfirmation"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
-                                />
-                            </div>
-                            <div className="w-full pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={!isValid || isSubmitting}
-                                    className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light disabled:bg-gray-600"
+        <Container
+            sx={{ pt: 3, maxWidth: { sm: '75%', lg: '50%', xl: '35%' } }}
+        >
+            <Typography variant="h5" align="center" pb={2}>
+                Reset Password
+            </Typography>
+            <Formik
+                initialValues={{ password: '', passwordConfirm: '' }}
+                validationSchema={validationSchema}
+                onSubmit={async ({ password }) => {
+                    const res = await fetch('/api/auth/resetPassword', {
+                        method: 'POST',
+                        body: JSON.stringify({ token, password }),
+                    });
+                    if (!res.ok) {
+                        const error = await res.text();
+                        alertError(
+                            `Unable to submit reset request - ${error}. You may need to request a new reset link.`,
+                        );
+                        return;
+                    }
+                }}
+            >
+                {({ isValid, isSubmitting, values: { password } }) => (
+                    <Form
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <FormikTextField
+                            id="new-password"
+                            name="password"
+                            type="password"
+                            label="New Password"
+                        />
+                        <Typography variant="caption" mt={0.5} ml={0.5}>
+                            Your password must contain the following:
+                            <ul style={{ margin: 0 }}>
+                                <Typography
+                                    component="li"
+                                    variant="caption"
+                                    color={
+                                        password.length >= 8
+                                            ? 'success.main'
+                                            : ''
+                                    }
                                 >
-                                    Reset Password
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </div>
-        </div>
+                                    At least 8 characters
+                                </Typography>
+                                <Typography
+                                    component="li"
+                                    variant="caption"
+                                    color={
+                                        password.match(/[a-z]+/)
+                                            ? 'success.main'
+                                            : ''
+                                    }
+                                >
+                                    One lowercase letter
+                                </Typography>
+                                <Typography
+                                    component="li"
+                                    variant="caption"
+                                    color={
+                                        password.match(/[A-Z]+/)
+                                            ? 'success.main'
+                                            : ''
+                                    }
+                                >
+                                    One uppercase letter
+                                </Typography>
+                                <Typography
+                                    component="li"
+                                    variant="caption"
+                                    color={
+                                        password.match(/[0-9]+/)
+                                            ? 'success.main'
+                                            : ''
+                                    }
+                                >
+                                    A number
+                                </Typography>
+                                <Typography
+                                    component="li"
+                                    variant="caption"
+                                    color={
+                                        password.match(
+                                            /[*.!@$%^&(){}\[\]:;<>,.?\/~_\+\-=|\\]+/,
+                                        )
+                                            ? 'success.main'
+                                            : ''
+                                    }
+                                >
+                                    A symbol
+                                </Typography>
+                            </ul>
+                        </Typography>
+                        <FormikTextField
+                            id="new-password-confirm"
+                            name="passwordConfirmation"
+                            type="password"
+                            label="Confirm New Password"
+                            sx={{ mt: 2, mb: 1 }}
+                        />
+                        <Box display="flex">
+                            <Box flexGrow={1} />
+                            <Button
+                                type="submit"
+                                disabled={!isValid || isSubmitting}
+                            >
+                                Reset Password
+                            </Button>
+                        </Box>
+                    </Form>
+                )}
+            </Formik>
+        </Container>
     );
 }

@@ -1,101 +1,100 @@
 'use client';
-import { useContext, useState } from 'react';
-import HeaderLink from './HeaderLink';
-import { UserContext } from '../../context/UserContext';
 import {
-    autoUpdate,
-    shift,
-    useClick,
-    useDismiss,
-    useFloating,
-    useInteractions,
-    useRole,
-    useTransitionStyles,
-} from '@floating-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+    AppBar,
+    Avatar,
+    Box,
+    Button,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Toolbar,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import IconLogout from '@mui/icons-material/Logout';
+import { useContext, useState } from 'react';
+import { UserContext } from '../../context/UserContext';
+import LinkButton from '../LinkButton';
+import DesktopMenu from './DesktopMenu';
+import MobileMenu from './MobileMenu';
+
+export const pages = [
+    { name: 'Games', path: '/games' },
+    { name: 'Play', path: '/rooms' },
+];
 
 export default function Header() {
     const { user, loggedIn, logout } = useContext(UserContext);
 
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-    const { refs, context, floatingStyles } = useFloating({
-        whileElementsMounted: autoUpdate,
-        open: menuOpen,
-        onOpenChange: setMenuOpen,
-        middleware: [shift({ padding: 5 })],
-    });
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
 
-    const click = useClick(context);
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: 'menu' });
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-        click,
-        dismiss,
-        role,
-    ]);
-
-    const { isMounted, styles } = useTransitionStyles(context, {
-        initial: {
-            transform: 'scale(0)',
-        },
-    });
+    const handleLogout = () => {
+        logout();
+        handleCloseUserMenu();
+    };
 
     return (
-        <div className="flex items-center gap-x-4 rounded-b-lg bg-primary px-4 py-2 text-white">
-            <HeaderLink href="/" className="text-xl">
-                bingo.gg
-            </HeaderLink>
-            <div className="grow" />
-            <HeaderLink href="/games">Games</HeaderLink>
-            <HeaderLink href="/rooms">Play</HeaderLink>
-            {!loggedIn && <HeaderLink href="/login">Log In</HeaderLink>}
-            {loggedIn && user && (
-                <>
-                    <div
-                        className="flex items-center"
-                        role="button"
-                        ref={refs.setReference}
-                        {...getReferenceProps()}
-                    >
-                        <HeaderLink href="">{user.username}</HeaderLink>
-                    </div>
-                    {isMounted && (
-                        <div
-                            ref={refs.setFloating}
-                            className="absolute flex flex-col rounded-lg border border-slate-200 bg-white py-2 shadow-xl"
-                            style={floatingStyles}
-                            {...getFloatingProps}
+        <AppBar position="sticky">
+            <Toolbar>
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1 }}>
+                    <DesktopMenu />
+                </Box>
+                <Box sx={{ display: { xs: 'flex', md: 'none' }, flexGrow: 1 }}>
+                    <MobileMenu />
+                </Box>
+
+                {user ? (
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open user menu">
+                            <Button
+                                style={{ color: 'white' }}
+                                onClick={handleOpenUserMenu}
+                                sx={{
+                                    display: 'flex',
+                                    columnGap: 1,
+                                }}
+                            >
+                                {user.username}
+                                <Avatar alt={user.username} />
+                            </Button>
+                        </Tooltip>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
                         >
-                            <div style={styles}>
-                                {/* {userMenu.map((item) => (
-                                    <UserMenuItem
-                                        key={item.label}
-                                        label={item.label}
-                                        to={item.to}
-                                        icon={item.icon}
-                                        isAction={item.isAction}
-                                        isDivider={item.isDivider}
-                                    />
-                                ))} */}
-                                <div
-                                    role="button"
-                                    className="flex w-full items-center gap-x-2 px-3 py-1 text-black hover:bg-slate-500 hover:bg-opacity-10"
-                                    onClick={logout}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faRightFromBracket}
-                                        className="w-1/6"
-                                    />
-                                    Log Out
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
-        </div>
+                            <MenuItem onClick={handleLogout}>
+                                <ListItemIcon>
+                                    <IconLogout fontSize="small" />
+                                </ListItemIcon>
+                                <Typography textAlign="center">
+                                    Logout
+                                </Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                ) : (
+                    <LinkButton href="/login">Login</LinkButton>
+                )}
+            </Toolbar>
+        </AppBar>
     );
 }

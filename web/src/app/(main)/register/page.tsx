@@ -1,11 +1,13 @@
 'use client';
 import { ErrorMessage, FastField, Field, Form, Formik } from 'formik';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import * as yup from 'yup';
 import { UserContext } from '../../../context/UserContext';
 import { alertError } from '../../../lib/Utils';
+import FormikTextField from '../../../components/input/FormikTextField';
+import { Box, Button, Link, Paper, Typography } from '@mui/material';
 
 const validationSchema = yup.object({
     email: yup
@@ -89,17 +91,24 @@ export default function Register() {
     }, [user, router]);
 
     return (
-        <div className="flex h-full items-center justify-center">
-            <div className="flex max-w-[50%] grow flex-col items-center rounded-3xl border-4 border-border bg-foreground px-8 py-6 shadow-lg shadow-border/10">
-                <div className="pb-1 text-3xl font-bold">
-                    Register for an Account
-                </div>
-                <div className="pb-4 text-justify text-sm text-gray-300">
-                    Already have an account?{' '}
-                    <Link href="/login" className="underline">
-                        Log in instead
-                    </Link>
-                </div>
+        <Box
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+            display="flex"
+        >
+            <Paper sx={{ px: 8, py: 4 }}>
+                <Box textAlign="center" pb={2}>
+                    <Typography variant="h4">
+                        Register for an Account
+                    </Typography>
+                    <Typography variant="caption">
+                        Already have an account?{' '}
+                        <Link href="/login" component={NextLink}>
+                            Log in instead
+                        </Link>
+                    </Typography>
+                </Box>
                 <Formik
                     initialValues={{
                         email: '',
@@ -135,130 +144,118 @@ export default function Register() {
                     }}
                 >
                     {({ isValid, isSubmitting, values: { password } }) => (
-                        <Form className="flex w-full flex-col gap-y-2">
-                            <div className="w-full">
-                                <label>
-                                    <div>Email</div>
-                                    <FastField
-                                        name="email"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
-                                    name="email"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
-                                />
-                            </div>
-                            <div className="w-full">
-                                <label>
-                                    <div>Username</div>
-                                    <FastField
-                                        name="username"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
-                                    name="username"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
-                                />
-                            </div>
-                            <div className="w-full">
-                                <label>
-                                    <div>Password</div>
-                                    <FastField
-                                        type="password"
-                                        name="password"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
+                        <Form
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                rowGap: 16,
+                            }}
+                        >
+                            <FormikTextField
+                                id="email"
+                                name="email"
+                                label="Email"
+                                fullWidth
+                            />
+                            <FormikTextField
+                                id="username"
+                                name="username"
+                                label="Username"
+                                autoComplete="username"
+                                fullWidth
+                            />
+                            <Box>
+                                <FormikTextField
+                                    id="password"
                                     name="password"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
+                                    autoComplete="new-password"
+                                    label="Password"
+                                    type="password"
+                                    fullWidth
                                 />
-                                <div className="w-full pb-2 pl-0.5 pt-1 text-xs">
+                                <Typography variant="caption">
                                     Your password must contain the following:
-                                    <ul className=" list-disc pl-4">
-                                        <li
-                                            className={
+                                    <ul style={{ margin: 0 }}>
+                                        <Typography
+                                            component="li"
+                                            variant="caption"
+                                            color={
                                                 password.length >= 8
-                                                    ? 'text-success-content'
+                                                    ? 'success.main'
                                                     : ''
                                             }
                                         >
                                             At least 8 characters
-                                        </li>
-                                        <li
-                                            className={
+                                        </Typography>
+                                        <Typography
+                                            component="li"
+                                            variant="caption"
+                                            color={
                                                 password.match(/[a-z]+/)
-                                                    ? 'text-success-content'
+                                                    ? 'success.main'
                                                     : ''
                                             }
                                         >
                                             One lowercase letter
-                                        </li>
-                                        <li
-                                            className={
+                                        </Typography>
+                                        <Typography
+                                            component="li"
+                                            variant="caption"
+                                            color={
                                                 password.match(/[A-Z]+/)
-                                                    ? 'text-success-content'
+                                                    ? 'success.main'
                                                     : ''
                                             }
                                         >
                                             One uppercase letter
-                                        </li>
-                                        <li
-                                            className={
+                                        </Typography>
+                                        <Typography
+                                            component="li"
+                                            variant="caption"
+                                            color={
                                                 password.match(/[0-9]+/)
-                                                    ? 'text-success-content'
+                                                    ? 'success.main'
                                                     : ''
                                             }
                                         >
                                             A number
-                                        </li>
-                                        <li
-                                            className={
+                                        </Typography>
+                                        <Typography
+                                            component="li"
+                                            variant="caption"
+                                            color={
                                                 password.match(
                                                     /[*.!@$%^&(){}\[\]:;<>,.?\/~_\+\-=|\\]+/,
                                                 )
-                                                    ? 'text-success-content'
+                                                    ? 'success.main'
                                                     : ''
                                             }
                                         >
                                             A symbol
-                                        </li>
+                                        </Typography>
                                     </ul>
-                                </div>
-                            </div>
-                            <div className="w-full">
-                                <label>
-                                    <div>Confirm Password</div>
-                                    <Field
-                                        type="password"
-                                        name="passwordConfirmation"
-                                        className="w-full text-black"
-                                    />
-                                </label>
-                                <ErrorMessage
-                                    name="passwordConfirmation"
-                                    component="div"
-                                    className="mt-1 w-full text-xs text-error-content"
-                                />
-                            </div>
-                            <div className="w-full pt-4">
-                                <button
+                                </Typography>
+                            </Box>
+                            <FormikTextField
+                                id="confirmPassword"
+                                type="password"
+                                name="passwordConfirmation"
+                                label="Confirm Password"
+                                autoComplete="new-password"
+                                fullWidth
+                            />
+                            <Box textAlign="right">
+                                <Button
                                     type="submit"
                                     disabled={!isValid || isSubmitting}
-                                    className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light disabled:bg-gray-600 disabled:hover:shadow-sm"
                                 >
                                     Register
-                                </button>
-                            </div>
+                                </Button>
+                            </Box>
                         </Form>
                     )}
                 </Formik>
-            </div>
-        </div>
+            </Paper>
+        </Box>
     );
 }

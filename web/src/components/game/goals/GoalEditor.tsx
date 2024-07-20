@@ -1,16 +1,83 @@
-import { Goal } from '@/types/Goal';
-import { Field, FieldProps, Form, Formik } from 'formik';
-import CreatableSelect from 'react-select/creatable';
 import NumberInput from '@/components/input/NumberInput';
-import { KeyedMutator, mutate } from 'swr';
+import { Goal } from '@/types/Goal';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Checkbox,
+    TextField,
+    createFilterOptions,
+} from '@mui/material';
+import { Form, Formik, useField } from 'formik';
+import { KeyedMutator } from 'swr';
 import { alertError } from '../../../lib/Utils';
+import FormikTextField from '../../input/FormikTextField';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const filter = createFilterOptions<string>();
+
+interface CategorySelectProps {
+    categories: string[];
+}
+
+function CategorySelect({ categories }: CategorySelectProps) {
+    const [field, meta, helpers] = useField<string[]>('categories');
+    return (
+        <Autocomplete
+            multiple
+            id="goal-cat-select"
+            options={categories}
+            value={field.value}
+            onChange={(_, newValue) => {
+                helpers.setValue(newValue);
+            }}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option}
+            renderOption={(props, option, { selected }) => {
+                return (
+                    <li {...props}>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        {option}
+                    </li>
+                );
+            }}
+            renderInput={(params) => (
+                <TextField {...params} label="Categories" />
+            )}
+            fullWidth
+            freeSolo
+            filterOptions={(options, params) => {
+                const filtered = filter(options, params);
+
+                const { inputValue } = params;
+                // Suggest the creation of a new value
+                const isExisting = options.some(
+                    (option) => inputValue === option,
+                );
+                if (inputValue !== '' && !isExisting) {
+                    filtered.push(`Add "${inputValue}"`);
+                }
+
+                return filtered;
+            }}
+        />
+    );
+}
 interface GoalEditorProps {
     slug: string;
     goal: Goal;
     isNew?: boolean;
     cancelNew?: () => void;
     mutateGoals: KeyedMutator<Goal[]>;
-    categories: { label: string; value: string }[];
+    categories: string[];
     canModerate?: boolean;
 }
 
@@ -23,11 +90,12 @@ export default function GoalEditor({
     categories,
     canModerate,
 }: GoalEditorProps) {
+    console.log(goal);
     return (
         <Formik
             initialValues={{
                 goal: goal.goal,
-                description: goal.description,
+                description: goal.description ?? '',
                 categories: goal.categories ?? [],
                 difficulty: goal.difficulty ?? 0,
             }}
@@ -95,76 +163,50 @@ export default function GoalEditor({
             enableReinitialize
         >
             {({ isSubmitting, isValidating, resetForm }) => (
-                <Form className="flex w-full flex-col">
-                    <label>
-                        Goal Text
-                        <Field
+                <Form>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="100%"
+                        rowGap={3}
+                    >
+                        <FormikTextField
+                            id="goal-name"
                             name="goal"
+                            label="Goal Text"
                             disabled={!canModerate}
-                            className="w-full grow text-black"
+                            fullWidth
                         />
-                    </label>
-                    <label className="pt-4">
-                        Goal Description
-                        <Field
+                        <FormikTextField
+                            id="goal-description"
                             name="description"
-                            as="textarea"
+                            label="Goal Description"
                             disabled={!canModerate}
-                            className="w-full rounded-md p-1 text-black"
+                            multiline
                             rows={6}
+                            fullWidth
                         />
-                    </label>
-                    <div className="flex w-full gap-x-4">
-                        <label className="w-1/2">
-                            Categories
-                            <Field name="categories" disabled={!canModerate}>
-                                {({
-                                    field,
-                                    form,
-                                    meta,
-                                }: FieldProps<string[]>) => (
-                                    <CreatableSelect
-                                        options={categories}
-                                        name={field.name}
-                                        value={field.value.map((cat) => ({
-                                            value: cat,
-                                            label: cat,
-                                        }))}
-                                        onChange={(option) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                option.map((val) => val.value),
-                                            );
-                                        }}
-                                        onBlur={field.onBlur}
-                                        isMulti
-                                        classNames={{
-                                            control: () => 'rounded-md',
-                                            menuList: () => 'text-black',
-                                            container: () => '',
-                                        }}
-                                        isDisabled={!canModerate}
-                                    />
-                                )}
-                            </Field>
-                        </label>
-                        <label className="w-1/2">
-                            <div>Difficulty</div>
-                            <Field
-                                name="difficulty"
-                                disabled={!canModerate}
-                                className="w-full"
-                                component={NumberInput}
-                                min={1}
-                                max={25}
-                            />
-                        </label>
-                    </div>
+                        <Box display="flex" columnGap={2}>
+                            <Box flexGrow={3}>
+                                <CategorySelect categories={categories} />
+                            </Box>
+                            <Box flexGrow={1}>
+                                <NumberInput
+                                    id="goal-difficulty"
+                                    name="difficulty"
+                                    label="Difficulty"
+                                    disabled={!canModerate}
+                                    min={0}
+                                    max={25}
+                                />
+                            </Box>
+                        </Box>
+                    </Box>
                     {canModerate && (
-                        <div className="flex pt-2">
-                            <button
+                        <Box display="flex" pt={1}>
+                            <Button
                                 type="button"
-                                className="rounded-md bg-error px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-600"
+                                color="error"
                                 onClick={() => {
                                     if (isNew && cancelNew) {
                                         cancelNew();
@@ -173,16 +215,15 @@ export default function GoalEditor({
                                 }}
                             >
                                 Cancel
-                            </button>
-                            <div className="grow" />
-                            <button
-                                className="rounded-md bg-success px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-500 disabled:bg-gray-300"
+                            </Button>
+                            <Box flexGrow={1} />
+                            <Button
                                 type="submit"
                                 disabled={isSubmitting || isValidating}
                             >
                                 Save
-                            </button>
-                        </div>
+                            </Button>
+                        </Box>
                     )}
                 </Form>
             )}

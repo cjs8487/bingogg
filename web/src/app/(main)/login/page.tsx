@@ -1,9 +1,11 @@
 'use client';
 import { Field, Form, Formik, FormikHelpers, FormikValues } from 'formik';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../../context/UserContext';
+import FormikTextField from '../../../components/input/FormikTextField';
+import { Box, Button, Link, Paper, Typography } from '@mui/material';
 
 export default function Login() {
     const router = useRouter();
@@ -17,13 +19,24 @@ export default function Login() {
     }, [user, router]);
 
     return (
-        <div className="flex h-full items-center justify-center">
-            <div className="flex max-w-[50%] grow flex-col items-center rounded-3xl border-4 border-border bg-foreground px-8 py-6 shadow-lg shadow-border/10">
-                <div className="pb-1 text-3xl font-bold">Login to bingo.gg</div>
-                <div className="pb-5 text-justify text-sm text-gray-300">
-                    No login is required to play bingo.
-                </div>
-                {error && <div className="text-sm text-red-400">{error}</div>}
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexGrow={1}
+        >
+            <Paper sx={{ px: 8, py: 4 }}>
+                <Box paddingBottom={2} textAlign="center">
+                    <Typography variant="h4">Login to bingo.gg</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                        No login is required to play bingo.
+                    </Typography>
+                    {error && (
+                        <Typography variant="body2" color="error">
+                            {error}
+                        </Typography>
+                    )}
+                </Box>
                 <Formik
                     initialValues={{ username: '', password: '' }}
                     onSubmit={async ({ username, password }) => {
@@ -49,47 +62,48 @@ export default function Login() {
                         router.push('/');
                     }}
                 >
-                    <Form className="flex w-full flex-col items-center justify-center gap-y-3">
-                        <label className="w-3/4">
-                            <div>Username</div>
-                            <Field
+                    <Form>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                rowGap: 2,
+                            }}
+                        >
+                            <FormikTextField
+                                id="username"
                                 name="username"
-                                className="w-full text-black"
+                                label="Username"
                             />
-                        </label>
-                        <div className="w-3/4">
-                            <label>
-                                <div className="">Password</div>
-                                <Field
-                                    type="password"
+                            <Box>
+                                <FormikTextField
+                                    id="password"
                                     name="password"
-                                    className="w-full text-black"
+                                    label="Password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    fullWidth
                                 />
-                            </label>
-                            <Link
-                                href="/forgotpass"
-                                className="pt-0.5 text-sm underline"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
-                        <div className="w-full pt-1">
-                            <Link
-                                href="/register"
-                                className="float-left rounded-md bg-primary px-4 py-2 hover:bg-primary-light"
-                            >
-                                Register
-                            </Link>
-                            <button
-                                type="submit"
-                                className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light"
-                            >
-                                Log In
-                            </button>
-                        </div>
+                                <Link
+                                    href="/forgotpass"
+                                    component={NextLink}
+                                    variant="caption"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </Box>
+                            <Box textAlign="right">
+                                <Button href="/register" component={NextLink}>
+                                    Register
+                                </Button>
+                                <Button type="submit" variant="contained">
+                                    Log In
+                                </Button>
+                            </Box>
+                        </Box>
                     </Form>
                 </Formik>
-            </div>
-        </div>
+            </Paper>
+        </Box>
     );
 }

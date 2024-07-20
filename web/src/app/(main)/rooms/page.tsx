@@ -1,18 +1,24 @@
 'use client';
+import AddIcon from '@mui/icons-material/Add';
+import {
+    Box,
+    Card,
+    CardActionArea,
+    CardContent,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Fab,
+    FormControlLabel,
+    FormGroup,
+    Switch,
+    Typography,
+} from '@mui/material';
 import Link from 'next/link';
+import { useState } from 'react';
+import RoomCreateForm from '../../../components/RoomCreateForm';
 import { useApi } from '../../../lib/Hooks';
 import { RoomData } from '../../../types/RoomData';
-import { Toggle } from '../../../components/input/Toggle';
-import { Fragment, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronDown,
-    faChevronUp,
-    faPlus,
-} from '@fortawesome/free-solid-svg-icons';
-import { Transition, Dialog, Disclosure } from '@headlessui/react';
-import { Formik, Form, Field } from 'formik';
-import RoomCreateForm from '../../../components/RoomCreateForm';
 
 export default function Rooms() {
     const [includeInactive, setIncludeInactive] = useState(false);
@@ -34,88 +40,93 @@ export default function Rooms() {
     }
 
     return (
-        <div className="h-full">
-            <div className="flex border-b border-border px-4 pb-4">
-                <div>{roomList.length} rooms loaded.</div>
-                <div className="grow" />
-                <label className="flex items-center gap-x-2">
-                    <span>Include Closed Rooms</span>
-                    <Toggle
-                        value={includeInactive}
-                        setValue={setIncludeInactive}
+        <Box flexGrow={1}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 4,
+                    py: 1,
+                    px: 2,
+                    borderBottom: 2,
+                    borderColor: 'divider',
+                }}
+            >
+                <Typography>{roomList.length} rooms loaded.</Typography>
+                <Box flexGrow={1} />
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                value={includeInactive}
+                                onChange={(e) =>
+                                    setIncludeInactive(e.target.checked)
+                                }
+                            />
+                        }
+                        label="Include Closed Rooms"
                     />
-                </label>
-            </div>
-            <div className="mt-4 flex max-h-[calc(100%-60px)] flex-wrap items-center justify-around gap-x-8 gap-y-8 overflow-auto">
+                </FormGroup>
+            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    rowGap: 2,
+                }}
+            >
                 {roomList.map((room) => (
-                    <div key={room.slug}>
-                        <Link href={`/rooms/${room.slug}`}>
-                            <div className="w-80 rounded-md border border-border bg-foreground px-4 py-2 text-center shadow-lg shadow-border/25">
-                                <div className="text-2xl font-semibold">
+                    <Card key={room.slug}>
+                        <CardActionArea
+                            href={`/rooms/${room.slug}`}
+                            LinkComponent={Link}
+                        >
+                            <CardContent>
+                                <Typography variant="h5" component="div">
                                     {room.name}
-                                </div>
-                                <div className="pb-2 text-sm">{room.slug}</div>
-                                <div className=/*"pb-2 */"text-lg">{room.game}</div>
-                                {/* <div className="flex text-sm">
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                >
+                                    {room.slug}
+                                </Typography>
+                                <Typography>{room.game}</Typography>
+                                {/* <div>
                                     <div>Variant</div>
-                                    <div className="grow" />
+                                    <div />
                                     <div>Mode</div>
                                 </div> */}
-                            </div>
-                        </Link>
-                    </div>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
                 ))}
-            </div>
-            <FontAwesomeIcon
-                icon={faPlus}
-                className="absolute bottom-0 right-0 mb-4 mr-4 cursor-pointer rounded-full border border-border bg-primary px-4 py-3.5 text-3xl hover:bg-primary-light"
+            </Box>
+            <Fab
+                color="primary"
+                aria-label="add"
+                sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    mb: 12,
+                    mr: 2,
+                }}
                 onClick={() => setShowNewRoomModal(true)}
-            />
-            <Transition appear show={showNewRoomModal} as={Fragment}>
-                <Dialog
-                    as="div"
-                    className="relative z-10"
-                    onClose={() => setShowNewRoomModal(false)}
-                >
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black/25" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-4 text-center">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl border border-border bg-foreground p-6 text-left align-middle text-white shadow-lg shadow-border/10 transition-all">
-                                    <Dialog.Title
-                                        as="h3"
-                                        className="text-2xl font-medium leading-6"
-                                    >
-                                        Create a Room
-                                    </Dialog.Title>
-                                    <div className="mt-4">
-                                        <RoomCreateForm />
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition>
-        </div>
+            >
+                <AddIcon />
+            </Fab>
+            <Dialog
+                open={showNewRoomModal}
+                onClose={() => setShowNewRoomModal(false)}
+            >
+                <DialogTitle>Create a Room</DialogTitle>
+                <DialogContent>
+                    <RoomCreateForm />
+                </DialogContent>
+            </Dialog>
+        </Box>
     );
 }
