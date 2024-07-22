@@ -355,7 +355,7 @@ export default class Room {
             },
         });
         this.sendChat(`Racetime.gg room created ${url}`);
-        this.connectRacetimeWebSocket;
+        this.connectRacetimeWebSocket();
     }
 
     handleRacetimeRoomDisconnected() {
@@ -410,9 +410,7 @@ export default class Room {
 
     // racetime integration related
     async connectRacetimeWebSocket() {
-        const racetimeRes = await fetch(
-            `${racetimeHost}${this.racetimeUrl}/data`,
-        );
+        const racetimeRes = await fetch(`${this.racetimeUrl}/data`);
         if (!racetimeRes.ok) {
             disconnectRoomFromRacetime(this.slug).then();
             this.handleRacetimeRoomDisconnected();
@@ -429,6 +427,9 @@ export default class Room {
         this.racetimeWebSocket.on('message', (data) =>
             console.log(data.toString()),
         );
+        this.racetimeWebSocket.on('close', () => {
+            this.handleRacetimeRoomDisconnected();
+        });
     }
 
     joinRacetimeRoom(token: string) {
@@ -441,5 +442,6 @@ export default class Room {
                 data: { oauth_token: `${token}` },
             }),
         );
+        this.racetimeWebSocket.send(JSON.stringify({ action: 'join' }));
     }
 }
