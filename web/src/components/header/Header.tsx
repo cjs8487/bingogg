@@ -4,7 +4,9 @@ import {
     Avatar,
     Box,
     Button,
+    Divider,
     ListItemIcon,
+    ListItemText,
     Menu,
     MenuItem,
     Toolbar,
@@ -17,6 +19,8 @@ import { UserContext } from '../../context/UserContext';
 import LinkButton from '../LinkButton';
 import DesktopMenu from './DesktopMenu';
 import MobileMenu from './MobileMenu';
+import Person from '@mui/icons-material/Person';
+import NextLink from 'next/link';
 
 export const pages = [
     { name: 'Games', path: '/games' },
@@ -81,6 +85,13 @@ export default function Header() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
+                            <MenuItem component={NextLink} href="/profile">
+                                <ListItemIcon>
+                                    <Person />
+                                </ListItemIcon>
+                                <ListItemText>Profile</ListItemText>
+                            </MenuItem>
+                            <Divider />
                             <MenuItem onClick={handleLogout}>
                                 <ListItemIcon>
                                     <IconLogout fontSize="small" />
