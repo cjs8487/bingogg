@@ -33,6 +33,12 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         return;
     }
 
+    if (room.racetimeUrl) {
+        room.handleRacetimeRoomCreated(room.racetimeUrl);
+        res.sendStatus(200);
+        return;
+    }
+
     const rtToken = await getAccessToken(req.session.user);
     if (!rtToken) {
         res.sendStatus(403);
@@ -88,8 +94,8 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         return;
     }
     const url = `${racetimeHost}${relativePath}`;
-    connectRoomToRacetime(slug, relativePath).then();
-    room.handleRacetimeRoomCreated(relativePath);
+    await connectRoomToRacetime(slug, url).then();
+    room.handleRacetimeRoomCreated(url);
 
     res.status(200).json({
         url,
@@ -113,7 +119,7 @@ actions.post('/refreshRacetimeConnection', async (req, res) => {
         return;
     }
 
-    const racetimeRes = await fetch(`${racetimeHost}${room.racetimeUrl}/data`);
+    const racetimeRes = await fetch(`${room.racetimeUrl}/data`);
     if (!racetimeRes.ok) {
         disconnectRoomFromRacetime(slug).then();
         room.handleRacetimeRoomDisconnected();
@@ -123,6 +129,7 @@ actions.post('/refreshRacetimeConnection', async (req, res) => {
     if (data.status.value === 'cancelled') {
         disconnectRoomFromRacetime(slug).then();
         room.handleRacetimeRoomDisconnected();
+        room.racetimeUrl = '';
     }
     res.status(200);
 });
@@ -145,6 +152,11 @@ actions.post('/racetime/join', async (req, res) => {
         return;
     }
     if (!verifyRoomToken(authToken, slug)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    if (!room.racetimeUrl || !room.racetimeWebSocket) {
         res.sendStatus(403);
         return;
     }
