@@ -74,10 +74,51 @@ export interface RoomData {
   game: string;
   slug: string;
   gameSlug: string;
-  racetimeUrl?: string;
+  racetimeConnection?: RacetimeConnection;
+}
+export interface RacetimeConnection {
+  /**
+   * Whether or not the game is enabled for racetime.gg integration and properly configured
+   */
+  gameActive?: boolean;
+  /**
+   * Racetime game slug
+   */
+  slug?: string;
+  /**
+   * Racetime race goal
+   */
+  goal?: string;
+  /**
+   * Full url to the connected racetime room. If not set, the room is not connected to a racetime room
+   */
+  url?: boolean;
+  /**
+   * True if there is an active websocket connection to the room
+   */
+  websocketConnected?: boolean;
+  /**
+   * Racetime room status
+   */
+  status?: string;
 }
 export interface Player {
   nickname: string;
   color: string;
   goalCount: number;
+  racetimeStatus?: RacetimeStatusDisconnected | RacetimeStatusConnected;
+}
+export interface RacetimeStatusDisconnected {
+  connected: never;
+}
+export interface RacetimeStatusConnected {
+  connected: unknown;
+  /**
+   * Racetime username connected to this player for the race
+   */
+  username: string;
+  /**
+   * Racetime race status
+   */
+  status: "requested" | "invited" | "declined" | "ready" | "not_ready" | "in_progress" | "done" | "dnf" | "dq";
 }

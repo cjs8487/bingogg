@@ -9,6 +9,38 @@
         "game": { "type": "string"},
         "slug": { "type": "string"},
         "gameSlug": { "type": "string"},
-        "racetimeUrl": {"type": "string"}
+        "racetimeConnection": {"$ref": "#/$defs/RacetimeConnection"}
+    },
+    "$defs": {
+        "RacetimeConnection": {
+            "required": [],
+            "additionalProperties": false,
+            "properties": {
+                "gameActive": {
+                    "type": "boolean",
+                    "description": "Whether or not the game is enabled for racetime.gg integration and properly configured"
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "Racetime game slug"
+                },
+                "goal": {
+                    "type": "string",
+                    "description": "Racetime race goal"
+                },
+                "url": {
+                    "type": "boolean",
+                    "description": "Full url to the connected racetime room. If not set, the room is not connected to a racetime room"
+                },
+                "websocketConnected": {
+                    "type": "boolean",
+                    "description": "True if there is an active websocket connection to the room"
+                },
+                "status": {
+                    "oneOf": ["open", "invitational", "pending", "in_progress", "finished", "cancelled"],
+                    "description": "Racetime room status"
+                }
+            }
+        }
     }
 }

@@ -6,6 +6,34 @@
     "properties": {
         "nickname": {"type": "string"},
         "color": {"type": "string"},
-        "goalCount": {"type": "number"}
+        "goalCount": {"type": "number"},
+        "racetimeStatus": {"oneOf": [
+            {"$ref": "#/$defs/RacetimeStatusDisconnected"},
+            {"$ref": "#/$defs/RacetimeStatusConnected"}
+        ]}
+    },
+    "$defs": {
+        "RacetimeStatusDisconnected": {
+            "required": ["connected"],
+            "additionalProperties": false,
+            "properties": {
+                "connected": false
+            }
+        },
+        "RacetimeStatusConnected": {
+            "required": ["connected", "username", "status"],
+            "additionalProperties": false,
+            "properties": {
+                "connected": true,
+                "username": {
+                    "type": "string",
+                    "description": "Racetime username connected to this player for the race"
+                },
+                "status": {
+                    "oneOf": ["requested", "invited", "declined", "ready", "not_ready", "in_progress", "done", "dnf", "dq"],
+                    "description": "Racetime race status"
+                }
+            }
+        }
     }
 }

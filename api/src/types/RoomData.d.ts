@@ -13,5 +13,31 @@ export interface RoomData {
   game: string;
   slug: string;
   gameSlug: string;
-  racetimeUrl?: string;
+  racetimeConnection?: RacetimeConnection;
+}
+export interface RacetimeConnection {
+  /**
+   * Whether or not the game is enabled for racetime.gg integration and properly configured
+   */
+  gameActive?: boolean;
+  /**
+   * Racetime game slug
+   */
+  slug?: string;
+  /**
+   * Racetime race goal
+   */
+  goal?: string;
+  /**
+   * Full url to the connected racetime room. If not set, the room is not connected to a racetime room
+   */
+  url?: boolean;
+  /**
+   * True if there is an active websocket connection to the room
+   */
+  websocketConnected?: boolean;
+  /**
+   * Racetime room status
+   */
+  status?: string;
 }
