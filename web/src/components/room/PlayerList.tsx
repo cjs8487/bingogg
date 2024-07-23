@@ -4,7 +4,7 @@ import { Box, Paper, Typography } from '@mui/material';
 
 export default function PlayerList() {
     const { players, roomData, joinRacetimeRoom } = useContext(RoomContext);
-    const racetimeConnected = !!roomData?.racetimeUrl;
+    const racetimeConnected = !!roomData?.racetimeConnection?.url;
 
     return (
         <Paper
