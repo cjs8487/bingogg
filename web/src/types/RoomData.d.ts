@@ -31,7 +31,7 @@ export interface RacetimeConnection {
   /**
    * Full url to the connected racetime room. If not set, the room is not connected to a racetime room
    */
-  url?: boolean;
+  url?: string;
   /**
    * True if there is an active websocket connection to the room
    */
@@ -39,5 +39,5 @@ export interface RacetimeConnection {
   /**
    * Racetime room status
    */
-  status?: string;
+  status?: "open" | "invitational" | "pending" | "in_progress" | "finished" | "cancelled";
 }

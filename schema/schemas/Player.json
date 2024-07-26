@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "required": ["nickname", "color", "goalCount"],
+    "required": ["nickname", "color", "goalCount", "racetimeStatus"],
     "properties": {
         "nickname": {"type": "string"},
         "color": {"type": "string"},
@@ -17,14 +17,14 @@
             "required": ["connected"],
             "additionalProperties": false,
             "properties": {
-                "connected": false
+                "connected": {"const": false}
             }
         },
         "RacetimeStatusConnected": {
             "required": ["connected", "username", "status"],
             "additionalProperties": false,
             "properties": {
-                "connected": true,
+                "connected": {"const": true},
                 "username": {
                     "type": "string",
                     "description": "Racetime username connected to this player for the race"

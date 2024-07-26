@@ -9,13 +9,13 @@ export interface Player {
   nickname: string;
   color: string;
   goalCount: number;
-  racetimeStatus?: RacetimeStatusDisconnected | RacetimeStatusConnected;
+  racetimeStatus: RacetimeStatusDisconnected | RacetimeStatusConnected;
 }
 export interface RacetimeStatusDisconnected {
-  connected: never;
+  connected: false;
 }
 export interface RacetimeStatusConnected {
-  connected: unknown;
+  connected: true;
   /**
    * Racetime username connected to this player for the race
    */

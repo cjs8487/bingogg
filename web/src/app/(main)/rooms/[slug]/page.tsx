@@ -96,21 +96,30 @@ export default function Room() {
                                         <Typography variant="h6">
                                             racetime.gg
                                         </Typography>
-                                        {!roomData?.racetimeUrl && (
+                                        {!roomData?.racetimeConnection?.url && (
                                             <Button
                                                 onClick={createRacetimeRoom}
                                             >
                                                 Create racetime.gg race
                                             </Button>
                                         )}
-                                        {roomData?.racetimeUrl && (
+                                        {roomData?.racetimeConnection?.url && (
                                             <>
                                                 Connected{' '}
                                                 <Link
                                                     component={NextLink}
-                                                    href={roomData.racetimeUrl}
+                                                    href={
+                                                        roomData
+                                                            .racetimeConnection
+                                                            .url
+                                                    }
+                                                    target="_blank"
                                                 >
-                                                    {roomData.racetimeUrl}
+                                                    {
+                                                        roomData
+                                                            .racetimeConnection
+                                                            .url
+                                                    }
                                                 </Link>
                                                 <IconButton
                                                     onClick={updateRacetimeRoom}
