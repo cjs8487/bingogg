@@ -3,11 +3,10 @@ import { verifyRoomToken } from '../../auth/RoomAuth';
 import { allRooms } from '../../core/RoomServer';
 import { getAccessToken } from '../../lib/RacetimeConnector';
 import { racetimeHost } from '../../Environment';
-import {
-    connectRoomToRacetime,
-    disconnectRoomFromRacetime,
-} from '../../database/Rooms';
+import { connectRoomToRacetime } from '../../database/Rooms';
 import { getRacetimeConfiguration } from '../../database/games/Games';
+import { getConnectionForUser } from '../../database/Connections';
+import { ConnectionService } from '@prisma/client';
 
 const actions = Router();
 
@@ -30,12 +29,6 @@ actions.post('/createRacetimeRoom', async (req, res) => {
     }
     if (!verifyRoomToken(authToken, slug)) {
         res.sendStatus(403);
-        return;
-    }
-
-    if (room.racetimeUrl) {
-        room.handleRacetimeRoomCreated(room.racetimeUrl);
-        res.sendStatus(200);
         return;
     }
 
@@ -118,19 +111,7 @@ actions.post('/refreshRacetimeConnection', async (req, res) => {
         res.sendStatus(403);
         return;
     }
-
-    const racetimeRes = await fetch(`${room.racetimeUrl}/data`);
-    if (!racetimeRes.ok) {
-        disconnectRoomFromRacetime(slug).then();
-        room.handleRacetimeRoomDisconnected();
-        return;
-    }
-    const data = (await racetimeRes.json()) as { status: { value: string } };
-    if (data.status.value === 'cancelled') {
-        disconnectRoomFromRacetime(slug).then();
-        room.handleRacetimeRoomDisconnected();
-        room.racetimeUrl = '';
-    }
+    room.refreshRacetimeHandler();
     res.status(200);
 });
 
@@ -156,17 +137,24 @@ actions.post('/racetime/join', async (req, res) => {
         return;
     }
 
-    if (!room.racetimeUrl || !room.racetimeWebSocket) {
-        res.sendStatus(403);
-        return;
-    }
-
     const token = await getAccessToken(req.session.user);
     if (!token) {
         res.sendStatus(403);
         return;
     }
-    room.joinRacetimeRoom(token);
+    const rtConnection = await getConnectionForUser(
+        req.session.user,
+        ConnectionService.RACETIME,
+    );
+    if (!rtConnection) {
+        res.sendStatus(403);
+        return;
+    }
+    if (!room.joinRacetimeRoom(token, rtConnection.serviceId, authToken)) {
+        res.sendStatus(403);
+        return;
+    }
+    res.sendStatus(200);
 });
 
 export default actions;
