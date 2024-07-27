@@ -67,6 +67,14 @@
                 "action": "updateRoomData",
                 "roomData": {"$ref": "./RoomData.json"}
             }
+        },
+        {
+            "required": ["action", "players"],
+            "additionalProperties": false,
+            "properties": {
+                "action": "syncRaceData",
+                "players":  {"type": "array", "items": {"$ref": "./Player.json"}}
+            }
         }
     ]
 }
