@@ -9,6 +9,27 @@ import { getConnectionForUser } from '../../database/Connections';
 import { ConnectionService } from '@prisma/client';
 import { logInfo, logWarn } from '../../Logger';
 
+// Actions are endpoints that allow consumers to execute actions on a bingo
+// room. Many times, these are actions that not suitable to the websocket
+// connection because they require a login session or an OAuth token (typically
+// because they need access to user data, such as external connections in order
+// to function). As much as possible, action endpoints try to send a helpful
+// status and message, regardless of the outcome. However, given the nature of
+// some of these actions (especially integration related actions), it is not
+// always possible (or reasonable) for the endpoint to block and/or determine
+// if the action was successful (success is also a fairly difficult thing to
+// define in some cases). AS such, the only guarantee that action endpoints make
+// is that if a 4xx or 5xx code is sent, the action did not dispatch or was
+// obviously unsuccessful, and that a 2xx status code indicates that the action
+// was successfully dispatched for processing. The successful completion of an
+// action will always result in an appropriate room update being dispatched. It
+// is up to Consuming applications to watch for updates via their preferred
+// mechanism if they need to react to the success/completion of the action. It
+// is generally not recommended to act based on the success of actions, and to
+// rather accurately display the state of the room based on the data the server
+// sends out, as that is the source of truth, and relying on manual or predicted
+// triggers will likely result in desyncs.
+
 const actions = Router();
 
 actions.post('/createRacetimeRoom', async (req, res) => {
