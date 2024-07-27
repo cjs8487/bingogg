@@ -41,6 +41,10 @@ export type ServerMessage = (
       action: "updateRoomData";
       roomData: RoomData;
     }
+  | {
+      action: "syncRaceData";
+      players: Player[];
+    }
 ) & {
   players?: Player[];
 };

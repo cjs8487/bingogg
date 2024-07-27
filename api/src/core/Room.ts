@@ -1,6 +1,6 @@
 import { Goal } from '@prisma/client';
 import { OPEN, WebSocket } from 'ws';
-import { logError } from '../Logger';
+import { logError, logInfo, logWarn } from '../Logger';
 import { RoomTokenPayload, invalidateToken } from '../auth/RoomAuth';
 import {
     addChangeColorAction,
@@ -155,6 +155,7 @@ export default class Room {
         return players;
     }
 
+    //#region Handlers
     handleJoin(
         action: JoinAction,
         auth: RoomTokenPayload,
@@ -177,6 +178,7 @@ export default class Room {
             { contents: identity.nickname, color: identity.color },
             ' has joined.',
         ]);
+
         this.connections.set(auth.uuid, socket);
         addJoinAction(this.id, identity.nickname, identity.color).then();
         return {
@@ -385,6 +387,7 @@ export default class Room {
             },
         });
     }
+    //#endregion
 
     sendChat(message: string): void;
     sendChat(message: ChatMessage): void;
@@ -412,6 +415,13 @@ export default class Room {
         this.sendServerMessage({ action: 'syncBoard', board: this.board });
     }
 
+    sendRaceData() {
+        this.sendServerMessage({
+            action: 'syncRaceData',
+            players: this.getPlayers(),
+        });
+    }
+
     private sendServerMessage(message: ServerMessage) {
         this.connections.forEach((client) => {
             if (client.readyState === OPEN) {
@@ -422,17 +432,33 @@ export default class Room {
         });
     }
 
-    // racetime integration related
+    //#region Racetime Integration
     async connectRacetimeWebSocket() {
         this.racetimeHandler.connectWebsocket();
     }
 
-    joinRacetimeRoom(token: string, racetimeId: string, authToken: string) {
-        const identity = this.identities.get(authToken);
-        if (!identity) return false;
-        this.identities.set(authToken, { ...identity, racetimeId: '' });
+    joinRacetimeRoom(
+        token: string,
+        racetimeId: string,
+        authToken: RoomTokenPayload,
+    ) {
+        const identity = this.identities.get(authToken.uuid);
+        if (!identity) {
+            logWarn(
+                `[${this.slug}] Unable to find an identity for a verified room token`,
+            );
+            return false;
+        }
+        logInfo(`[${this.slug}] Connecting ${identity.nickname} to racetime`);
+        this.identities.set(authToken.uuid, {
+            ...identity,
+            racetimeId: racetimeId,
+        });
         return this.racetimeHandler.joinUser(token);
     }
 
-    async refreshRacetimeHandler() {}
+    async refreshRacetimeHandler() {
+        this.racetimeHandler.refresh();
+    }
+    //#endregion
 }
