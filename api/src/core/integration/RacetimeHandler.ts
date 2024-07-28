@@ -60,7 +60,19 @@ interface RaceDataMessage {
     race: RaceData;
 }
 
-type WebSocketMessage = RaceDataMessage;
+interface AuthenticatedMessage {
+    type: 'authenticated';
+    user: User;
+}
+
+interface ErrorMessage {
+    type: 'error';
+    errors: string[];
+}
+
+type WebSocketMessage = RaceDataMessage | AuthenticatedMessage | ErrorMessage;
+
+type SynchronousSocketCallback<T> = (value: T) => void;
 
 export default class RacetimeHandler {
     /**The room this handler is connected to */
@@ -77,9 +89,55 @@ export default class RacetimeHandler {
     /** Current version of the race rooms data*/
     data?: RaceData;
 
+    //#region Synchronous Websocket
+    nextAuthenticatedCallback?: SynchronousSocketCallback<
+        AuthenticatedMessage | ErrorMessage
+    >;
+    //#endregion
+
     constructor(room: Room) {
         this.room = room;
     }
+
+    //#region Synchronous Websocket Functions
+    async authenticate(token: string) {
+        const resPromise = new Promise<AuthenticatedMessage>(
+            (resolve, reject) => {
+                if (
+                    !this.connected ||
+                    !this.websocketConnected ||
+                    !this.socket
+                ) {
+                    reject(new Error('Invalid websocket state'));
+                    return;
+                }
+                if (this.nextAuthenticatedCallback) {
+                    reject(
+                        new Error(
+                            'Multiple entities awaiting the same response',
+                        ),
+                    );
+                } else {
+                    this.nextAuthenticatedCallback = (value) => {
+                        if ('errors' in value) {
+                            reject(new Error(value.errors.join()));
+                        } else {
+                            resolve(value);
+                        }
+                    };
+                }
+                this.socket.send(
+                    JSON.stringify({
+                        action: 'authenticate',
+                        data: { oauth_token: `${token}` },
+                    }),
+                );
+            },
+        );
+
+        return resPromise;
+    }
+    //#endregion
 
     connect(url: string) {
         this.connected = true;
@@ -123,7 +181,6 @@ export default class RacetimeHandler {
     private updateData(data: RaceData) {
         if (!this.data || this.data.version < data.version) {
             this.data = data;
-            console.log(data);
             this.room.sendRaceData();
         }
 
@@ -138,6 +195,17 @@ export default class RacetimeHandler {
             case 'race.data':
                 this.updateData(message.race);
                 break;
+            case 'authenticated':
+                if (this.nextAuthenticatedCallback) {
+                    this.nextAuthenticatedCallback(message);
+                    this.nextAuthenticatedCallback = undefined;
+                }
+                break;
+            case 'error':
+                if (this.nextAuthenticatedCallback) {
+                    this.nextAuthenticatedCallback(message);
+                    this.nextAuthenticatedCallback = undefined;
+                }
         }
     }
 
@@ -145,21 +213,27 @@ export default class RacetimeHandler {
         return this.data?.entrants.find((u) => u.user.id === id);
     }
 
-    joinUser(token: string) {
+    async joinUser(token: string) {
         if (!this.connected || !this.websocketConnected || !this.socket) {
             logInfo(
                 `[${this.room.slug}] Unable to join user - room is not connected to racetime`,
             );
             return false;
         }
-        this.socket.send(
-            JSON.stringify({
-                action: 'authenticate',
-                data: { oauth_token: `${token}` },
-            }),
-        );
-        this.socket.send(JSON.stringify({ action: 'join' }));
-        return true;
+        try {
+            const { user } = await this.authenticate(token);
+            if (this.getPlayer(user.id)) {
+                this.room.sendRaceData();
+                return true;
+            }
+            this.socket.send(JSON.stringify({ action: 'join' }));
+            return true;
+        } catch (e) {
+            this.room.logInfo(
+                `Failed to join racetime room - ${JSON.stringify(e)}`,
+            );
+            return false;
+        }
     }
 
     async refresh() {
@@ -193,7 +267,7 @@ export default class RacetimeHandler {
                 `[${this.room.slug}] Existing racetime.gg websocket connection found. Testing connection...`,
             );
             try {
-                this.socket.send('ping');
+                this.socket.send(JSON.stringify({ action: 'ping' }));
             } catch {
                 logInfo(
                     `[${this.room.slug}] Unable to reestablish connection. Creating a new websocket connection.`,

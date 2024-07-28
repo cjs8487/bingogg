@@ -416,6 +416,7 @@ export default class Room {
     }
 
     sendRaceData() {
+        this.logInfo('Dispatching race data update');
         this.sendServerMessage({
             action: 'syncRaceData',
             players: this.getPlayers(),
@@ -459,6 +460,20 @@ export default class Room {
 
     async refreshRacetimeHandler() {
         this.racetimeHandler.refresh();
+    }
+    //#endregion
+
+    //#region Logging
+    logInfo(message: string) {
+        logInfo(`[${this.slug}] ${message}`);
+    }
+
+    logWarn(message: string) {
+        logWarn(`[${this.slug}] ${message}`);
+    }
+
+    logError(message: string) {
+        logError(`[${this.slug}] ${message}`);
     }
     //#endregion
 }
