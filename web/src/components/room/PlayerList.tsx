@@ -48,7 +48,8 @@ export default function PlayerList() {
                                 )}
                                 {player.racetimeStatus.connected && (
                                     <Typography>
-                                        {player.racetimeStatus.username}
+                                        {player.racetimeStatus.username} -{' '}
+                                        {player.racetimeStatus.status}
                                     </Typography>
                                 )}
                             </>

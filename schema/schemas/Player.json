@@ -30,7 +30,7 @@
                     "description": "Racetime username connected to this player for the race"
                 },
                 "status": {
-                    "oneOf": ["requested", "invited", "declined", "ready", "not_ready", "in_progress", "done", "dnf", "dq"],
+                    "type": "string",
                     "description": "Racetime race status"
                 }
             }
