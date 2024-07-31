@@ -147,7 +147,7 @@ export default class Room {
                     ? {
                           connected: true,
                           username: rtUser.user.full_name,
-                          status: rtUser.status.value,
+                          status: rtUser.status.verbose_value,
                       }
                     : { connected: false },
             });

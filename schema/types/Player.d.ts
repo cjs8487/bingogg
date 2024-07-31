@@ -23,5 +23,5 @@ export interface RacetimeStatusConnected {
   /**
    * Racetime race status
    */
-  status: "requested" | "invited" | "declined" | "ready" | "not_ready" | "in_progress" | "done" | "dnf" | "dq";
+  status: string;
 }

@@ -49,7 +49,7 @@ interface RaceData {
                 | 'done'
                 | 'dnf'
                 | 'dq';
-            verbosse_value: string;
+            verbose_value: string;
             help_text: string;
         };
     }[];
@@ -214,6 +214,7 @@ export default class RacetimeHandler {
 
     handleWebsocketMessage(data: RawData) {
         const message: WebSocketMessage = JSON.parse(data.toString());
+        console.log(message);
         switch (message.type) {
             case 'pong':
                 if (this.nextPongCallback) {
