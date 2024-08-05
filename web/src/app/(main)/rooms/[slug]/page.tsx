@@ -19,6 +19,7 @@ import NextLink from 'next/link';
 import { useContext } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import PlayerList from '../../../../components/room/PlayerList';
+import Timer from '../../../../components/room/racetime/Timer';
 
 export default function Room() {
     const {
@@ -128,6 +129,7 @@ export default function Room() {
                                                 </IconButton>
                                             </>
                                         )}
+                                        <Timer />
                                     </CardContent>
                                 </Card>
                             </Box>

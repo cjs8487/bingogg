@@ -21,14 +21,6 @@ export interface RacetimeConnection {
    */
   gameActive?: boolean;
   /**
-   * Racetime game slug
-   */
-  slug?: string;
-  /**
-   * Racetime race goal
-   */
-  goal?: string;
-  /**
    * Full url to the connected racetime room. If not set, the room is not connected to a racetime room
    */
   url?: string;
@@ -39,5 +31,17 @@ export interface RacetimeConnection {
   /**
    * Racetime room status
    */
-  status?: "open" | "invitational" | "pending" | "in_progress" | "finished" | "cancelled";
+  status?: string;
+  /**
+   * ISO 8601 duration string representing the amount of time between ready and start
+   */
+  startDelay?: string;
+  /**
+   * ISO 8601 date when the race started
+   */
+  started?: string;
+  /**
+   * ISO 8601 date when the race ended
+   */
+  ended?: string;
 }

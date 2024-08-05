@@ -30,7 +30,7 @@ import {
 import { shuffle } from '../util/Array';
 import { listToBoard } from '../util/RoomUtils';
 import { generateSRLv5 } from './generation/SRLv5';
-import RacetimeHandler from './integration/RacetimeHandler';
+import RacetimeHandler, { RaceData } from './integration/RacetimeHandler';
 
 type RoomIdentity = {
     nickname: string;
@@ -194,6 +194,8 @@ export default class Room {
                 gameSlug: this.gameSlug,
                 racetimeConnection: {
                     url: this.racetimeHandler.url,
+                    startDelay: this.racetimeHandler.data?.start_delay,
+                    started: this.racetimeHandler.data?.started_at ?? undefined,
                 },
             },
             players: this.getPlayers(),
@@ -415,11 +417,16 @@ export default class Room {
         this.sendServerMessage({ action: 'syncBoard', board: this.board });
     }
 
-    sendRaceData() {
+    sendRaceData(data: RaceData) {
         this.logInfo('Dispatching race data update');
         this.sendServerMessage({
             action: 'syncRaceData',
             players: this.getPlayers(),
+            racetimeConnection: {
+                url: this.racetimeHandler.url,
+                startDelay: data.start_delay ?? undefined,
+                started: data.started_at ?? undefined,
+            },
         });
     }
 
