@@ -26,7 +26,7 @@ type RaceStatus =
     | 'finished'
     | 'cancelled';
 
-interface RaceData {
+export interface RaceData {
     version: number;
     status: {
         value: RaceStatus;
@@ -53,6 +53,9 @@ interface RaceData {
             help_text: string;
         };
     }[];
+    start_delay: string;
+    started_at: string | null;
+    ended_at: string | null;
 }
 
 interface RaceDataMessage {
@@ -204,7 +207,7 @@ export default class RacetimeHandler {
     private updateData(data: RaceData) {
         if (!this.data || this.data.version < data.version) {
             this.data = data;
-            this.room.sendRaceData();
+            this.room.sendRaceData(data);
         }
 
         if (this.data.status.value === 'cancelled') {
@@ -214,7 +217,6 @@ export default class RacetimeHandler {
 
     handleWebsocketMessage(data: RawData) {
         const message: WebSocketMessage = JSON.parse(data.toString());
-        console.log(message);
         switch (message.type) {
             case 'pong':
                 if (this.nextPongCallback) {
@@ -257,7 +259,7 @@ export default class RacetimeHandler {
         try {
             const { user } = await this.authenticate(token);
             if (this.getPlayer(user.id)) {
-                this.room.sendRaceData();
+                this.room.sendRaceData(this.data as RaceData);
                 return true;
             }
             this.socket.send(JSON.stringify({ action: 'join' }));
@@ -310,5 +312,6 @@ export default class RacetimeHandler {
                 this.connectWebsocket();
             }
         }
+        this.room.sendRaceData(this.data);
     }
 }

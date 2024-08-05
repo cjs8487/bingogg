@@ -218,6 +218,12 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                         onUpdateRoomData(payload.roomData);
                         break;
                     case 'syncRaceData':
+                        if (roomData) {
+                            onUpdateRoomData({
+                                ...roomData,
+                                racetimeConnection: payload.racetimeConnection,
+                            });
+                        }
                         break;
                 }
             },
