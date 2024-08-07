@@ -219,6 +219,7 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                         break;
                     case 'syncRaceData':
                         if (roomData) {
+                            console.log(payload.racetimeConnection);
                             onUpdateRoomData({
                                 ...roomData,
                                 racetimeConnection: payload.racetimeConnection,
@@ -236,10 +237,6 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
         connectionStatus === ConnectionStatus.CONNECTING ||
             connectionStatus === ConnectionStatus.CONNECTED,
     );
-
-    useEffect(() => {
-        console.log('players effect');
-    }, [players]);
 
     // actions
     const join = useCallback(

@@ -12,7 +12,7 @@ export default function Timer() {
     }
 
     const {
-        racetimeConnection: { startDelay, started },
+        racetimeConnection: { startDelay, started, ended },
     } = roomData;
 
     if (!startDelay) {
@@ -23,30 +23,49 @@ export default function Timer() {
     if (started) {
         startDt = DateTime.fromISO(started);
     }
+    let endDt: DateTime | undefined;
+    if (ended) {
+        endDt = DateTime.fromISO(ended);
+    }
     const offset = Duration.fromISO(startDelay);
 
-    return <TimerDisplay start={startDt} offset={offset} />;
+    return <TimerDisplay start={startDt} end={endDt} offset={offset} />;
 }
 
 function TimerDisplay({
     start,
     offset,
+    end,
 }: {
     start?: DateTime;
+    end?: DateTime;
     offset: Duration;
 }) {
     const [updateTimer, setUpdateTimer] = useState(true);
-    const [dur, setDur] = useState<Duration>(offset);
-
-    useInterval(
-        () => {
-            if (!start) {
-                return;
-            }
-            setDur(DateTime.now().diff(start).normalize());
-        },
-        updateTimer ? (start ? 10 : 1000) : null,
+    const [dur, setDur] = useState<Duration>(
+        start && end ? end.diff(start) : offset,
     );
+
+    let interval;
+    if (updateTimer) {
+        if (end) {
+            interval = null;
+        } else if (start) {
+            interval = 10;
+        } else {
+            interval = 1000;
+        }
+    } else {
+        interval = null;
+    }
+
+    useInterval(() => {
+        if (end && start) {
+            setDur(end.diff(start));
+        } else if (start) {
+            setDur(DateTime.now().diff(start).normalize());
+        }
+    }, interval);
 
     useEffect(() => {
         const callback = () => {
