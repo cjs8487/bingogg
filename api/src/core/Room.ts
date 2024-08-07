@@ -62,6 +62,7 @@ export default class Room {
 
     lastGenerationMode: BoardGenerationMode;
 
+    racetimeEligible: boolean;
     racetimeHandler: RacetimeHandler;
 
     constructor(
@@ -71,6 +72,7 @@ export default class Room {
         slug: string,
         password: string,
         id: string,
+        racetimeEligible: boolean,
         racetimeUrl?: string,
     ) {
         this.name = name;
@@ -85,6 +87,7 @@ export default class Room {
 
         this.lastGenerationMode = BoardGenerationMode.RANDOM;
 
+        this.racetimeEligible = !!racetimeEligible;
         this.racetimeHandler = new RacetimeHandler(this);
 
         this.board = {
@@ -193,6 +196,7 @@ export default class Room {
                 name: this.name,
                 gameSlug: this.gameSlug,
                 racetimeConnection: {
+                    gameActive: this.racetimeEligible,
                     url: this.racetimeHandler.url,
                     startDelay: this.racetimeHandler.data?.start_delay,
                     started: this.racetimeHandler.data?.started_at ?? undefined,
@@ -424,6 +428,7 @@ export default class Room {
             action: 'syncRaceData',
             players: this.getPlayers(),
             racetimeConnection: {
+                gameActive: this.racetimeEligible,
                 url: this.racetimeHandler.url,
                 startDelay: data.start_delay ?? undefined,
                 started: data.started_at ?? undefined,

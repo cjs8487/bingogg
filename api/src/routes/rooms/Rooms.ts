@@ -70,11 +70,11 @@ rooms.post('/', async (req, res) => {
     }
 
     // Might be better as a frontend check, but also way more imperformant
-    const goalsNumber = await goalCount(game)
+    const goalsNumber = await goalCount(game);
 
     if (goalsNumber < MIN_ROOM_GOALS_REQUIRED) {
         res.status(400).send(
-            `Game has less than the minimum amount of goals required for room creation (${MIN_ROOM_GOALS_REQUIRED}).`
+            `Game has less than the minimum amount of goals required for room creation (${MIN_ROOM_GOALS_REQUIRED}).`,
         );
         return;
     }
@@ -84,7 +84,17 @@ rooms.post('/', async (req, res) => {
     }-${randomInt(1000, 10000)}`;
 
     const dbRoom = await createRoom(slug, name, gameData.id, false, password);
-    const room = new Room(name, gameData.name, game, slug, password, dbRoom.id);
+    const room = new Room(
+        name,
+        gameData.name,
+        game,
+        slug,
+        password,
+        dbRoom.id,
+        gameData.racetimeBeta &&
+            !!gameData.racetimeCategory &&
+            !!gameData.racetimeGoal,
+    );
     let genMode;
     if (generationMode) {
         genMode = generationMode;
@@ -121,6 +131,10 @@ rooms.get('/:slug', async (req, res) => {
         dbRoom.slug,
         dbRoom.password ?? '',
         dbRoom.id,
+        (dbRoom.game.racetimeBeta &&
+            !!dbRoom.game.racetimeCategory &&
+            !!dbRoom.game.racetimeGoal) ||
+            !!dbRoom.racetimeRoom,
         dbRoom.racetimeRoom ?? '',
     );
     room.board = {
