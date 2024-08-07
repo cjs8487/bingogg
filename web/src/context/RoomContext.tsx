@@ -4,6 +4,7 @@ import {
     ReactNode,
     createContext,
     useCallback,
+    useContext,
     useEffect,
     useState,
     useSyncExternalStore,
@@ -428,4 +429,8 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
             {children}
         </RoomContext.Provider>
     );
+}
+
+export function useRoomContext() {
+    return useContext(RoomContext);
 }

@@ -20,6 +20,7 @@ import { useContext } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import PlayerList from '../../../../components/room/PlayerList';
 import Timer from '../../../../components/room/racetime/Timer';
+import RacetimeCard from '../../../../components/room/racetime/RacetimeCard';
 
 export default function Room() {
     const {
@@ -92,52 +93,7 @@ export default function Room() {
                                 </Card>
                             </Box>
                             <Box>
-                                {roomData?.racetimeConnection?.gameActive && (
-                                    <Card>
-                                        <CardContent>
-                                            <Typography variant="h6">
-                                                racetime.gg
-                                            </Typography>
-                                            {!roomData?.racetimeConnection
-                                                ?.url && (
-                                                <Button
-                                                    onClick={createRacetimeRoom}
-                                                >
-                                                    Create racetime.gg race
-                                                </Button>
-                                            )}
-                                            {roomData?.racetimeConnection
-                                                ?.url && (
-                                                <>
-                                                    Connected{' '}
-                                                    <Link
-                                                        component={NextLink}
-                                                        href={
-                                                            roomData
-                                                                .racetimeConnection
-                                                                .url
-                                                        }
-                                                        target="_blank"
-                                                    >
-                                                        {
-                                                            roomData
-                                                                .racetimeConnection
-                                                                .url
-                                                        }
-                                                    </Link>
-                                                    <IconButton
-                                                        onClick={
-                                                            updateRacetimeRoom
-                                                        }
-                                                    >
-                                                        <Refresh />
-                                                    </IconButton>
-                                                </>
-                                            )}
-                                            <Timer />
-                                        </CardContent>
-                                    </Card>
-                                )}
+                                <RacetimeCard />
                             </Box>
                         </Box>
                         <Box display="flex" maxHeight="70%" columnGap={8}>
