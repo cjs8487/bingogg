@@ -59,6 +59,7 @@ model Game {
   rooms            Room[]
   racetimeCategory String?
   racetimeGoal     String?
+  racetimeBeta     Boolean   @default(false)
 }
 
 model User {

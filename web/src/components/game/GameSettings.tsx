@@ -113,8 +113,8 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
                     name: gameData.name,
                     coverImage: gameData.coverImage,
                     enableSRLv5: gameData.enableSRLv5,
-                    racetimeCategory: '',
-                    racetimeGoal: '',
+                    racetimeCategory: gameData.racetimeCategory,
+                    racetimeGoal: gameData.racetimeGoal,
                 }}
                 onSubmit={async ({
                     name,
@@ -179,7 +179,7 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
                                 </Typography>
                             </HoverIcon>
                         </Box>
-                        <RacetimeSettings />
+                        {gameData.racetimeBeta && <RacetimeSettings />}
                         <Box pt={1} display="flex">
                             <Box flexGrow={1} />
                             <Button
