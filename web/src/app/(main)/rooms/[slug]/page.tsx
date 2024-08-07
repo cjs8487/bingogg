@@ -92,46 +92,52 @@ export default function Room() {
                                 </Card>
                             </Box>
                             <Box>
-                                <Card>
-                                    <CardContent>
-                                        <Typography variant="h6">
-                                            racetime.gg
-                                        </Typography>
-                                        {!roomData?.racetimeConnection?.url && (
-                                            <Button
-                                                onClick={createRacetimeRoom}
-                                            >
-                                                Create racetime.gg race
-                                            </Button>
-                                        )}
-                                        {roomData?.racetimeConnection?.url && (
-                                            <>
-                                                Connected{' '}
-                                                <Link
-                                                    component={NextLink}
-                                                    href={
-                                                        roomData
-                                                            .racetimeConnection
-                                                            .url
-                                                    }
-                                                    target="_blank"
+                                {roomData?.racetimeConnection?.gameActive && (
+                                    <Card>
+                                        <CardContent>
+                                            <Typography variant="h6">
+                                                racetime.gg
+                                            </Typography>
+                                            {!roomData?.racetimeConnection
+                                                ?.url && (
+                                                <Button
+                                                    onClick={createRacetimeRoom}
                                                 >
-                                                    {
-                                                        roomData
-                                                            .racetimeConnection
-                                                            .url
-                                                    }
-                                                </Link>
-                                                <IconButton
-                                                    onClick={updateRacetimeRoom}
-                                                >
-                                                    <Refresh />
-                                                </IconButton>
-                                            </>
-                                        )}
-                                        <Timer />
-                                    </CardContent>
-                                </Card>
+                                                    Create racetime.gg race
+                                                </Button>
+                                            )}
+                                            {roomData?.racetimeConnection
+                                                ?.url && (
+                                                <>
+                                                    Connected{' '}
+                                                    <Link
+                                                        component={NextLink}
+                                                        href={
+                                                            roomData
+                                                                .racetimeConnection
+                                                                .url
+                                                        }
+                                                        target="_blank"
+                                                    >
+                                                        {
+                                                            roomData
+                                                                .racetimeConnection
+                                                                .url
+                                                        }
+                                                    </Link>
+                                                    <IconButton
+                                                        onClick={
+                                                            updateRacetimeRoom
+                                                        }
+                                                    >
+                                                        <Refresh />
+                                                    </IconButton>
+                                                </>
+                                            )}
+                                            <Timer />
+                                        </CardContent>
+                                    </Card>
+                                )}
                             </Box>
                         </Box>
                         <Box display="flex" maxHeight="70%" columnGap={8}>
