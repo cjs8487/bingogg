@@ -196,6 +196,7 @@ export default class Room {
                     url: this.racetimeHandler.url,
                     startDelay: this.racetimeHandler.data?.start_delay,
                     started: this.racetimeHandler.data?.started_at ?? undefined,
+                    ended: this.racetimeHandler.data?.ended_at ?? undefined,
                 },
             },
             players: this.getPlayers(),
@@ -426,6 +427,7 @@ export default class Room {
                 url: this.racetimeHandler.url,
                 startDelay: data.start_delay ?? undefined,
                 started: data.started_at ?? undefined,
+                ended: data.ended_at ?? undefined,
             },
         });
     }
