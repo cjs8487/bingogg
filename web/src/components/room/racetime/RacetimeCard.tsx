@@ -57,23 +57,31 @@ export default function RacetimeCard() {
                 )}
                 {url && (
                     <Box>
-                        <Link component={NextLink} href={url} target="_blank">
-                            Connected
-                        </Link>
-                        <IconButton onClick={updateRacetimeRoom}>
-                            <Refresh />
-                        </IconButton>
-                        {user?.racetimeConnected && (
-                            <Box display="flex">
-                                <Button onClick={joinRacetimeRoom}>
-                                    Join Race
-                                </Button>
-                                <Button onClick={racetimeReady}>Ready</Button>
-                                <Button onClick={racetimeUnready}>
-                                    Not ready
-                                </Button>
-                            </Box>
-                        )}
+                        <Box display="flex" alignItems="center">
+                            <Link
+                                component={NextLink}
+                                href={url}
+                                target="_blank"
+                            >
+                                Connected
+                            </Link>
+                            <IconButton onClick={updateRacetimeRoom}>
+                                <Refresh />
+                            </IconButton>
+                            {user?.racetimeConnected && (
+                                <>
+                                    <Button onClick={joinRacetimeRoom}>
+                                        Join Race
+                                    </Button>
+                                    <Button onClick={racetimeReady}>
+                                        Ready
+                                    </Button>
+                                    <Button onClick={racetimeUnready}>
+                                        Not ready
+                                    </Button>
+                                </>
+                            )}
+                        </Box>
                     </Box>
                 )}
                 {status && (
