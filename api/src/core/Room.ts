@@ -151,6 +151,7 @@ export default class Room {
                           connected: true,
                           username: rtUser.user.full_name,
                           status: rtUser.status.verbose_value,
+                          finishTime: rtUser.finish_time ?? undefined,
                       }
                     : { connected: false },
             });
@@ -201,6 +202,7 @@ export default class Room {
                     startDelay: this.racetimeHandler.data?.start_delay,
                     started: this.racetimeHandler.data?.started_at ?? undefined,
                     ended: this.racetimeHandler.data?.ended_at ?? undefined,
+                    status: this.racetimeHandler.data?.status.verbose_value,
                 },
             },
             players: this.getPlayers(),
@@ -433,6 +435,7 @@ export default class Room {
                 startDelay: data.start_delay ?? undefined,
                 started: data.started_at ?? undefined,
                 ended: data.ended_at ?? undefined,
+                status: data.status.verbose_value,
             },
         });
     }

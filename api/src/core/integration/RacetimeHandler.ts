@@ -52,6 +52,9 @@ export interface RaceData {
             verbose_value: string;
             help_text: string;
         };
+        finish_time: string | null;
+        place: number | null;
+        place_ordinal: string | null;
     }[];
     start_delay: string;
     started_at: string | null;

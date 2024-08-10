@@ -32,6 +32,10 @@
                 "status": {
                     "type": "string",
                     "description": "Racetime race status"
+                },
+                "finishTime": {
+                    "type": "string",
+                    "description": "Race finish time (ISO 8601 duration)"
                 }
             }
         }

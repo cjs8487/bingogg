@@ -130,4 +130,8 @@ export interface RacetimeStatusConnected {
    * Racetime race status
    */
   status: string;
+  /**
+   * Race finish time (ISO 8601 duration)
+   */
+  finishTime?: string;
 }

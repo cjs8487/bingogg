@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { RoomContext } from '../../context/RoomContext';
 import { Box, Paper, Typography } from '@mui/material';
+import { Duration } from 'luxon';
 
 export default function PlayerList() {
     const { players, roomData, joinRacetimeRoom } = useContext(RoomContext);
@@ -42,6 +43,8 @@ export default function PlayerList() {
                                     <Typography>
                                         {player.racetimeStatus.username} -{' '}
                                         {player.racetimeStatus.status}
+                                        {player.racetimeStatus.finishTime &&
+                                            ` - ${Duration.fromISO(player.racetimeStatus.finishTime).toFormat('h:mm:ss')}`}
                                     </Typography>
                                 )}
                             </>

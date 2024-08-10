@@ -34,7 +34,7 @@ export default function RacetimeCard() {
         return null;
     }
 
-    const { gameActive, url } = racetimeConnection;
+    const { gameActive, url, status } = racetimeConnection;
     if (!gameActive) {
         return null;
     }
@@ -76,7 +76,12 @@ export default function RacetimeCard() {
                         )}
                     </Box>
                 )}
-                <Timer />
+                {status && (
+                    <>
+                        <Typography>{status}</Typography>
+                        <Timer />
+                    </>
+                )}
             </CardContent>
         </Card>
     );
