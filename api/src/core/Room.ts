@@ -459,12 +459,12 @@ export default class Room {
     ) {
         const identity = this.identities.get(authToken.uuid);
         if (!identity) {
-            logWarn(
-                `[${this.slug}] Unable to find an identity for a verified room token`,
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
             );
             return false;
         }
-        logInfo(`[${this.slug}] Connecting ${identity.nickname} to racetime`);
+        this.logInfo(`Connecting ${identity.nickname} to racetime`);
         this.identities.set(authToken.uuid, {
             ...identity,
             racetimeId: racetimeId,
@@ -474,6 +474,30 @@ export default class Room {
 
     async refreshRacetimeHandler() {
         this.racetimeHandler.refresh();
+    }
+
+    readyPlayer(token: string, roomAuth: RoomTokenPayload) {
+        const identity = this.identities.get(roomAuth.uuid);
+        if (!identity) {
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
+            );
+            return false;
+        }
+        this.logInfo(`Readying ${identity.nickname} to race`);
+        return this.racetimeHandler.ready(token);
+    }
+
+    unreadyPlayer(token: string, roomAuth: RoomTokenPayload) {
+        const identity = this.identities.get(roomAuth.uuid);
+        if (!identity) {
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
+            );
+            return false;
+        }
+        this.logInfo(`Readying ${identity.nickname} to race`);
+        return this.racetimeHandler.unready(token);
     }
     //#endregion
 

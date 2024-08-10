@@ -36,15 +36,7 @@ export default function PlayerList() {
                         {racetimeConnected && (
                             <>
                                 {!player.racetimeStatus.connected && (
-                                    <div className="pl-1 pt-1.5 text-sm">
-                                        Not connected
-                                        <button
-                                            className="ml-2 rounded-md border border-white px-1 py-1 text-sm"
-                                            onClick={joinRacetimeRoom}
-                                        >
-                                            Join Race
-                                        </button>
-                                    </div>
+                                    <Typography>Not connected</Typography>
                                 )}
                                 {player.racetimeStatus.connected && (
                                     <Typography>

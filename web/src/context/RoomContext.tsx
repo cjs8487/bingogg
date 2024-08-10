@@ -62,6 +62,8 @@ interface RoomContext {
     createRacetimeRoom: () => void;
     updateRacetimeRoom: () => void;
     joinRacetimeRoom: () => void;
+    racetimeReady: () => void;
+    racetimeUnready: () => void;
 }
 
 export const RoomContext = createContext<RoomContext>({
@@ -83,6 +85,8 @@ export const RoomContext = createContext<RoomContext>({
     createRacetimeRoom() {},
     updateRacetimeRoom() {},
     joinRacetimeRoom() {},
+    racetimeReady() {},
+    racetimeUnready() {},
 });
 
 interface RoomContextProps {
@@ -220,7 +224,6 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                         break;
                     case 'syncRaceData':
                         if (roomData) {
-                            console.log(payload.racetimeConnection);
                             onUpdateRoomData({
                                 ...roomData,
                                 racetimeConnection: payload.racetimeConnection,
@@ -360,6 +363,30 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
             method: 'POST',
             body: JSON.stringify({ slug: roomData?.slug, authToken }),
         });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
+    }, [roomData, authToken]);
+    const racetimeReady = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/ready', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
+    }, [roomData, authToken]);
+    const racetimeUnready = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/unready', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
     }, [roomData, authToken]);
 
     // effects
@@ -424,6 +451,8 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                 createRacetimeRoom,
                 updateRacetimeRoom,
                 joinRacetimeRoom,
+                racetimeReady,
+                racetimeUnready,
             }}
         >
             {children}

@@ -22,4 +22,5 @@ export interface Game {
 export interface User {
   id: string;
   username: string;
+  racetimeConnected?: boolean;
 }

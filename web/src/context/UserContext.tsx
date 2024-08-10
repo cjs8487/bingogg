@@ -2,6 +2,7 @@
 import {
     createContext,
     useCallback,
+    useContext,
     useEffect,
     useLayoutEffect,
     useState,
@@ -70,3 +71,7 @@ export const UserContextProvider = ({ children }: React.PropsWithChildren) => {
         </UserContext.Provider>
     );
 };
+
+export function useUserContext() {
+    return useContext(UserContext);
+}

@@ -5,6 +5,7 @@
     "required": ["id", "username"],
     "properties": {
         "id": {"type": "string"},
-        "username": {"type": "string"}
+        "username": {"type": "string"},
+        "racetimeConnected": { "type": "boolean" }
     }
 }

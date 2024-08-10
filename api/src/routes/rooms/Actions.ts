@@ -136,12 +136,12 @@ actions.post('/refreshRacetimeConnection', async (req, res) => {
         return;
     }
     if (!verifyRoomToken(authToken, slug)) {
-        logWarn(`[${room.slug}] Unauthorized action request`);
+        room.logWarn('Unauthorized action request');
         res.sendStatus(403);
         return;
     }
     room.refreshRacetimeHandler();
-    res.status(200);
+    res.status(200).send();
 });
 
 actions.post('/racetime/join', async (req, res) => {
@@ -197,6 +197,108 @@ actions.post('/racetime/join', async (req, res) => {
         return;
     }
     res.sendStatus(200);
+});
+
+actions.post('/racetime/ready', async (req, res) => {
+    if (!req.session.user) {
+        logWarn('Unauthorized racetime join request');
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug, authToken } = req.body;
+
+    if (!slug || !authToken) {
+        logInfo(`Malformed action body request`);
+        res.status(400).send('Missing required body parameter');
+        return;
+    }
+    const room = allRooms.get(slug);
+    if (!room) {
+        logInfo(`Unable to find room to take action on`);
+        res.sendStatus(404);
+        return;
+    }
+    const roomToken = verifyRoomToken(authToken, slug);
+    if (!roomToken) {
+        logWarn(`[${room.slug}] Unauthorized action request`);
+        res.sendStatus(403);
+        return;
+    }
+
+    const rtConnection = await getConnectionForUser(
+        req.session.user,
+        ConnectionService.RACETIME,
+    );
+    if (!rtConnection) {
+        logInfo(
+            `[${room.slug}] Unable to join a user to the racetime room - no racetime connection found`,
+        );
+        res.sendStatus(403);
+        return;
+    }
+
+    const token = await getAccessToken(req.session.user);
+    if (!token) {
+        logInfo(
+            `[${room.slug}] Unable to join a user to the racetime room - unable to generate token`,
+        );
+        res.sendStatus(403);
+        return;
+    }
+    room.readyPlayer(token, roomToken);
+    res.status(200).send();
+});
+
+actions.post('/racetime/unready', async (req, res) => {
+    if (!req.session.user) {
+        logWarn('Unauthorized racetime join request');
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug, authToken } = req.body;
+
+    if (!slug || !authToken) {
+        logInfo(`Malformed action body request`);
+        res.status(400).send('Missing required body parameter');
+        return;
+    }
+    const room = allRooms.get(slug);
+    if (!room) {
+        logInfo(`Unable to find room to take action on`);
+        res.sendStatus(404);
+        return;
+    }
+    const roomToken = verifyRoomToken(authToken, slug);
+    if (!roomToken) {
+        logWarn(`[${room.slug}] Unauthorized action request`);
+        res.sendStatus(403);
+        return;
+    }
+
+    const rtConnection = await getConnectionForUser(
+        req.session.user,
+        ConnectionService.RACETIME,
+    );
+    if (!rtConnection) {
+        logInfo(
+            `[${room.slug}] Unable to join a user to the racetime room - no racetime connection found`,
+        );
+        res.sendStatus(403);
+        return;
+    }
+
+    const token = await getAccessToken(req.session.user);
+    if (!token) {
+        logInfo(
+            `[${room.slug}] Unable to join a user to the racetime room - unable to generate token`,
+        );
+        res.sendStatus(403);
+        return;
+    }
+    room.unreadyPlayer(token, roomToken);
+    res.status(200).send();
 });
 
 export default actions;

@@ -314,4 +314,42 @@ export default class RacetimeHandler {
         }
         this.room.sendRaceData(this.data);
     }
+
+    async ready(token: string) {
+        if (!this.connected || !this.websocketConnected || !this.socket) {
+            this.room.logInfo(
+                'Unable to ready - room is not connected to racetime',
+            );
+            return false;
+        }
+        try {
+            await this.authenticate(token);
+            this.socket.send(JSON.stringify({ action: 'ready' }));
+            return true;
+        } catch (e) {
+            this.room.logInfo(
+                `Failed to join racetime room - ${JSON.stringify(e)}`,
+            );
+            return false;
+        }
+    }
+
+    async unready(token: string) {
+        if (!this.connected || !this.websocketConnected || !this.socket) {
+            this.room.logInfo(
+                'Unable to unready - room is not connected to racetime',
+            );
+            return false;
+        }
+        try {
+            await this.authenticate(token);
+            this.socket.send(JSON.stringify({ action: 'unready' }));
+            return true;
+        } catch (e) {
+            this.room.logInfo(
+                `Failed to join racetime room - ${JSON.stringify(e)}`,
+            );
+            return false;
+        }
+    }
 }
