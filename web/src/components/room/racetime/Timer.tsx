@@ -80,7 +80,7 @@ function TimerDisplay({
     }, []);
 
     return (
-        <Typography>
+        <Typography variant="h6">
             {dur.toFormat('h:mm:ss')}.{dur.milliseconds % 10}
         </Typography>
     );
