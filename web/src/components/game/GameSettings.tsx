@@ -125,6 +125,9 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
                 }) => {
                     const res = await fetch(`/api/games/${gameData.slug}`, {
                         method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                         body: JSON.stringify({
                             name,
                             coverImage,
