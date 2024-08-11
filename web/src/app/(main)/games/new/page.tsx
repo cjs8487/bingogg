@@ -6,6 +6,8 @@ import { useContext, useLayoutEffect } from 'react';
 import * as yup from 'yup';
 import { UserContext } from '../../../../context/UserContext';
 import { alertError } from '../../../../lib/Utils';
+import { Box, Button, Typography } from '@mui/material';
+import FormikTextField from '../../../../components/input/FormikTextField';
 
 const newGameValidationSchema = yup.object().shape({
     name: yup.string().required('Game name is required'),
@@ -33,95 +35,58 @@ export default function NewGame() {
     }
 
     return (
-        <div>
-            <div className="pb-8 text-center text-3xl">Create a new game</div>
-            <div className="flex">
-                <div className="w-1/4" />
-                <Formik
-                    initialValues={{ name: '', slug: '', coverImage: '' }}
-                    validationSchema={newGameValidationSchema}
-                    onSubmit={async (values) => {
-                        const res = await fetch('/api/games', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(values),
-                        });
-                        if (!res.ok) {
-                            const error = await res.text();
-                            alertError(`Unable to create game - ${error}`);
-                            return;
-                        }
-                        router.push('/');
-                    }}
-                >
-                    {({ errors, touched }) => (
-                        <Form className="flex w-1/2 flex-col content-center items-center gap-y-2">
-                            <div className="w-full">
-                                <label className="flex gap-x-4">
-                                    <span className="w-1/3 text-right">
-                                        Game Name
-                                    </span>
-                                    <Field
-                                        name="name"
-                                        className="w-2/3 text-black"
-                                    />
-                                </label>
-                                {errors.name && touched.name && (
-                                    <div className="flex gap-x-4 pt-1 text-sm text-red-600">
-                                        <div className="w-1/3" />
-                                        {errors.name}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="w-full">
-                                <label className="flex gap-x-4">
-                                    <span className="w-1/3 text-right">
-                                        Slug
-                                    </span>
-                                    <Field
-                                        name="slug"
-                                        className="w-2/3 text-black"
-                                    />
-                                </label>
-                                {errors.slug && touched.slug && (
-                                    <div className="flex gap-x-4 pt-1 text-sm text-red-600">
-                                        <div className="w-1/3" />
-                                        {errors.slug}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="w-full">
-                                <label className="flex gap-x-4">
-                                    <span className="w-1/3 text-right">
-                                        Cover Image
-                                    </span>
-                                    <Field
-                                        name="coverImage"
-                                        className="w-2/3 text-black"
-                                    />
-                                </label>
-                                {errors.coverImage && touched.coverImage && (
-                                    <div className="flex gap-x-4 pt-1 text-sm text-red-600">
-                                        <div className="w-1/3" />
-                                        {errors.coverImage}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex w-full pt-2">
-                                <div className="grow" />
-                                <button
-                                    type="submit"
-                                    className="rounded-md border bg-green-700 px-2 py-1"
-                                >
-                                    Submit
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </div>
-        </div>
+        <Box flexGrow={1} px={4} width="100%">
+            <Typography variant="h4" align="center" py={2}>
+                Create a new game
+            </Typography>
+            <Formik
+                initialValues={{ name: '', slug: '', coverImage: '' }}
+                validationSchema={newGameValidationSchema}
+                onSubmit={async (values) => {
+                    const res = await fetch('/api/games', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(values),
+                    });
+                    if (!res.ok) {
+                        const error = await res.text();
+                        alertError(`Unable to create game - ${error}`);
+                        return;
+                    }
+                    router.push('/');
+                }}
+            >
+                <Form>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="100%"
+                        rowGap={1}
+                    >
+                        <FormikTextField
+                            id="game-name"
+                            name="name"
+                            label="Game Name"
+                        />
+                        <FormikTextField
+                            id="game-slug"
+                            name="slug"
+                            label="Slug"
+                        />
+                        <FormikTextField
+                            id="game-cover-image"
+                            name="coverImage"
+                            label="Cover Image"
+                        />
+                        <Box display="flex">
+                            <Box flexGrow={1} />
+                            <Button type="submit">Submit</Button>
+                        </Box>
+                    </Box>
+                </Form>
+            </Formik>
+        </Box>
     );
 }

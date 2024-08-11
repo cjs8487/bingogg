@@ -3,6 +3,8 @@ import { Field, Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
 import { alertError } from '../../../lib/Utils';
+import FormikTextField from '../../../components/input/FormikTextField';
+import { Box, Button, Typography } from '@mui/material';
 
 const validationSchema = yup.object({
     email: yup
@@ -16,75 +18,72 @@ export default function ForgotPassword() {
     const [success, setSuccess] = useState(false);
 
     return (
-        <div className="flex h-full items-center justify-center">
-            <div className="flex max-w-[50%] grow flex-col items-center rounded-3xl border-4 border-border bg-foreground px-8 py-6 shadow-lg shadow-border/30">
-                <div className="pb-1 text-3xl font-bold">Forgot Password</div>
-                <div className="pb-4 text-justify text-sm text-gray-300">
-                    Forgot your password? Follow the steps below to reset it.
-                </div>
-                {!success && (
-                    <Formik
-                        initialValues={{ email: '', username: '' }}
-                        validationSchema={validationSchema}
-                        onSubmit={async ({ email, username }) => {
-                            const res = await fetch(
-                                '/api/auth/forgotPassword',
-                                {
-                                    method: 'POST',
-                                    body: JSON.stringify({ email, username }),
-                                },
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            flexGrow={1}
+        >
+            <Typography variant="h4">Forgot Password</Typography>
+            <Typography pb={2} variant="body2" color="text.secondary">
+                Forgot your password? Follow the steps below to reset it.
+            </Typography>
+            {!success && (
+                <Formik
+                    initialValues={{ email: '', username: '' }}
+                    validationSchema={validationSchema}
+                    onSubmit={async ({ email, username }) => {
+                        const res = await fetch('/api/auth/forgotPassword', {
+                            method: 'POST',
+                            body: JSON.stringify({ email, username }),
+                        });
+                        if (!res.ok) {
+                            const error = await res.text();
+                            alertError(
+                                `Unable to submit reset request - ${error}`,
                             );
-                            if (!res.ok) {
-                                const error = await res.text();
-                                alertError(
-                                    `Unable to submit reset request - ${error}`,
-                                );
-                                return;
-                            }
-                            setSuccess(true);
-                        }}
-                    >
-                        {({ isValid, isSubmitting }) => (
-                            <Form className="flex w-full flex-col gap-y-4">
-                                <div className="w-full">
-                                    <label>
-                                        <div>Email</div>
-                                        <Field
-                                            name="email"
-                                            className="w-full text-black"
-                                        />
-                                    </label>
-                                </div>
-                                <div className="w-full">
-                                    <label>
-                                        <div>Username</div>
-                                        <Field
-                                            name="username"
-                                            className="w-full text-black"
-                                        />
-                                    </label>
-                                </div>
-                                <div className="w-full pt-2">
-                                    <button
-                                        type="submit"
-                                        disabled={!isValid || isSubmitting}
-                                        className="float-right rounded-md bg-primary px-4 py-2 hover:bg-primary-light disabled:bg-gray-600"
-                                    >
-                                        Reset Password
-                                    </button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                )}
-                {success && (
-                    <div>
-                        We&#39;ve sent you an email with further details on
-                        resetting your password. If you don&#39;t receive it
-                        soon, be sure to check your spam folder.
-                    </div>
-                )}
-            </div>
-        </div>
+                            return;
+                        }
+                        setSuccess(true);
+                    }}
+                >
+                    {({ isValid, isSubmitting }) => (
+                        <Form>
+                            <FormikTextField
+                                id="email"
+                                name="email"
+                                label="Email"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                            />
+                            <FormikTextField
+                                id="username"
+                                name="username"
+                                label="Username"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                            />
+                            <Box textAlign="right">
+                                <Button
+                                    type="submit"
+                                    disabled={!isValid || isSubmitting}
+                                    variant="contained"
+                                >
+                                    Reset Password
+                                </Button>
+                            </Box>
+                        </Form>
+                    )}
+                </Formik>
+            )}
+            {success && (
+                <Typography>
+                    We&#39;ve sent you an email with further details on
+                    resetting your password. If you don&#39;t receive it soon,
+                    be sure to check your spam folder.
+                </Typography>
+            )}
+        </Box>
     );
 }

@@ -1,6 +1,8 @@
 'use client';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { RoomContext } from '@/context/RoomContext';
+import { Box, Button, Paper, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function RoomChat() {
     const { messages, sendChatMessage } = useContext(RoomContext);
@@ -14,8 +16,23 @@ export default function RoomChat() {
     }, [messages]);
 
     return (
-        <div className="flex h-full grow flex-col gap-y-1 rounded-md border-2 border-border bg-foreground px-4 py-3 shadow-lg shadow-border/40">
-            <div className="mb-1.5 h-full grow overflow-y-auto px-1">
+        <Paper
+            sx={{
+                display: 'flex',
+                maxHeight: '100%',
+                flexDirection: 'column',
+                rowGap: 1,
+                p: 1,
+            }}
+        >
+            <Box
+                sx={{
+                    height: '100%',
+                    flexGrow: 1,
+                    overflowY: 'auto',
+                    px: 1,
+                }}
+            >
                 {messages.map((message, index) => (
                     <div key={index}>
                         {message.map((messageContents, contentIndex) => {
@@ -40,10 +57,13 @@ export default function RoomChat() {
                     </div>
                 ))}
                 <div ref={chatDivRef} />
-            </div>
-            <div className="flex gap-x-2 text-black">
-                <input
+            </Box>
+            <Box display="flex" columnGap={1}>
+                <TextField
+                    size="small"
+                    variant="outlined"
                     value={message}
+                    placeholder="Send a chat message..."
                     onChange={(event) => setMessage(event.target.value)}
                     onKeyUp={(event) => {
                         if (event.key === 'Enter') {
@@ -51,18 +71,19 @@ export default function RoomChat() {
                             setMessage('');
                         }
                     }}
-                    className="grow"
+                    sx={{ flexGrow: 1 }}
                 />
-                <button
-                    className="rounded-md bg-gray-200 px-3"
+                <Button
+                    variant="contained"
+                    endIcon={<SendIcon />}
                     onClick={() => {
                         sendChatMessage(message);
                         setMessage('');
                     }}
                 >
                     Send
-                </button>
-            </div>
-        </div>
+                </Button>
+            </Box>
+        </Paper>
     );
 }

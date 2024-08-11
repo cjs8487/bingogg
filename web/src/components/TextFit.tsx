@@ -1,4 +1,5 @@
 'use client';
+import { Box, SxProps, Typography } from '@mui/material';
 import {
     useCallback,
     useEffect,
@@ -7,13 +8,7 @@ import {
     useState,
 } from 'react';
 
-export default function TextFit({
-    text,
-    className,
-}: {
-    text: string;
-    className?: string;
-}) {
+export default function TextFit({ text, sx }: { text: string; sx?: SxProps }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const iterations = useRef<number>(0);
@@ -62,17 +57,23 @@ export default function TextFit({
     }, [text, resetFit]);
 
     return (
-        <div
+        <Box
             ref={containerRef}
-            className="flex h-full w-full items-center justify-center"
+            sx={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
         >
-            <div
+            <Typography
                 ref={contentRef}
-                className={className}
                 style={{ transform, fontSize: optimizedFontSize }}
+                sx={sx}
             >
                 {text}
-            </div>
-        </div>
+            </Typography>
+        </Box>
     );
 }

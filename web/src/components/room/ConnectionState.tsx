@@ -1,62 +1,55 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { ConnectionStatus, RoomContext } from '../../context/RoomContext';
+import { Box, Card, CardContent, Paper, Typography } from '@mui/material';
+
+function getStatusContents(status: ConnectionStatus) {
+    switch (status) {
+        case ConnectionStatus.UNINITIALIZED:
+            return {
+                color: '',
+                text: 'Uninitialized',
+            };
+        case ConnectionStatus.CONNECTING:
+            return {
+                color: 'success.light',
+                text: 'Connecting',
+            };
+        case ConnectionStatus.CONNECTED:
+            return {
+                color: 'success.dark',
+                text: 'Connected',
+            };
+        case ConnectionStatus.UNAUTHORIZED:
+            return {
+                color: 'error.dark',
+                text: 'Unauthorized',
+            };
+        case ConnectionStatus.CLOSING:
+            return {
+                color: 'warning.main',
+                text: 'Disconnecting',
+            };
+        case ConnectionStatus.CLOSED:
+            return {
+                color: '',
+                text: 'Disconnected',
+            };
+        default:
+            return {
+                color: '',
+                text: 'Unknown connection status',
+            };
+    }
+}
 
 export default function ConnectionState() {
     const { connectionStatus } = useContext(RoomContext);
 
-    const padding = 'p-2';
-    let contents;
-    if (connectionStatus === ConnectionStatus.UNINITIALIZED) {
-        contents = (
-            <div className={`${padding} rounded-md bg-gray-600 bg-opacity-40`}>
-                Uninitialized
-            </div>
-        );
-    } else if (connectionStatus === ConnectionStatus.CONNECTING) {
-        contents = (
-            <div
-                className={`${padding} rounded-md bg-orange-400 bg-opacity-80`}
-            >
-                Connecting
-            </div>
-        );
-    } else if (connectionStatus === ConnectionStatus.CONNECTED) {
-        contents = (
-            <div className={`${padding} rounded-md bg-green-400 bg-opacity-60`}>
-                Connected
-            </div>
-        );
-    } else if (connectionStatus === ConnectionStatus.UNAUTHORIZED) {
-        contents = (
-            <div className={`${padding} rounded-md bg-red-500 bg-opacity-80`}>
-                Unauthorized
-            </div>
-        );
-    } else if (connectionStatus === ConnectionStatus.CLOSING) {
-        contents = (
-            <div
-                className={`${padding} rounded-md bg-orange-400 bg-opacity-80`}
-            >
-                Disconnecting
-            </div>
-        );
-    } else if (connectionStatus === ConnectionStatus.CLOSED) {
-        contents = (
-            <div className={`${padding} rounded-md bg-gray-600 bg-opacity-80`}>
-                Disconnected
-            </div>
-        );
-    } else {
-        contents = (
-            <div className={`${padding} rounded-md bg-gray-600 bg-opacity-80`}>
-                Unknown connection status
-            </div>
-        );
-    }
+    const contents = getStatusContents(ConnectionStatus.CONNECTED);
 
     return (
-        <div className="rounded-md border border-border text-center">
-            {contents}
-        </div>
+        <Paper elevation={8} sx={{ py: 1, backgroundColor: contents.color }}>
+            <Typography>{contents.text}</Typography>
+        </Paper>
     );
 }

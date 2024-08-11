@@ -1,10 +1,15 @@
-import { ErrorMessage, FieldProps } from 'formik';
+import { Box, Button, TextField } from '@mui/material';
+import { ErrorMessage, FieldProps, useField } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 
 interface NumberInputProps {
+    id?: string;
+    name: string;
+    label: string;
     min?: number;
     max?: number;
     disabled?: boolean;
+    required?: boolean;
 }
 
 /**
@@ -18,20 +23,24 @@ interface NumberInputProps {
  * like any other form element
  */
 export default function NumberInput({
+    id,
+    name,
+    label,
     min,
     max,
     disabled,
-    field: { name, value },
-    form: { setFieldValue },
-}: NumberInputProps & FieldProps<number>) {
+    required,
+}: NumberInputProps) {
+    const [{ value }, meta, helpers] = useField<number>(name);
     const setValue = useCallback(
         (v: number) => {
-            if (Number.isNaN(v)) return;
+            if (required && Number.isNaN(v)) return;
+            if (!required && v !== undefined && Number.isNaN(v)) return;
             if (min !== undefined && v < min) return;
             if (max !== undefined && v > max) return;
-            setFieldValue(name, v);
+            helpers.setValue(v);
         },
-        [min, max, name, setFieldValue],
+        [min, max, helpers, required],
     );
     const decrement = useCallback(() => {
         setValue(value - 1);
@@ -42,37 +51,56 @@ export default function NumberInput({
 
     return (
         <>
-            <div className="flex w-full bg-white text-black">
-                <button
+            <Box display="flex" height="max-content">
+                <Button
                     type="button"
+                    variant="contained"
                     onClick={decrement}
                     disabled={
                         disabled || (min !== undefined ? value <= min : false)
                     }
-                    className="grow bg-gray-200 hover:bg-gray-400 hover:bg-opacity-50 disabled:bg-gray-400"
+                    sx={{
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
+                        minWidth: 0,
+                    }}
                 >
                     -
-                </button>
-                <input
+                </Button>
+                <TextField
+                    id={id}
+                    label={label}
                     inputMode="numeric"
-                    pattern="[0-9]*"
-                    name={name}
+                    inputProps={{
+                        pattern: '[0-9]*',
+                    }}
                     value={value}
                     disabled={disabled}
                     onChange={(e) => setValue(Number(e.target.value))}
-                    className="rounded-none text-center"
+                    size="small"
+                    InputProps={{
+                        slotProps: {
+                            root: { style: { borderRadius: 0 } },
+                        },
+                    }}
+                    sx={{ flexGrow: 1 }}
                 />
-                <button
+                <Button
                     type="button"
+                    variant="contained"
                     onClick={increment}
                     disabled={
                         disabled || (max !== undefined ? value >= max : false)
                     }
-                    className="grow bg-gray-200 hover:bg-gray-400 hover:bg-opacity-50 disabled:bg-gray-400"
+                    sx={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        minWidth: 0,
+                    }}
                 >
                     +
-                </button>
-            </div>
+                </Button>
+            </Box>
             <ErrorMessage name={name} />
         </>
     );

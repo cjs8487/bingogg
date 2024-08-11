@@ -1,19 +1,23 @@
 'use client';
 import { useApi } from '@/lib/Hooks';
 import { Game } from '@/types/Game';
-import { faInfo } from '@fortawesome/free-solid-svg-icons';
-import { Tab } from '@headlessui/react';
-import { Field, Form, Formik } from 'formik';
-import Link from 'next/link';
+import Info from '@mui/icons-material/Info';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { Box, Button, Container, Link, Tab, Typography } from '@mui/material';
+import { Form, Formik } from 'formik';
+import Image from 'next/image';
+import NextLink from 'next/link';
 import { useLayoutEffect, useState } from 'react';
 import { mutate } from 'swr';
 import HoverIcon from '../../../../components/HoverIcon';
 import PermissionsManagement from '../../../../components/game/PermissionsManagement';
 import GoalManagement from '../../../../components/game/goals/GoalManagement';
-import Toggle from '../../../../components/input/Toggle';
+import FormikSwitch from '../../../../components/input/FormikSwitch';
+import FormikTextField from '../../../../components/input/FormikTextField';
 import { alertError } from '../../../../lib/Utils';
+import { GoalManagerContextProvider } from '../../../../context/GoalManagerContext';
 
-export default function Game({
+export default function GamePage({
     params: { slug },
 }: {
     params: { slug: string };
@@ -22,6 +26,10 @@ export default function Game({
 
     const [isOwner, setIsOwner] = useState(false);
     const [canModerate, setCanModerate] = useState(false);
+    const [tab, setTab] = useState('Goals');
+    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+        setTab(newValue);
+    };
 
     useLayoutEffect(() => {
         async function loadPermissions() {
@@ -50,193 +58,172 @@ export default function Game({
     }
 
     return (
-        <div className="flex h-full gap-x-3">
-            <div className="flex grow flex-col rounded-2xl border-4 border-border bg-foreground p-5">
-                <div className="flex">
-                    <div className="mr-4">
-                        {gameData.coverImage && (
-                            <div
-                                className="h-32 w-20 bg-cover bg-center bg-no-repeat"
-                                style={{
-                                    backgroundImage: `url(${gameData.coverImage})`,
-                                }}
-                            />
-                        )}
-                        {!gameData.coverImage && (
-                            <div className="relative flex h-32 w-20 border shadow-[inset_0_0_8px_white]">
-                                <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center">
-                                    {slug}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="grow">
-                        <Link
-                            className="text-sm underline"
-                            href={`/games/${slug}`}
-                        >
-                            {gameData.slug}
-                        </Link>
-                        <div className="text-xl">{gameData.name}</div>
-                    </div>
-                    <div className="w-2/5">
+        <Container
+            sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                pt: 2,
+            }}
+        >
+            <Box display="flex">
+                <Box position="fixed" mr={4}>
+                    {gameData.coverImage && (
+                        <Image src={gameData.coverImage} alt="" fill />
+                    )}
+                    {!gameData.coverImage && (
                         <div>
-                            <div className="text-lg underline">Owners</div>
-                            <div className="">
-                                {gameData.owners
-                                    ?.map((o) => o.username)
-                                    .join(', ')}
-                            </div>
+                            <div>{slug}</div>
                         </div>
-                        <div>
-                            <div className="text-lg underline">Moderators</div>
-                            <div className="text-sm">
-                                {gameData.moderators
-                                    ?.map((o) => o.username)
-                                    .join(', ')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Tab.Group>
-                    <Tab.List className="mt-3 flex rounded-xl bg-border p-1">
-                        {tabs.map((tab, index) => (
-                            <Tab
-                                key={tab}
-                                className={({ selected }) =>
-                                    `w-full py-2.5 text-sm font-medium leading-5 ${
-                                        selected
-                                            ? 'cursor-default bg-neutral-600'
-                                            : 'hover:bg- bg-background hover:bg-neutral-400'
-                                    } ${
-                                        index === 0
-                                            ? 'rounded-l-lg border-r'
-                                            : ''
-                                    } ${
-                                        index === tabs.length - 1
-                                            ? 'rounded-r-lg'
-                                            : 'border-r-2 border-border'
-                                    }`
-                                }
-                            >
-                                {tab}
-                            </Tab>
+                    )}
+                </Box>
+                <Box flexGrow={1}>
+                    <Link component={NextLink} href={`/games/${slug}`}>
+                        {gameData.slug}
+                    </Link>
+                    <Typography variant="h6">{gameData.name}</Typography>
+                </Box>
+                <Box minWidth="30%">
+                    <Typography
+                        variant="body1"
+                        sx={{ textDecoration: 'underline' }}
+                    >
+                        Owners
+                    </Typography>
+                    <Typography variant="body2">
+                        {gameData.owners?.map((o) => o.username).join(', ')}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{ textDecoration: 'underline' }}
+                    >
+                        Moderators
+                    </Typography>
+                    <Typography variant="body2">
+                        {gameData.moderators?.map((o) => o.username).join(', ')}
+                    </Typography>
+                </Box>
+            </Box>
+            <TabContext value={tab}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList
+                        onChange={handleChange}
+                        aria-label="lab API tabs example"
+                    >
+                        {tabs.map((tab) => (
+                            <Tab key={tab} label={tab} value={tab} />
                         ))}
-                    </Tab.List>
-                    <Tab.Panels className="mt-2 h-full">
-                        <Tab.Panel className="h-full rounded-xl p-3">
-                            <GoalManagement
-                                slug={slug}
-                                canModerate={canModerate}
-                            />
-                        </Tab.Panel>
-                        <Tab.Panel>
-                            <PermissionsManagement
-                                slug={slug}
-                                gameData={gameData}
-                            />
-                        </Tab.Panel>
-                        <Tab.Panel>
-                            <div>
-                                <div className="text-center text-2xl">
-                                    Game Settings
-                                </div>
-                                <Formik
-                                    initialValues={{
-                                        name: gameData.name,
-                                        coverImage: gameData.coverImage,
-                                        enableSRLv5: gameData.enableSRLv5,
-                                    }}
-                                    onSubmit={async ({
+                    </TabList>
+                </Box>
+                <TabPanel
+                    value="Goals"
+                    sx={{
+                        display: tab === 'Goals' ? 'flex' : 'none',
+                        flexGrow: 1,
+                    }}
+                >
+                    <GoalManagerContextProvider
+                        slug={slug}
+                        canModerate={canModerate}
+                    >
+                        <GoalManagement />
+                    </GoalManagerContextProvider>
+                </TabPanel>
+                <TabPanel value="Permissions">
+                    <PermissionsManagement slug={slug} gameData={gameData} />
+                </TabPanel>
+                <TabPanel value="Settings">
+                    <div>
+                        <Typography variant="h5" align="center">
+                            Game Settings
+                        </Typography>
+                        <Formik
+                            initialValues={{
+                                name: gameData.name,
+                                coverImage: gameData.coverImage,
+                                enableSRLv5: gameData.enableSRLv5,
+                            }}
+                            onSubmit={async ({
+                                name,
+                                coverImage,
+                                enableSRLv5,
+                            }) => {
+                                const res = await fetch(`/api/games/${slug}`, {
+                                    method: 'POST',
+                                    body: JSON.stringify({
                                         name,
                                         coverImage,
                                         enableSRLv5,
-                                    }) => {
-                                        const res = await fetch(
-                                            `/api/games/${slug}`,
-                                            {
-                                                method: 'POST',
-                                                body: JSON.stringify({
-                                                    name,
-                                                    coverImage,
-                                                    enableSRLv5,
-                                                }),
-                                            },
-                                        );
-                                        if (!res.ok) {
-                                            const error = await res.text();
-                                            alertError(
-                                                `Failed to update game - ${error}`,
-                                            );
-                                            return;
-                                        }
-                                        mutate(`/api/games/${slug}`);
-                                    }}
+                                    }),
+                                });
+                                if (!res.ok) {
+                                    const error = await res.text();
+                                    alertError(
+                                        `Failed to update game - ${error}`,
+                                    );
+                                    return;
+                                }
+                                mutate(`/api/games/${slug}`);
+                            }}
+                        >
+                            <Form>
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    justifyItems="center"
+                                    rowGap={2}
+                                    pt={2}
                                 >
-                                    <Form className="flex w-full flex-col justify-center gap-y-3 pt-3">
-                                        <div className="w-1/2">
-                                            <label className="flex gap-x-4">
-                                                <span className="w-1/3">
-                                                    Game Name
-                                                </span>
-                                                <Field
-                                                    name="name"
-                                                    className="w-full text-black"
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="w-1/2">
-                                            <label className="flex gap-x-4">
-                                                <span className="w-1/3">
-                                                    Cover Image
-                                                </span>
-                                                <Field
-                                                    name="coverImage"
-                                                    className="w-full text-black"
-                                                />
-                                            </label>
-                                        </div>
-                                        <label className="flex items-center gap-x-3">
-                                            <Field
-                                                name="enableSRLv5"
-                                                component={Toggle}
-                                            />
-                                            <span className="flex items-center gap-x-1">
-                                                Enable SRLv5 Board Generation{' '}
-                                                <HoverIcon icon={faInfo}>
-                                                    SRLv5 generation requires
-                                                    goals to have a difficulty
-                                                    value assigned to them in
-                                                    order to be used in
-                                                    generation. The generator
-                                                    uses the difficulty value to
-                                                    balance each row, column,
-                                                    and diagonal, by having the
-                                                    difficulty of goals in each
-                                                    sum to the same value. It
-                                                    also tries to minimize
-                                                    synergy between goals in the
-                                                    same line by minimizing the
-                                                    category overlap.
-                                                </HoverIcon>
-                                            </span>
-                                        </label>
-                                        <div className="pt-3">
-                                            <button
-                                                type="submit"
-                                                className="float-right rounded-md bg-green-400 px-4 py-2 text-center text-sm font-medium text-black hover:bg-green-300 disabled:bg-gray-300"
-                                            >
-                                                Save Changes
-                                            </button>
-                                        </div>
-                                    </Form>
-                                </Formik>
-                            </div>
-                        </Tab.Panel>
-                    </Tab.Panels>
-                </Tab.Group>
-            </div>
-            {/* <div className="w-1/4 rounded-2xl border-4 p-5"></div> */}
-        </div>
+                                    <FormikTextField
+                                        id="game-name"
+                                        name="name"
+                                        label="Name"
+                                    />
+                                    <FormikTextField
+                                        id="game-cover-image"
+                                        name="coverImage"
+                                        label="Cover Image"
+                                    />
+                                    <Box display="flex" alignItems="center">
+                                        <FormikSwitch
+                                            id="game-srlv5-generation-switch"
+                                            label="Enable SRLv5 Board Generation"
+                                            name="enableSRLv5"
+                                        />
+                                        <HoverIcon icon={<Info />}>
+                                            <Typography variant="caption">
+                                                SRLv5 generation requires goals
+                                                to have a difficulty value
+                                                assigned to them in order to be
+                                                used in generation. The
+                                                generator uses the difficulty
+                                                value to balance each row,
+                                                column, and diagonal, by having
+                                                the difficulty of goals in each
+                                                sum to the same value. It also
+                                                tries to minimize synergy
+                                                between goals in the same line
+                                                by minimizing the category
+                                                overlap.
+                                            </Typography>
+                                        </HoverIcon>
+                                    </Box>
+                                    <Box pt={1} display="flex">
+                                        <Box flexGrow={1} />
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            color="success"
+                                        >
+                                            Save Changes
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Form>
+                        </Formik>
+                    </div>
+                </TabPanel>
+            </TabContext>
+        </Container>
     );
 }

@@ -1,11 +1,9 @@
 import { useFloating, useHover, useInteractions } from '@floating-ui/react';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faInfo } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Paper } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
 interface HoverIconProps {
-    icon: IconProp;
+    icon: JSX.Element;
     children: ReactNode;
 }
 
@@ -19,21 +17,18 @@ export default function HoverIcon({ icon, children }: HoverIconProps) {
     const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
     return (
         <>
-            <FontAwesomeIcon
-                icon={icon}
-                className="ml-1 px-1 pb-0.5 text-sm"
-                ref={refs.setReference}
-                {...getReferenceProps()}
-            />
+            <div ref={refs.setReference} {...getReferenceProps()}>
+                {icon}
+            </div>
             {open && (
-                <div
+                <Paper
                     ref={refs.setFloating}
                     style={floatingStyles}
                     {...getFloatingProps()}
-                    className=" z-10 max-w-md rounded-lg border border-border bg-text-light p-2 text-sm text-background shadow-lg shadow-border/10"
+                    sx={{ p: 2, maxWidth: 'sm', zIndex: 10 }}
                 >
                     {children}
-                </div>
+                </Paper>
             )}
         </>
     );

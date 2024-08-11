@@ -3,6 +3,7 @@ import { useContext, useRef, useState } from 'react';
 import { SketchPicker } from 'react-color';
 import { useClickAway, useLocalStorage } from 'react-use';
 import { RoomContext } from '../../context/RoomContext';
+import { Box, ButtonBase, Typography } from '@mui/material';
 
 export default function ColorSelect() {
     const { color, changeColor } = useContext(RoomContext);
@@ -24,31 +25,52 @@ export default function ColorSelect() {
     });
 
     return (
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            columnGap={2}
+            rowGap={1}
+        >
             {colors.map((colorItem) => (
-                <div
+                <Box
                     key={colorItem}
-                    className={`${
-                        color === colorItem ? 'border-4 border-white' : ''
-                    } cursor-pointer rounded-md px-2 py-1 hover:scale-110 hover:bg-opacity-50`}
-                    style={{ backgroundColor: colorItem }}
+                    sx={{
+                        backgroundColor: colorItem,
+                        cursor: 'pointer',
+                        border: color === colorItem ? 4 : 0,
+                        borderColor: 'white',
+                        px: 1,
+                        py: 0.5,
+                        ':hover': {
+                            scale: '110%',
+                        },
+                    }}
+                    bgcolor={colorItem}
                     onClick={() => changeColor(colorItem)}
                 >
                     {colorItem}
-                </div>
+                </Box>
             ))}
-            <div className="flex flex-col">
-                <div
-                    className={`${
-                        color === customColor ? 'border-4 border-white' : ''
-                    } cursor-pointer rounded-md px-2 py-1 hover:scale-110 hover:bg-opacity-50`}
-                    style={{ backgroundColor: customColor }}
+            <Box display="flex" flexDirection="column">
+                <Box
+                    sx={{
+                        backgroundColor: customColor,
+                        cursor: 'pointer',
+                        border: color === customColor ? 4 : 0,
+                        borderColor: 'white',
+                        px: 1,
+                        py: 0.5,
+                        ':hover': {
+                            scale: '110%',
+                        },
+                    }}
                     onClick={() => setPicker(true)}
                 >
                     custom
-                </div>
+                </Box>
                 {picker && (
-                    <div ref={pickerRef} className="absolute z-20">
+                    <Box position="absolute" zIndex={20} ref={pickerRef}>
                         <SketchPicker
                             color={customColor}
                             onChange={(color) => {
@@ -56,9 +78,9 @@ export default function ColorSelect() {
                                 setCustomColor(color.hex);
                             }}
                         />
-                    </div>
+                    </Box>
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }
