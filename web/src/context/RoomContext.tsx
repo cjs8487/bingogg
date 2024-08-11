@@ -4,6 +4,7 @@ import {
     ReactNode,
     createContext,
     useCallback,
+    useContext,
     useEffect,
     useState,
     useSyncExternalStore,
@@ -58,6 +59,11 @@ interface RoomContext {
     changeColor: (color: string) => void;
     regenerateCard: (options?: CardRegenerateOptions) => void;
     disconnect: () => void;
+    createRacetimeRoom: () => void;
+    updateRacetimeRoom: () => void;
+    joinRacetimeRoom: () => void;
+    racetimeReady: () => void;
+    racetimeUnready: () => void;
 }
 
 export const RoomContext = createContext<RoomContext>({
@@ -76,6 +82,11 @@ export const RoomContext = createContext<RoomContext>({
     changeColor() {},
     regenerateCard() {},
     disconnect() {},
+    createRacetimeRoom() {},
+    updateRacetimeRoom() {},
+    joinRacetimeRoom() {},
+    racetimeReady() {},
+    racetimeUnready() {},
 });
 
 interface RoomContextProps {
@@ -145,6 +156,9 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
         setConnectionStatus(ConnectionStatus.UNAUTHORIZED);
         localStorage.removeItem(`authToken-${slug}`);
     }, [slug]);
+    const onUpdateRoomData = useCallback((roomData: RoomData) => {
+        setRoomData(roomData);
+    }, []);
 
     // websocket
     const { sendJsonMessage } = useWebSocket(
@@ -201,6 +215,20 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                         break;
                     case 'unauthorized':
                         onUnauthorized();
+                        break;
+                    case 'updateRoomData':
+                        if (!payload.roomData) {
+                            return;
+                        }
+                        onUpdateRoomData(payload.roomData);
+                        break;
+                    case 'syncRaceData':
+                        if (roomData) {
+                            onUpdateRoomData({
+                                ...roomData,
+                                racetimeConnection: payload.racetimeConnection,
+                            });
+                        }
                         break;
                 }
             },
@@ -315,6 +343,51 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
         },
         [authToken, sendJsonMessage],
     );
+    const createRacetimeRoom = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/createRacetimeRoom', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+    }, [roomData, authToken]);
+    const updateRacetimeRoom = useCallback(async () => {
+        const res = await fetch(
+            '/api/rooms/actions/refreshRacetimeConnection',
+            {
+                method: 'POST',
+                body: JSON.stringify({ slug: roomData?.slug, authToken }),
+            },
+        );
+    }, [roomData, authToken]);
+    const joinRacetimeRoom = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/join', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
+    }, [roomData, authToken]);
+    const racetimeReady = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/ready', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
+    }, [roomData, authToken]);
+    const racetimeUnready = useCallback(async () => {
+        const res = await fetch('/api/rooms/actions/racetime/unready', {
+            method: 'POST',
+            body: JSON.stringify({ slug: roomData?.slug, authToken }),
+        });
+        if (!res.ok) {
+            alertError(await res.text());
+            return;
+        }
+    }, [roomData, authToken]);
 
     // effects
     // slug changed, try to establish initial connection from storage
@@ -375,9 +448,18 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                 changeColor,
                 regenerateCard,
                 disconnect,
+                createRacetimeRoom,
+                updateRacetimeRoom,
+                joinRacetimeRoom,
+                racetimeReady,
+                racetimeUnready,
             }}
         >
             {children}
         </RoomContext.Provider>
     );
+}
+
+export function useRoomContext() {
+    return useContext(RoomContext);
 }

@@ -1,19 +1,36 @@
 'use client';
 import Board from '@/components/board/Board';
 import ColorSelect from '@/components/room/ColorSelect';
-import ConnectionState from '@/components/room/ConnectionState';
 import RoomChat from '@/components/room/RoomChat';
 import RoomInfo from '@/components/room/RoomInfo';
 import RoomLogin from '@/components/room/RoomLogin';
 import { ConnectionStatus, RoomContext } from '@/context/RoomContext';
+import Refresh from '@mui/icons-material/Refresh';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    IconButton,
+    Link,
+    Typography,
+} from '@mui/material';
+import NextLink from 'next/link';
 import { useContext } from 'react';
-import PlayerList from '../../../../components/room/PlayerList';
-import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import PlayerList from '../../../../components/room/PlayerList';
+import Timer from '../../../../components/room/racetime/Timer';
+import RacetimeCard from '../../../../components/room/racetime/RacetimeCard';
 
 export default function Room() {
-    const { connectionStatus, roomData, nickname, disconnect } =
-        useContext(RoomContext);
+    const {
+        connectionStatus,
+        roomData,
+        nickname,
+        disconnect,
+        createRacetimeRoom,
+        updateRacetimeRoom,
+    } = useContext(RoomContext);
 
     if (connectionStatus === ConnectionStatus.UNINITIALIZED) {
         return <RoomLogin />;
@@ -74,6 +91,9 @@ export default function Room() {
                                         </Box>
                                     </CardContent>
                                 </Card>
+                            </Box>
+                            <Box>
+                                <RacetimeCard />
                             </Box>
                         </Box>
                         <Box display="flex" maxHeight="70%" columnGap={8}>

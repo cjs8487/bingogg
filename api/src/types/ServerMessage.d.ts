@@ -37,6 +37,15 @@ export type ServerMessage = (
   | {
       action: "disconnected";
     }
+  | {
+      action: "updateRoomData";
+      roomData: RoomData;
+    }
+  | {
+      action: "syncRaceData";
+      players: Player[];
+      racetimeConnection: RacetimeConnection;
+    }
 ) & {
   players?: Player[];
 };
@@ -70,9 +79,59 @@ export interface RoomData {
   game: string;
   slug: string;
   gameSlug: string;
+  racetimeConnection?: RacetimeConnection;
+}
+export interface RacetimeConnection {
+  /**
+   * Whether or not the game is enabled for racetime.gg integration and properly configured
+   */
+  gameActive?: boolean;
+  /**
+   * Full url to the connected racetime room. If not set, the room is not connected to a racetime room
+   */
+  url?: string;
+  /**
+   * True if there is an active websocket connection to the room
+   */
+  websocketConnected?: boolean;
+  /**
+   * Racetime room status
+   */
+  status?: string;
+  /**
+   * ISO 8601 duration string representing the amount of time between ready and start
+   */
+  startDelay?: string;
+  /**
+   * ISO 8601 date when the race started
+   */
+  started?: string;
+  /**
+   * ISO 8601 date when the race ended
+   */
+  ended?: string;
 }
 export interface Player {
   nickname: string;
   color: string;
   goalCount: number;
+  racetimeStatus: RacetimeStatusDisconnected | RacetimeStatusConnected;
+}
+export interface RacetimeStatusDisconnected {
+  connected: false;
+}
+export interface RacetimeStatusConnected {
+  connected: true;
+  /**
+   * Racetime username connected to this player for the race
+   */
+  username: string;
+  /**
+   * Racetime race status
+   */
+  status: string;
+  /**
+   * Race finish time (ISO 8601 duration)
+   */
+  finishTime?: string;
 }

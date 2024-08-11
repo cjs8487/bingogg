@@ -45,18 +45,21 @@ model Variant {
 }
 
 model Game {
-  id          String    @id @unique @default(cuid())
-  name        String
-  slug        String    @unique
-  coverImage  String?
-  variants    Variant[]
-  goals       Goal[]
-  owners      User[]    @relation("GameOwners")
-  moderators  User[]    @relation("GameModerators")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  enableSRLv5 Boolean   @default(false)
-  rooms       Room[]
+  id               String    @id @unique @default(cuid())
+  name             String
+  slug             String    @unique
+  coverImage       String?
+  variants         Variant[]
+  goals            Goal[]
+  owners           User[]    @relation("GameOwners")
+  moderators       User[]    @relation("GameModerators")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  enableSRLv5      Boolean   @default(false)
+  rooms            Room[]
+  racetimeCategory String?
+  racetimeGoal     String?
+  racetimeBeta     Boolean   @default(false)
 }
 
 model User {
@@ -90,15 +93,16 @@ model Connection {
 }
 
 model Room {
-  id       String       @id @unique @default(cuid())
-  slug     String       @unique
-  name     String
-  private  Boolean
-  password String?
-  history  RoomAction[]
-  game     Game         @relation(fields: [gameId], references: [id])
-  gameId   String
-  board    String[]
+  id           String       @id @unique @default(cuid())
+  slug         String       @unique
+  name         String
+  private      Boolean
+  password     String?
+  history      RoomAction[]
+  game         Game         @relation(fields: [gameId], references: [id])
+  gameId       String
+  board        String[]
+  racetimeRoom String?
 }
 
 model RoomAction {

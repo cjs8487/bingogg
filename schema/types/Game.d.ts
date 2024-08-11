@@ -15,8 +15,12 @@ export interface Game {
   owners?: User[];
   moderators?: User[];
   enableSRLv5?: boolean;
+  racetimeBeta?: boolean;
+  racetimeCategory?: string;
+  racetimeGoal?: string;
 }
 export interface User {
   id: string;
   username: string;
+  racetimeConnected?: boolean;
 }

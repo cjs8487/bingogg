@@ -59,6 +59,23 @@
             "properties": {
                 "action": "disconnected"
             }
+        },
+        {
+            "required": ["action", "roomData"],
+            "additionalProperties": false,
+            "properties": {
+                "action": "updateRoomData",
+                "roomData": {"$ref": "./RoomData.json"}
+            }
+        },
+        {
+            "required": ["action", "players", "racetimeConnection"],
+            "additionalProperties": false,
+            "properties": {
+                "action": "syncRaceData",
+                "players":  {"type": "array", "items": {"$ref": "./Player.json"}},
+                "racetimeConnection": {"$ref": "./RoomData.json#/$defs/RacetimeConnection"}
+            }
         }
     ]
 }

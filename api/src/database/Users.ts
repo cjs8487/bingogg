@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 import { prisma } from './Database';
+import { ConnectionService } from '@prisma/client';
 
 export const userByEmail = (email: string) => {
     return prisma.user.findUnique({ select: { id: true }, where: { email } });
@@ -56,10 +57,26 @@ export const getSiteAuth = async (username: string) => {
 };
 
 export const getUser = async (id: string) => {
-    return prisma.user.findUnique({
-        select: { id: true, username: true },
+    const user = await prisma.user.findUnique({
+        select: {
+            id: true,
+            username: true,
+            connections: {
+                select: { service: true },
+            },
+        },
         where: { id },
     });
+    if (!user) return null;
+    return {
+        id: user.id,
+        username: user.username,
+        racetimeConnected: user.connections.find(
+            (c) => c.service === ConnectionService.RACETIME,
+        )
+            ? true
+            : false,
+    };
 };
 
 export const getUserByEmail = (email: string) => {

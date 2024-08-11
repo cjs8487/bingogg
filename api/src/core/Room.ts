@@ -1,5 +1,6 @@
 import { Goal } from '@prisma/client';
 import { OPEN, WebSocket } from 'ws';
+import { logError, logInfo, logWarn } from '../Logger';
 import { RoomTokenPayload, invalidateToken } from '../auth/RoomAuth';
 import {
     addChangeColorAction,
@@ -29,11 +30,12 @@ import {
 import { shuffle } from '../util/Array';
 import { listToBoard } from '../util/RoomUtils';
 import { generateSRLv5 } from './generation/SRLv5';
-import { logError } from '../Logger';
+import RacetimeHandler, { RaceData } from './integration/RacetimeHandler';
 
 type RoomIdentity = {
     nickname: string;
     color: string;
+    racetimeId?: string;
 };
 
 export enum BoardGenerationMode {
@@ -60,6 +62,9 @@ export default class Room {
 
     lastGenerationMode: BoardGenerationMode;
 
+    racetimeEligible: boolean;
+    racetimeHandler: RacetimeHandler;
+
     constructor(
         name: string,
         game: string,
@@ -67,6 +72,8 @@ export default class Room {
         slug: string,
         password: string,
         id: string,
+        racetimeEligible: boolean,
+        racetimeUrl?: string,
     ) {
         this.name = name;
         this.game = game;
@@ -80,9 +87,16 @@ export default class Room {
 
         this.lastGenerationMode = BoardGenerationMode.RANDOM;
 
+        this.racetimeEligible = !!racetimeEligible;
+        this.racetimeHandler = new RacetimeHandler(this);
+
         this.board = {
             board: [],
         };
+
+        if (racetimeUrl) {
+            this.racetimeHandler.connect(racetimeUrl);
+        }
     }
 
     async generateBoard(mode: BoardGenerationMode) {
@@ -117,6 +131,7 @@ export default class Room {
     getPlayers() {
         const players: Player[] = [];
         this.identities.forEach((i) => {
+            const rtUser = this.racetimeHandler.getPlayer(i.racetimeId ?? '');
             players.push({
                 nickname: i.nickname,
                 color: i.color,
@@ -131,11 +146,20 @@ export default class Room {
                         }, 0)
                     );
                 }, 0),
+                racetimeStatus: rtUser
+                    ? {
+                          connected: true,
+                          username: rtUser.user.full_name,
+                          status: rtUser.status.verbose_value,
+                          finishTime: rtUser.finish_time ?? undefined,
+                      }
+                    : { connected: false },
             });
         });
         return players;
     }
 
+    //#region Handlers
     handleJoin(
         action: JoinAction,
         auth: RoomTokenPayload,
@@ -158,6 +182,7 @@ export default class Room {
             { contents: identity.nickname, color: identity.color },
             ' has joined.',
         ]);
+
         this.connections.set(auth.uuid, socket);
         addJoinAction(this.id, identity.nickname, identity.color).then();
         return {
@@ -171,6 +196,14 @@ export default class Room {
                 slug: this.slug,
                 name: this.name,
                 gameSlug: this.gameSlug,
+                racetimeConnection: {
+                    gameActive: this.racetimeEligible,
+                    url: this.racetimeHandler.url,
+                    startDelay: this.racetimeHandler.data?.start_delay,
+                    started: this.racetimeHandler.data?.started_at ?? undefined,
+                    ended: this.racetimeHandler.data?.ended_at ?? undefined,
+                    status: this.racetimeHandler.data?.status.verbose_value,
+                },
             },
             players: this.getPlayers(),
         };
@@ -330,6 +363,41 @@ export default class Room {
         return false;
     }
 
+    async handleRacetimeRoomCreated(url: string) {
+        this.sendServerMessage({
+            action: 'updateRoomData',
+            roomData: {
+                game: this.game,
+                slug: this.slug,
+                name: this.name,
+                gameSlug: this.gameSlug,
+                racetimeConnection: {
+                    url,
+                },
+            },
+        });
+        this.sendChat(`Racetime.gg room created ${url}`);
+        this.racetimeHandler.connect(url);
+        this.racetimeHandler.connectWebsocket();
+    }
+
+    handleRacetimeRoomDisconnected() {
+        this.racetimeHandler.disconnect();
+        this.sendServerMessage({
+            action: 'updateRoomData',
+            roomData: {
+                game: this.game,
+                slug: this.slug,
+                name: this.name,
+                gameSlug: this.gameSlug,
+                racetimeConnection: {
+                    url: undefined,
+                },
+            },
+        });
+    }
+    //#endregion
+
     sendChat(message: string): void;
     sendChat(message: ChatMessage): void;
 
@@ -356,6 +424,22 @@ export default class Room {
         this.sendServerMessage({ action: 'syncBoard', board: this.board });
     }
 
+    sendRaceData(data: RaceData) {
+        this.logInfo('Dispatching race data update');
+        this.sendServerMessage({
+            action: 'syncRaceData',
+            players: this.getPlayers(),
+            racetimeConnection: {
+                gameActive: this.racetimeEligible,
+                url: this.racetimeHandler.url,
+                startDelay: data.start_delay ?? undefined,
+                started: data.started_at ?? undefined,
+                ended: data.ended_at ?? undefined,
+                status: data.status.verbose_value,
+            },
+        });
+    }
+
     private sendServerMessage(message: ServerMessage) {
         this.connections.forEach((client) => {
             if (client.readyState === OPEN) {
@@ -365,4 +449,72 @@ export default class Room {
             }
         });
     }
+
+    //#region Racetime Integration
+    async connectRacetimeWebSocket() {
+        this.racetimeHandler.connectWebsocket();
+    }
+
+    joinRacetimeRoom(
+        token: string,
+        racetimeId: string,
+        authToken: RoomTokenPayload,
+    ) {
+        const identity = this.identities.get(authToken.uuid);
+        if (!identity) {
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
+            );
+            return false;
+        }
+        this.logInfo(`Connecting ${identity.nickname} to racetime`);
+        this.identities.set(authToken.uuid, {
+            ...identity,
+            racetimeId: racetimeId,
+        });
+        return this.racetimeHandler.joinUser(token);
+    }
+
+    async refreshRacetimeHandler() {
+        this.racetimeHandler.refresh();
+    }
+
+    readyPlayer(token: string, roomAuth: RoomTokenPayload) {
+        const identity = this.identities.get(roomAuth.uuid);
+        if (!identity) {
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
+            );
+            return false;
+        }
+        this.logInfo(`Readying ${identity.nickname} to race`);
+        return this.racetimeHandler.ready(token);
+    }
+
+    unreadyPlayer(token: string, roomAuth: RoomTokenPayload) {
+        const identity = this.identities.get(roomAuth.uuid);
+        if (!identity) {
+            this.logWarn(
+                'Unable to find an identity for a verified room token',
+            );
+            return false;
+        }
+        this.logInfo(`Readying ${identity.nickname} to race`);
+        return this.racetimeHandler.unready(token);
+    }
+    //#endregion
+
+    //#region Logging
+    logInfo(message: string) {
+        logInfo(`[${this.slug}] ${message}`);
+    }
+
+    logWarn(message: string) {
+        logWarn(`[${this.slug}] ${message}`);
+    }
+
+    logError(message: string) {
+        logError(`[${this.slug}] ${message}`);
+    }
+    //#endregion
 }

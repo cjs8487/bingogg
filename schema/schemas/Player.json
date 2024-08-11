@@ -2,10 +2,42 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "required": ["nickname", "color", "goalCount"],
+    "required": ["nickname", "color", "goalCount", "racetimeStatus"],
     "properties": {
         "nickname": {"type": "string"},
         "color": {"type": "string"},
-        "goalCount": {"type": "number"}
+        "goalCount": {"type": "number"},
+        "racetimeStatus": {"oneOf": [
+            {"$ref": "#/$defs/RacetimeStatusDisconnected"},
+            {"$ref": "#/$defs/RacetimeStatusConnected"}
+        ]}
+    },
+    "$defs": {
+        "RacetimeStatusDisconnected": {
+            "required": ["connected"],
+            "additionalProperties": false,
+            "properties": {
+                "connected": {"const": false}
+            }
+        },
+        "RacetimeStatusConnected": {
+            "required": ["connected", "username", "status"],
+            "additionalProperties": false,
+            "properties": {
+                "connected": {"const": true},
+                "username": {
+                    "type": "string",
+                    "description": "Racetime username connected to this player for the race"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Racetime race status"
+                },
+                "finishTime": {
+                    "type": "string",
+                    "description": "Race finish time (ISO 8601 duration)"
+                }
+            }
+        }
     }
 }
