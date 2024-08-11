@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Link from 'next/link';
 import RacetimeIntegration from './RacetimeIntegration';
+import { Box, Button, Container, Typography } from '@mui/material';
+import FormikTextField from '../../../components/input/FormikTextField';
 
 export default function ProfilePage() {
     const { user, loggedIn } = useContext(UserContext);
@@ -19,56 +21,58 @@ export default function ProfilePage() {
     }
 
     return (
-        <>
-            <div className="mb-6 text-2xl">{user.username}</div>
-            <div className="mb-2 text-xl">Account Info</div>
+        <Container>
+            <Typography variant="h4" mb={2}>
+                {user.username}
+            </Typography>
+            {/* <Typography variant="h5" mb={1}>
+                Account Info
+            </Typography>
             <Formik initialValues={{}} onSubmit={() => {}}>
-                <Form className="flex w-1/2 flex-col gap-y-2">
-                    <div>
-                        <label>
-                            <div>Username</div>
-                            <Field name="username" className="w-full" />
-                        </label>
-                        <ErrorMessage
-                            name="name"
-                            component="div"
-                            className="mt-1 text-xs text-error-content"
+                <Form>
+                    <Box display="flex" flexDirection="column" rowGap={1}>
+                        <FormikTextField
+                            id="username"
+                            name="username"
+                            label="Username"
+                            size="small"
                         />
-                    </div>
-                    <div>
-                        <label>
-                            <div>Email</div>
-                            <Field name="email" className="w-full" />
-                        </label>
-                        <ErrorMessage
-                            name="name"
-                            component="div"
-                            className="mt-1 text-xs text-error-content"
+                        <FormikTextField
+                            id="email"
+                            name="email"
+                            label="Email"
+                            size="small"
                         />
-                    </div>
-                    <div className="mt-2 flex">
-                        <div className="grow" />
-                        <button className="rounded-md bg-green-700 px-2 py-1">
-                            Update
-                        </button>
-                    </div>
+                        <Box display="flex">
+                            <Box flexGrow={1} />
+                            <Button className="rounded-md bg-green-700 px-2 py-1">
+                                Update
+                            </Button>
+                        </Box>
+                    </Box>
                 </Form>
             </Formik>
-            <div className="mb-6">
-                <div className="mb-2 text-xl">Password</div>
-                <button className="mb-1 rounded-md border border-red-500 bg-red-600 px-2 py-1 ">
+            <Box mb={3}>
+                <Typography variant="h6" mb={1}>
+                    Password
+                </Typography>
+                <Button color="error" variant="outlined">
                     Change Password
-                </button>
-                <div className="text-xs">
-                    Changing your password will end all login sessions.
-                </div>
-            </div>
-            <div>
-                <div className="mb-2 text-xl">Integrations</div>
+                </Button>
+                <Box>
+                    <Typography variant="caption">
+                        Changing your password will end all login sessions.
+                    </Typography>
+                </Box>
+            </Box> */}
+            <Box>
+                <Typography variant="h5" mb={1}>
+                    Integrations
+                </Typography>
                 <Suspense>
                     <RacetimeIntegration />
                 </Suspense>
-            </div>
-        </>
+            </Box>
+        </Container>
     );
 }
