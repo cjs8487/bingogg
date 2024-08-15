@@ -1,0 +1,88 @@
+openapi: '3.0.3'
+info:
+  title: PlayBingo API
+  version: '1.0'
+servers:
+  - url: https://playbingo.gg/api
+tags:
+  - name: rooms
+    description: Creating, updating, and interacting with rooms
+  - name: games
+    description: Creating and managing games
+components:
+  securitySchemes:
+    cookieAuthentication:
+      description:
+        Authentication is handled via session and cookies. Endpoints
+        protected by this authentication method are only available to requests
+        made by the website.
+      type: apiKey
+      in: cookie
+      name: connect.sid
+  responses:
+    errorBadRequest:
+      description:
+        "Bad Request: Required parameters, request body, or body contents are
+        missing, malformed, or otherwise invalid, and the client should have
+        been able to validate them as such."
+    errorUnauthorized:
+      description:
+        "Unauthorized: The request failed to provide identification in a way the API
+        server recognizes."
+    errorForbidden:
+      description:
+        "Forbidden: The provided authorization does not have permission to
+        perform the requested action"
+    errorNotFound:
+      description:
+        "Not Found: The requested resource was not found"
+    errorServer:
+      description:
+        "Internal Server Error: The server encountered an error unrelated to the
+        contents of the request"
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+          description:
+            The user's database UUID
+        username:
+          type: string
+          description:
+            The user's name. Usernames are unique across all
+            PlayBingo users
+        racetimeConnected:
+          type: boolean
+          description:
+            Flag indicating if the user has connected their account to
+            racetime.gg in order to use the integration
+paths:
+  /me:
+    get:
+      summary: Get the currently logged in user
+      security:
+        - cookieAuthentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        401:
+          $ref: '#/components/responses/errorUnauthorized'
+        403:
+          $ref: '#/components/responses/errorForbidden'
+  /logout:
+    post:
+      summary: End the current login session
+      description:
+        Ends the login session of the currently logged in user.
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: '#/components/responses/errorUnauthorized'
+            
