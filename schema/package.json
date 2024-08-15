@@ -3,15 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "generate": "ts-node Generate.ts"
+    "types:generate": "ts-node Generate.ts",
+    "apidoc:generate": "npx @redocly/cli build-docs openapi.yml",
+    "apidoc:watch": "nodemon -e yml --exec npm run apidoc:generate"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@redocly/cli": "^1.19.0",
     "json-schema-to-typescript": "^13.1.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",
+    "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
