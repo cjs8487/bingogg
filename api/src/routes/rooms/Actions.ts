@@ -53,7 +53,7 @@ actions.post('/createRacetimeRoom', async (req, res) => {
         return;
     }
     if (!verifyRoomToken(authToken, slug)) {
-        logWarn(`[${room.slug}] Unauthorized action request`);
+        room.logWarn('Unauthorized action request');
         res.sendStatus(403);
         return;
     }
@@ -65,7 +65,6 @@ actions.post('/createRacetimeRoom', async (req, res) => {
     }
 
     const racetimeConfiguration = await getRacetimeConfiguration(room.gameSlug);
-
     if (
         !racetimeConfiguration ||
         !racetimeConfiguration.racetimeCategory ||
@@ -166,7 +165,7 @@ actions.post('/racetime/join', async (req, res) => {
     }
     const roomToken = verifyRoomToken(authToken, slug);
     if (!roomToken) {
-        logWarn(`[${room.slug}] Unauthorized action request`);
+        room.logWarn('Unauthorized action request');
         res.sendStatus(403);
         return;
     }
@@ -176,8 +175,8 @@ actions.post('/racetime/join', async (req, res) => {
         ConnectionService.RACETIME,
     );
     if (!rtConnection) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - no racetime connection found`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - no racetime connection found',
         );
         res.sendStatus(403);
         return;
@@ -185,8 +184,8 @@ actions.post('/racetime/join', async (req, res) => {
 
     const token = await getAccessToken(req.session.user);
     if (!token) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - unable to generate token`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - unable to generate token',
         );
         res.sendStatus(403);
         return;
@@ -221,7 +220,7 @@ actions.post('/racetime/ready', async (req, res) => {
     }
     const roomToken = verifyRoomToken(authToken, slug);
     if (!roomToken) {
-        logWarn(`[${room.slug}] Unauthorized action request`);
+        room.logWarn('Unauthorized action request');
         res.sendStatus(403);
         return;
     }
@@ -231,8 +230,8 @@ actions.post('/racetime/ready', async (req, res) => {
         ConnectionService.RACETIME,
     );
     if (!rtConnection) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - no racetime connection found`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - no racetime connection found',
         );
         res.sendStatus(403);
         return;
@@ -240,8 +239,8 @@ actions.post('/racetime/ready', async (req, res) => {
 
     const token = await getAccessToken(req.session.user);
     if (!token) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - unable to generate token`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - unable to generate token',
         );
         res.sendStatus(403);
         return;
@@ -272,7 +271,7 @@ actions.post('/racetime/unready', async (req, res) => {
     }
     const roomToken = verifyRoomToken(authToken, slug);
     if (!roomToken) {
-        logWarn(`[${room.slug}] Unauthorized action request`);
+        room.logWarn('Unauthorized action request');
         res.sendStatus(403);
         return;
     }
@@ -282,8 +281,8 @@ actions.post('/racetime/unready', async (req, res) => {
         ConnectionService.RACETIME,
     );
     if (!rtConnection) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - no racetime connection found`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - no racetime connection found',
         );
         res.sendStatus(403);
         return;
@@ -291,8 +290,8 @@ actions.post('/racetime/unready', async (req, res) => {
 
     const token = await getAccessToken(req.session.user);
     if (!token) {
-        logInfo(
-            `[${room.slug}] Unable to join a user to the racetime room - unable to generate token`,
+        room.logInfo(
+            'Unable to join a user to the racetime room - unable to generate token',
         );
         res.sendStatus(403);
         return;

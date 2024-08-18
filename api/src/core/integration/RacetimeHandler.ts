@@ -2,7 +2,7 @@ import { RawData, WebSocket } from 'ws';
 import { racetimeHost } from '../../Environment';
 import { disconnectRoomFromRacetime } from '../../database/Rooms';
 import Room from '../Room';
-import { logError, logInfo } from '../../Logger';
+import { logInfo } from '../../Logger';
 
 interface User {
     id: string;
@@ -198,7 +198,7 @@ export default class RacetimeHandler {
             `${racetimeHost.replace('http', 'ws')}${data.websocket_oauth_url}`,
         );
         this.socket.on('open', () => {
-            logInfo(`[${this.room.slug}] Racetime.gg websocket connected`);
+            this.room.logInfo('Racetime.gg websocket connected');
         });
         this.socket.on('message', this.handleWebsocketMessage.bind(this));
         this.socket.on('close', () => {
@@ -254,9 +254,7 @@ export default class RacetimeHandler {
 
     async joinUser(token: string) {
         if (!this.connected || !this.websocketConnected || !this.socket) {
-            logInfo(
-                `[${this.room.slug}] Unable to join user - room is not connected to racetime`,
-            );
+            logInfo('Unable to join user - room is not connected to racetime');
             return false;
         }
         try {
@@ -276,11 +274,11 @@ export default class RacetimeHandler {
     }
 
     async refresh() {
-        logInfo(`[${this.room.slug}] Refreshing racetime.gg connection`);
+        this.room.logInfo('Refreshing racetime.gg connection');
         const racetimeRes = await fetch(`${this.url}/data`);
         if (!racetimeRes.ok) {
-            logError(
-                `[${this.room.slug}] Unable to connect to racetime.gg. Room will be disconnected.`,
+            this.room.logError(
+                'Unable to connect to racetime.gg. Room will be disconnected.',
             );
             disconnectRoomFromRacetime(this.room.slug).then();
             this.room.handleRacetimeRoomDisconnected();
@@ -288,8 +286,8 @@ export default class RacetimeHandler {
         }
         this.data = (await racetimeRes.json()) as RaceData;
         if (this.data.status.value === 'cancelled') {
-            logInfo(
-                `[${this.room.slug}] Existing race was cancelled. Disconnecting room.`,
+            this.room.logInfo(
+                'Existing race was cancelled. Disconnecting room.',
             );
             disconnectRoomFromRacetime(this.room.slug).then();
             this.disconnect();
@@ -297,20 +295,20 @@ export default class RacetimeHandler {
             return;
         }
         if (!this.socket) {
-            logInfo(
-                `[${this.room.slug}] No existing racetime.gg websocket connection. Reconnecting...`,
+            this.room.logInfo(
+                'No existing racetime.gg websocket connection. Reconnecting...',
             );
             this.connectWebsocket();
         } else {
-            logInfo(
-                `[${this.room.slug}] Existing racetime.gg websocket connection found. Testing connection...`,
+            this.room.logInfo(
+                'Existing racetime.gg websocket connection found. Testing connection...',
             );
             try {
                 await this.ping();
                 this.room.logInfo('Connection test successful');
             } catch {
-                logInfo(
-                    `[${this.room.slug}] Unable to reestablish connection. Creating a new websocket connection.`,
+                this.room.logInfo(
+                    'Unable to reestablish connection. Creating a new websocket connection.',
                 );
                 this.connectWebsocket();
             }
