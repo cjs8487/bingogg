@@ -9,6 +9,7 @@ import oauth from './oauth/OAuth';
 import registration from './registration/Registration';
 import rooms from './rooms/Rooms';
 import users from './users/Users';
+import { readFile } from 'fs/promises';
 
 const api = Router();
 
@@ -54,6 +55,32 @@ api.post('/logout', (req, res, next) => {
             res.sendStatus(200);
         });
     });
+});
+
+api.get('/logs', async (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+    const user = await getUser(req.session.user);
+    if (!user) {
+        res.sendStatus(403);
+        return;
+    }
+    if (!user.staff) {
+        res.sendStatus(403);
+        return;
+    }
+    const currentLogFile = await readFile('current.log');
+    const contents = currentLogFile.toString();
+    const entryList: string[] = [];
+    contents
+        .trim()
+        .split('\n')
+        .map((entry) => {
+            entryList.push(JSON.parse(entry));
+        });
+    res.status(200).json(entryList);
 });
 
 export default api;

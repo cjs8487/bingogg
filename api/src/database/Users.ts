@@ -61,6 +61,7 @@ export const getUser = async (id: string) => {
         select: {
             id: true,
             username: true,
+            staff: true,
             connections: {
                 select: { service: true },
             },
@@ -71,6 +72,7 @@ export const getUser = async (id: string) => {
     return {
         id: user.id,
         username: user.username,
+        staff: user.staff,
         racetimeConnected: user.connections.find(
             (c) => c.service === ConnectionService.RACETIME,
         )
