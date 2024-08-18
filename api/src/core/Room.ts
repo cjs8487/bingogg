@@ -506,15 +506,15 @@ export default class Room {
 
     //#region Logging
     logInfo(message: string) {
-        logInfo(`[${this.slug}] ${message}`);
+        logInfo(message, { room: this.slug });
     }
 
     logWarn(message: string) {
-        logWarn(`[${this.slug}] ${message}`);
+        logWarn(message, { room: this.slug });
     }
 
     logError(message: string) {
-        logError(`[${this.slug}] ${message}`);
+        logError(message, { room: this.slug });
     }
     //#endregion
 }

@@ -2,15 +2,11 @@ import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { testing } from './Environment';
 
-const { combine, colorize, timestamp, printf } = format;
+const { combine, timestamp, json } = format;
 
-const logFormat = combine(
-    timestamp({ format: 'ddd MMMM D YYYY h:mm:ss A' }),
-    colorize({}),
-    printf((info) => `${info.timestamp} [${info.level}] ${info.message}`),
-);
+const logFormat = combine(timestamp(), json());
 
-const rotateTransport: DailyRotateFile = new DailyRotateFile({
+export const rotateTransport: DailyRotateFile = new DailyRotateFile({
     filename: 'playbingo-%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     maxFiles: '7d',
@@ -30,22 +26,22 @@ if (testing) {
     logger.add(new transports.Console());
 }
 
-export const logDebug = (message: string) => {
-    logger.log('debug', message);
+export const logDebug = (message: string, meta?: { [k: string]: string }) => {
+    logger.log('debug', message, meta);
 };
 
-export const logVerbose = (message: string) => {
-    logger.log('verbose', message);
+export const logVerbose = (message: string, meta?: { [k: string]: string }) => {
+    logger.log('verbose', message, meta);
 };
 
-export const logInfo = (message: string) => {
-    logger.log('info', message);
+export const logInfo = (message: string, meta?: { [k: string]: string }) => {
+    logger.log('info', message, meta);
 };
 
-export const logWarn = (message: string) => {
-    logger.log('warn', message);
+export const logWarn = (message: string, meta?: { [k: string]: string }) => {
+    logger.log('warn', message, meta);
 };
 
-export const logError = (message: string) => {
-    logger.log('error', message);
+export const logError = (message: string, meta?: { [k: string]: string }) => {
+    logger.log('error', message, meta);
 };
