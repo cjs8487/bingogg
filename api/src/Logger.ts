@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { testing } from './Environment';
 
-const { combine, timestamp, json } = format;
+const { combine, timestamp, json, cli, printf } = format;
 
 const logFormat = combine(timestamp(), json());
 
@@ -23,7 +23,21 @@ export const logger = createLogger({
 
 if (testing) {
     logger.level = 'silly';
-    logger.add(new transports.Console());
+    logger.add(
+        new transports.Console({
+            format: combine(
+                timestamp({ format: 'ddd MMMM D YYYY h:mm:ss A' }),
+                cli(),
+                printf((info) => {
+                    let end = '';
+                    if (info.ip) {
+                        end += `[${info.ip} ${info.durationMs}ms]`;
+                    }
+                    return `${info.timestamp} [${info.level}] ${info.message} ${end}`;
+                }),
+            ),
+        }),
+    );
 }
 
 export const logDebug = (message: string, meta?: { [k: string]: string }) => {
