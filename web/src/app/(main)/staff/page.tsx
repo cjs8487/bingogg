@@ -25,6 +25,8 @@ import {
     red,
     yellow,
 } from '@mui/material/colors';
+import { useUserContext } from '../../../context/UserContext';
+import { notFound } from 'next/navigation';
 
 interface LogEntry {
     level: string;
@@ -41,12 +43,17 @@ const colorMap: { [k: string]: string } = {
 };
 
 export default function StaffDashboard() {
+    const { user, loggedIn } = useUserContext();
     const { data: logs, isLoading, error } = useApi<LogEntry[]>('/api/logs');
 
     const [tab, setTab] = useState('Logs');
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setTab(newValue);
     };
+
+    if (!loggedIn || !user || !user.staff) {
+        notFound();
+    }
 
     const tabs = ['Logs'];
 
