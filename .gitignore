@@ -41,3 +41,4 @@ next-env.d.ts
 *.db
 *.log
 *-audit.json
+*.log.gz
