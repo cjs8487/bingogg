@@ -2,10 +2,11 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "required": ["id", "username"],
+    "required": ["id", "username", "staff"],
     "properties": {
         "id": {"type": "string"},
         "username": {"type": "string"},
+        "staff": {"type": "boolean"},
         "racetimeConnected": { "type": "boolean" }
     }
 }

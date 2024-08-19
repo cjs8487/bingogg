@@ -8,5 +8,6 @@
 export interface User {
   id: string;
   username: string;
+  staff: boolean;
   racetimeConnected?: boolean;
 }
