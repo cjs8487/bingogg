@@ -2,7 +2,8 @@
 import {
     Box,
     CircularProgress,
-    Paper,
+    Collapse,
+    IconButton,
     Table,
     TableBody,
     TableCell,
@@ -11,19 +12,37 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
-import { forwardRef, useRef } from 'react';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { TableProps, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
-import { useApi } from '../../../../lib/Hooks';
 import { blue, blueGrey, orange, red } from '@mui/material/colors';
+import { DateTime } from 'luxon';
+import { forwardRef, useState } from 'react';
+import { useList } from 'react-use';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { TableComponents, TableProps, TableVirtuoso } from 'react-virtuoso';
+import { useApi } from '../../../../lib/Hooks';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-interface LogEntry {
+type BasicLogEntry = {
     level: string;
     message: string;
     timestamp: string;
-    [key: string]: string;
-}
+};
+
+type RequestLogEntry = BasicLogEntry & {
+    method: string;
+    path: string;
+    statusCode: number;
+    sessionId: string;
+    userAgent: string;
+    ip: string;
+    durationMs: number;
+};
+
+type RoomLogEntry = (BasicLogEntry | RequestLogEntry) & {
+    room: string;
+};
+
+type LogEntry = BasicLogEntry | RequestLogEntry | RoomLogEntry;
 
 const colorMap: { [k: string]: string } = {
     error: red[900],
@@ -60,37 +79,117 @@ const VirtuosoTableHead = forwardRef<HTMLTableSectionElement>(
     },
 );
 
+const VirtuosoTableRow: TableComponents<LogEntry, TableContext>['TableRow'] = ({
+    context,
+    item: entry,
+    ...props
+}) => {
+    if (!context) {
+        return null;
+    }
+
+    const { isExpanded, setExpanded } = context;
+    const open = isExpanded(props['data-index']);
+
+    return (
+        <>
+            <TableRow
+                sx={{
+                    '& > *': {
+                        borderBottom: 'unset',
+                        background: colorMap[entry.level],
+                    },
+                }}
+                {...props}
+            >
+                {'method' in entry && (
+                    <TableCell>
+                        <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => setExpanded(props['data-index'])}
+                        >
+                            {open ? (
+                                <KeyboardArrowUpIcon />
+                            ) : (
+                                <KeyboardArrowDownIcon />
+                            )}
+                        </IconButton>
+                    </TableCell>
+                )}
+                <TableCell colSpan={'method' in entry ? 1 : 2} align="right">
+                    {DateTime.fromISO(entry.timestamp).toLocaleString(
+                        DateTime.DATETIME_MED,
+                    )}
+                </TableCell>
+                <TableCell align="center">{entry.level}</TableCell>
+                <TableCell>
+                    {'room' in entry && `[${entry.room}] `}
+                    {entry.message}
+                </TableCell>
+            </TableRow>
+            {'method' in entry && (
+                <TableRow>
+                    <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={4}
+                    >
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <Box sx={{ margin: 1 }}>
+                                <Typography
+                                    variant="h6"
+                                    gutterBottom
+                                    component="div"
+                                >
+                                    Additional Request Information
+                                </Typography>
+                                <Typography>
+                                    User Agent: {entry.userAgent}
+                                </Typography>
+                                <Typography>IP Address: {entry.ip}</Typography>
+                                <Typography>
+                                    Session Id: {entry.sessionId}
+                                </Typography>
+                                <Typography>
+                                    Request completed in {entry.durationMs} ms
+                                </Typography>
+                            </Box>
+                        </Collapse>
+                    </TableCell>
+                </TableRow>
+            )}
+        </>
+    );
+};
+
 const FixedHeaderContent = () => (
     <TableRow
         sx={{
             backgroundColor: 'background.paper',
         }}
     >
-        <TableCell>Timestamp</TableCell>
-        <TableCell>Level</TableCell>
+        <TableCell />
+        <TableCell align="right">Timestamp</TableCell>
+        <TableCell align="center">Level</TableCell>
         <TableCell>Message</TableCell>
     </TableRow>
 );
 
-const ItemContent = (_index: number, entry: LogEntry) => (
-    <>
-        <TableCell sx={{ background: colorMap[entry.level] }}>
-            {DateTime.fromISO(entry.timestamp).toLocaleString(
-                DateTime.DATETIME_MED,
-            )}
-        </TableCell>
-        <TableCell sx={{ background: colorMap[entry.level] }}>
-            {entry.level}
-        </TableCell>
-        <TableCell sx={{ background: colorMap[entry.level] }}>
-            {entry.room && `[${entry.room}] `}
-            {entry.message}
-        </TableCell>
-    </>
-);
+interface TableContext {
+    isExpanded: (index: number) => boolean;
+    setExpanded: (index: number) => void;
+}
 
 export default function Logs() {
     const { data: logs, isLoading, error } = useApi<LogEntry[]>('/api/logs');
+
+    const [expansionStatus, { updateAt }] = useList<boolean>();
+
+    const isExpanded = (index: number) => !!expansionStatus[index];
+
+    const setExpanded = (index: number) => {
+        updateAt(index, !expansionStatus[index]);
+    };
 
     if (isLoading) {
         return <CircularProgress />;
@@ -104,7 +203,7 @@ export default function Logs() {
         <Box width="100%" height="100%">
             <AutoSizer>
                 {({ width, height }) => (
-                    <TableVirtuoso
+                    <TableVirtuoso<LogEntry, TableContext>
                         width={width}
                         height={height}
                         style={{ height, width }}
@@ -113,12 +212,12 @@ export default function Logs() {
                             Scroller,
                             Table: VirtuosoTable,
                             TableHead: VirtuosoTableHead,
-                            TableRow,
+                            TableRow: VirtuosoTableRow,
                             TableBody: VirtuosoTableBody,
                         }}
                         fixedHeaderContent={FixedHeaderContent}
-                        itemContent={ItemContent}
                         initialTopMostItemIndex={logs.length}
+                        context={{ isExpanded, setExpanded }}
                     />
                 )}
             </AutoSizer>
