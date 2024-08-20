@@ -1,9 +1,11 @@
+/* eslint-disable react/display-name */
 'use client';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
     Box,
     CircularProgress,
     Container,
+    Paper,
     Tab,
     Table,
     TableBody,
@@ -14,7 +16,7 @@ import {
     Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { useApi } from '../../../lib/Hooks';
 import {
     blue,
@@ -27,6 +29,8 @@ import {
 } from '@mui/material/colors';
 import { useUserContext } from '../../../context/UserContext';
 import { notFound } from 'next/navigation';
+import { TableVirtuoso } from 'react-virtuoso';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 interface LogEntry {
     level: string;
@@ -58,63 +62,127 @@ export default function StaffDashboard() {
     const tabs = ['Logs'];
 
     return (
-        <Container sx={{ pt: 2 }}>
+        <Container
+            sx={{
+                pt: 2,
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
             <Typography textAlign="center" variant="h4">
                 Staff Dashboard
             </Typography>
             <TabContext value={tab}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList
-                        onChange={handleChange}
-                        aria-label="lab API tabs example"
-                    >
+                    <TabList onChange={handleChange}>
                         {tabs.map((tab) => (
                             <Tab key={tab} label={tab} value={tab} />
                         ))}
                     </TabList>
                 </Box>
-                <TabPanel value="Logs">
+                <TabPanel value="Logs" sx={{ flexGrow: 1 }}>
                     {isLoading && <CircularProgress />}
                     {error && (
                         <Typography>Unable to load logs - ${error}</Typography>
                     )}
                     {logs && (
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Timestamp</TableCell>
-                                        <TableCell>Level</TableCell>
-                                        <TableCell>Message</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {logs.map((entry, index) => (
-                                        <TableRow
-                                            key={index}
-                                            sx={{
-                                                background:
-                                                    colorMap[entry.level],
+                        <Box width="100%" height="100%">
+                            <AutoSizer>
+                                {({ width, height }) => {
+                                    console.log(height);
+                                    return (
+                                        <TableVirtuoso
+                                            width={width}
+                                            height={height}
+                                            style={{ height, width }}
+                                            data={logs}
+                                            components={{
+                                                Scroller:
+                                                    forwardRef<HTMLDivElement>(
+                                                        (props, ref) => (
+                                                            <TableContainer
+                                                                component={
+                                                                    Paper
+                                                                }
+                                                                {...props}
+                                                                ref={ref}
+                                                            />
+                                                        ),
+                                                    ),
+                                                Table: (props) => (
+                                                    <Table
+                                                        {...props}
+                                                        sx={{
+                                                            borderCollapse:
+                                                                'separate',
+                                                            tableLayout:
+                                                                'fixed',
+                                                        }}
+                                                    />
+                                                ),
+                                                TableHead:
+                                                    forwardRef<HTMLTableSectionElement>(
+                                                        (props, ref) => (
+                                                            <TableHead
+                                                                {...props}
+                                                                ref={ref}
+                                                            />
+                                                        ),
+                                                    ),
+                                                TableRow,
+                                                TableBody:
+                                                    forwardRef<HTMLTableSectionElement>(
+                                                        (props, ref) => (
+                                                            <TableBody
+                                                                {...props}
+                                                                ref={ref}
+                                                            />
+                                                        ),
+                                                    ),
                                             }}
-                                        >
-                                            <TableCell sx={{ opacity: 1 }}>
-                                                {DateTime.fromISO(
-                                                    entry.timestamp,
-                                                ).toLocaleString(
-                                                    DateTime.DATETIME_MED,
-                                                )}
-                                            </TableCell>
-                                            <TableCell>{entry.level}</TableCell>
-                                            <TableCell>
-                                                {entry.room &&
-                                                    `[${entry.room}] `}
-                                                {entry.message}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                            fixedHeaderContent={() => (
+                                                <TableRow
+                                                    sx={{
+                                                        backgroundColor:
+                                                            'background.paper',
+                                                    }}
+                                                >
+                                                    <TableCell>
+                                                        Timestamp
+                                                    </TableCell>
+                                                    <TableCell>Level</TableCell>
+                                                    <TableCell>
+                                                        Message
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                            itemContent={(index, entry) => (
+                                                <>
+                                                    <TableCell
+                                                        sx={{ opacity: 1 }}
+                                                    >
+                                                        {DateTime.fromISO(
+                                                            entry.timestamp,
+                                                        ).toLocaleString(
+                                                            DateTime.DATETIME_MED,
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {entry.level}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {entry.room &&
+                                                            `[${entry.room}] `}
+                                                        {entry.message}
+                                                    </TableCell>
+                                                </>
+                                            )}
+                                        />
+                                    );
+                                }}
+                            </AutoSizer>
+                        </Box>
                     )}
                 </TabPanel>
             </TabContext>
