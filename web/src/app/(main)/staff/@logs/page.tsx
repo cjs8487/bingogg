@@ -34,7 +34,7 @@ const colorMap: { [k: string]: string } = {
 
 const Scroller = forwardRef<HTMLDivElement>(
     function VirtuosoScroller(props, ref) {
-        return <TableContainer component={Paper} {...props} ref={ref} />;
+        return <TableContainer {...props} ref={ref} />;
     },
 );
 
@@ -74,13 +74,15 @@ const FixedHeaderContent = () => (
 
 const ItemContent = (_index: number, entry: LogEntry) => (
     <>
-        <TableCell sx={{ opacity: 1 }}>
+        <TableCell sx={{ background: colorMap[entry.level] }}>
             {DateTime.fromISO(entry.timestamp).toLocaleString(
                 DateTime.DATETIME_MED,
             )}
         </TableCell>
-        <TableCell>{entry.level}</TableCell>
-        <TableCell>
+        <TableCell sx={{ background: colorMap[entry.level] }}>
+            {entry.level}
+        </TableCell>
+        <TableCell sx={{ background: colorMap[entry.level] }}>
             {entry.room && `[${entry.room}] `}
             {entry.message}
         </TableCell>
