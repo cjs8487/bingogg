@@ -12,9 +12,9 @@ import {
     Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { TableProps, TableVirtuoso } from 'react-virtuoso';
+import { TableProps, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
 import { useApi } from '../../../../lib/Hooks';
 import { blue, blueGrey, orange, red } from '@mui/material/colors';
 
@@ -116,6 +116,7 @@ export default function Logs() {
                         }}
                         fixedHeaderContent={FixedHeaderContent}
                         itemContent={ItemContent}
+                        initialTopMostItemIndex={logs.length}
                     />
                 )}
             </AutoSizer>
