@@ -4,9 +4,14 @@ import {
     Checkbox,
     CircularProgress,
     Collapse,
+    FormControl,
     FormControlLabel,
     FormGroup,
     IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
     Table,
     TableBody,
     TableCell,
@@ -106,7 +111,7 @@ const VirtuosoTableRow: TableComponents<LogEntry, TableContext>['TableRow'] = ({
                 {...props}
             >
                 {'method' in entry && (
-                    <TableCell>
+                    <TableCell padding="none" size="small">
                         <IconButton
                             aria-label="expand row"
                             size="small"
@@ -171,8 +176,10 @@ const FixedHeaderContent = () => (
             backgroundColor: 'background.paper',
         }}
     >
-        <TableCell />
-        <TableCell align="right">Timestamp</TableCell>
+        <TableCell size="small" padding="none" />
+        <TableCell align="right" size="small">
+            Timestamp
+        </TableCell>
         <TableCell align="center">Level</TableCell>
         <TableCell>Message</TableCell>
     </TableRow>
@@ -196,6 +203,7 @@ export default function Logs() {
 
     const [shownLevels, { push: pushLevel, filter: filterLevels }] =
         useList<string>(['info', 'warn', 'error']);
+    const [roomFilter, setRoomFilter] = useState('All logs');
 
     if (isLoading) {
         return <CircularProgress />;
@@ -205,7 +213,23 @@ export default function Logs() {
         return <Typography>Unable to load logs - ${error}</Typography>;
     }
 
-    const shownLogs = logs.filter((log) => shownLevels.includes(log.level));
+    const shownLogs = logs
+        .filter((log) => shownLevels.includes(log.level))
+        .filter(
+            (log) =>
+                roomFilter === 'All logs' ||
+                ('room' in log && log.room === roomFilter),
+        );
+    const rooms = logs.reduce<string[]>((rooms, log) => {
+        if ('room' in log && !rooms.includes(log.room)) {
+            rooms.push(log.room);
+        }
+        return rooms;
+    }, []);
+
+    const handleRoomChange = (event: SelectChangeEvent) => {
+        setRoomFilter(event.target.value as string);
+    };
 
     return (
         <Box width="100%" height="100%" display="flex" flexDirection="column">
@@ -269,6 +293,23 @@ export default function Logs() {
                     }
                     label="Error"
                 />
+                <FormControl fullWidth>
+                    <InputLabel id="room-select-label">Room</InputLabel>
+                    <Select
+                        labelId="room-select-label"
+                        id="room-select"
+                        value={roomFilter}
+                        label="Room"
+                        onChange={handleRoomChange}
+                    >
+                        <MenuItem value="All logs">All logs</MenuItem>
+                        {rooms.map((room) => (
+                            <MenuItem key={room} value={room}>
+                                {room}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             </Box>
             <Box style={{ flexGrow: 1 }}>
                 <AutoSizer>
