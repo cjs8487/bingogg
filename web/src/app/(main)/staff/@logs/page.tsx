@@ -1,8 +1,11 @@
 'use client';
 import {
     Box,
+    Checkbox,
     CircularProgress,
     Collapse,
+    FormControlLabel,
+    FormGroup,
     IconButton,
     Table,
     TableBody,
@@ -191,6 +194,9 @@ export default function Logs() {
         updateAt(index, !expansionStatus[index]);
     };
 
+    const [shownLevels, { push: pushLevel, filter: filterLevels }] =
+        useList<string>(['info', 'warn', 'error']);
+
     if (isLoading) {
         return <CircularProgress />;
     }
@@ -199,28 +205,93 @@ export default function Logs() {
         return <Typography>Unable to load logs - ${error}</Typography>;
     }
 
+    const shownLogs = logs.filter((log) => shownLevels.includes(log.level));
+
     return (
-        <Box width="100%" height="100%">
-            <AutoSizer>
-                {({ width, height }) => (
-                    <TableVirtuoso<LogEntry, TableContext>
-                        width={width}
-                        height={height}
-                        style={{ height, width }}
-                        data={logs}
-                        components={{
-                            Scroller,
-                            Table: VirtuosoTable,
-                            TableHead: VirtuosoTableHead,
-                            TableRow: VirtuosoTableRow,
-                            TableBody: VirtuosoTableBody,
-                        }}
-                        fixedHeaderContent={FixedHeaderContent}
-                        initialTopMostItemIndex={logs.length}
-                        context={{ isExpanded, setExpanded }}
-                    />
-                )}
-            </AutoSizer>
+        <Box width="100%" height="100%" display="flex" flexDirection="column">
+            <Box sx={{ display: 'flex' }}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            onChange={(event) => {
+                                if (event.target.checked) {
+                                    pushLevel('debug');
+                                } else {
+                                    filterLevels((l) => l !== 'debug');
+                                }
+                            }}
+                        />
+                    }
+                    label="Debug"
+                />
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            defaultChecked
+                            onChange={(event) => {
+                                if (event.target.checked) {
+                                    pushLevel('info');
+                                } else {
+                                    filterLevels((l) => l !== 'info');
+                                }
+                            }}
+                        />
+                    }
+                    label="Info"
+                />
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            defaultChecked
+                            onChange={(event) => {
+                                if (event.target.checked) {
+                                    pushLevel('warn');
+                                } else {
+                                    filterLevels((l) => l !== 'warn');
+                                }
+                            }}
+                        />
+                    }
+                    label="Warn"
+                />
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            defaultChecked
+                            onChange={(event) => {
+                                if (event.target.checked) {
+                                    pushLevel('error');
+                                } else {
+                                    filterLevels((l) => l !== 'error');
+                                }
+                            }}
+                        />
+                    }
+                    label="Error"
+                />
+            </Box>
+            <Box style={{ flexGrow: 1 }}>
+                <AutoSizer>
+                    {({ width, height }) => (
+                        <TableVirtuoso<LogEntry, TableContext>
+                            width={width}
+                            height={height}
+                            style={{ height, width }}
+                            data={shownLogs}
+                            components={{
+                                Scroller,
+                                Table: VirtuosoTable,
+                                TableHead: VirtuosoTableHead,
+                                TableRow: VirtuosoTableRow,
+                                TableBody: VirtuosoTableBody,
+                            }}
+                            fixedHeaderContent={FixedHeaderContent}
+                            initialTopMostItemIndex={logs.length}
+                            context={{ isExpanded, setExpanded }}
+                        />
+                    )}
+                </AutoSizer>
+            </Box>
         </Box>
     );
 }
