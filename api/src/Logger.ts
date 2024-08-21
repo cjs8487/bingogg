@@ -13,12 +13,15 @@ export const rotateTransport: DailyRotateFile = new DailyRotateFile({
     zippedArchive: true,
     createSymlink: true,
     symlinkName: 'current.log',
+    handleExceptions: true,
+    handleRejections: true,
 });
 
 export const logger = createLogger({
     level: 'info',
     format: logFormat,
     transports: [rotateTransport],
+    exitOnError: false,
 });
 
 if (testing) {
@@ -36,6 +39,8 @@ if (testing) {
                     return `${info.timestamp} [${info.level}] ${info.message} ${end}`;
                 }),
             ),
+            handleExceptions: true,
+            handleRejections: true,
         }),
     );
 }
