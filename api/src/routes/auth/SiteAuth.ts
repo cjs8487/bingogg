@@ -34,22 +34,15 @@ siteAuth.post('/login', async (req, res, next) => {
         res.sendStatus(401);
         return;
     }
-
-    req.session.regenerate((genErr) => {
-        if (genErr) {
+    req.session.loggedIn = true;
+    req.session.user = auth.id;
+    req.session.save((saveErr) => {
+        if (saveErr) {
             next();
             res.sendStatus(500);
             return;
         }
-        req.session.user = auth.id;
-        req.session.save((saveErr) => {
-            if (saveErr) {
-                next();
-                res.sendStatus(500);
-                return;
-            }
-            res.sendStatus(200);
-        });
+        res.sendStatus(200);
     });
 });
 

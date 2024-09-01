@@ -6,14 +6,16 @@ import { randomUUID } from 'crypto';
 export type RoomTokenPayload = {
     roomSlug: string;
     uuid: string;
+    sessionId?: string;
 };
 
 const tokenStore: string[] = [];
 
-export const createRoomToken = (room: Room) => {
+export const createRoomToken = (room: Room, sessionId?: string) => {
     const payload: RoomTokenPayload = {
         roomSlug: room.slug,
         uuid: randomUUID(),
+        sessionId,
     };
     const token = sign(payload, roomTokenSecret);
     tokenStore.push(token);

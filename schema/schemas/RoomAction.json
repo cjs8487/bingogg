@@ -5,7 +5,14 @@
     "required": ["authToken"],
     "description": "An outgoing client websocket message sent when a client performs an action in a room",
     "properties": {
-        "authToken": {"type": "string", "description": "JWT for the room obtained from the server"}
+        "authToken": {
+            "type": "string",
+            "description": "JWT for the room obtained from the server"
+        },
+        "sessionCookie": {
+            "type": "string",
+            "description": "Session cookie value, which allows the socket connection to use user authentication. If supplied, it MUST match the session with which authToken was created."
+        }
     },
     "anyOf": [
         {"$ref": "#/$defs/JoinAction"},

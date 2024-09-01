@@ -1,42 +1,40 @@
-import Database, { Database as DB } from 'better-sqlite3';
-import SqliteStore from 'better-sqlite3-session-store';
 import bodyParser from 'body-parser';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import session from 'express-session';
 import { port, sessionSecret, testing } from './Environment';
 import { logDebug, logInfo } from './Logger';
 import { allRooms, roomWebSocketServer } from './core/RoomServer';
 import { disconnect } from './database/Database';
 import api from './routes/api';
+import { closeSessionDatabase, sessionStore } from './util/Session';
 
 declare module 'express-session' {
     interface SessionData {
+        loggedIn: boolean;
         user?: string;
     }
 }
 
 const app = express();
 
-// configure session store
-const sessionDb: DB = new Database('sessions.db');
-const sessionStore = new (SqliteStore(session))({
-    client: sessionDb,
-    expired: {
-        clear: true,
-        intervalMs: 900000,
-    },
+const sessionParser = session({
+    store: sessionStore,
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: !testing },
+    proxy: !testing,
+    unset: 'destroy',
 });
-app.use(
-    session({
-        store: sessionStore,
-        secret: sessionSecret,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: !testing },
-        proxy: !testing,
-        unset: 'destroy',
-    }),
-);
+
+app.use(sessionParser);
+
+app.use((req, res, next) => {
+    if (req.session.loggedIn === undefined) {
+        req.session.loggedIn = false;
+    }
+    next();
+});
 
 app.use((req, res, next) => {
     // res.header('Access-Control-Allow-Origin', clientUrl);
@@ -70,8 +68,10 @@ server.on('upgrade', (req, socket, head) => {
         if (!room) {
             return;
         }
-        roomWebSocketServer.handleUpgrade(req, socket, head, (ws) => {
-            roomWebSocketServer.emit('connection', ws, req);
+        sessionParser(req as unknown as Request, {} as Response, () => {
+            roomWebSocketServer.handleUpgrade(req, socket, head, (ws) => {
+                roomWebSocketServer.emit('connection', ws, req);
+            });
         });
     } else {
         socket.destroy();
@@ -107,7 +107,7 @@ const cleanup = async () => {
         }),
         new Promise((resolve) => {
             logDebug('Closing session database connection');
-            sessionDb.close();
+            closeSessionDatabase();
             logDebug('Session database connection closed');
             resolve(undefined);
         }),

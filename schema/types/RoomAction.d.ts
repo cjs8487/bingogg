@@ -21,6 +21,10 @@ export type RoomAction = (
    * JWT for the room obtained from the server
    */
   authToken: string;
+  /**
+   * Session cookie value, which allows the socket connection to use user authentication.
+   */
+  sessionCookie?: string;
 };
 
 export interface JoinAction {

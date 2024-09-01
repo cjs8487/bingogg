@@ -210,7 +210,7 @@ rooms.post('/:slug/authorize', (req, res) => {
         res.sendStatus(403);
         return;
     }
-    const token = createRoomToken(room);
+    const token = createRoomToken(room, req.session.id);
     res.status(200).send({ authToken: token });
 });
 

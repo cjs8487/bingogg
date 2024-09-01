@@ -58,21 +58,14 @@ registration.post('/register', async (req, res, next) => {
         res.sendStatus(400);
         return;
     }
-    req.session.regenerate((genErr) => {
-        if (genErr) {
+    req.session.user = id;
+    req.session.save((saveErr) => {
+        if (saveErr) {
             next();
             res.sendStatus(500);
             return;
         }
-        req.session.user = id;
-        req.session.save((saveErr) => {
-            if (saveErr) {
-                next();
-                res.sendStatus(500);
-                return;
-            }
-            res.sendStatus(201);
-        });
+        res.sendStatus(201);
     });
 });
 
