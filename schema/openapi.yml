@@ -1,7 +1,7 @@
-openapi: '3.0.3'
+openapi: "3.0.3"
 info:
   title: PlayBingo API
-  version: '1.0'
+  version: "1.0"
 servers:
   - url: https://playbingo.gg/api
 tags:
@@ -82,7 +82,7 @@ components:
             The unique identifier of the game, used to retrieve game resources
             from the server
         roomRacetimeConnection:
-          $ref: '#/components/schemas/roomRacetimeConnection'
+          $ref: "#/components/schemas/roomRacetimeConnection"
     roomRacetimeConnection:
       type: object
       required:
@@ -116,6 +116,12 @@ components:
         ended:
           type: string
           description: ISO 8601 date when the race ended
+    roomSocketAuthToken:
+      type: string
+      description:
+        JWT representing authorization to access a specific room. Room
+        authorization tokens encapsulate both the authorized user's identity
+        within the room, as well as what permissions they have within the room.
 paths:
   /me:
     get:
@@ -128,11 +134,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: "#/components/schemas/user"
         401:
-          $ref: '#/components/responses/errorUnauthorized'
+          $ref: "#/components/responses/errorUnauthorized"
         403:
-          $ref: '#/components/responses/errorForbidden'
+          $ref: "#/components/responses/errorForbidden"
   /logout:
     post:
       summary: End the current login session
@@ -142,7 +148,7 @@ paths:
         200:
           description: OK
         401:
-          $ref: '#/components/responses/errorUnauthorized'
+          $ref: "#/components/responses/errorUnauthorized"
   /rooms:
     get:
       summary: Get a list of rooms
@@ -165,7 +171,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/roomData'
+                  $ref: "#/components/schemas/roomData"
     post:
       summary: Create a new room
       description:
@@ -220,14 +226,71 @@ paths:
                       Unique identifier for the room, which can be used to
                       construct the URL to the room
                   authToken:
-                    type: string
-                    description:
-                      JWT representing the creators authorization to access the
-                      newly created room. The token is automatically associated
-                      with the identity provided in the request, but can be
-                      updated as normal like other auth tokens.
+                    $ref: "#/components/schemas/roomSocketAuthToken"
+                  
         400:
-          $ref: '#/components/responses/errorBadRequest'
+          $ref: "#/components/responses/errorBadRequest"
         404:
-          $ref: '#/components/responses/errorNotFound'
-            
+          $ref: "#/components/responses/errorNotFound"
+  /rooms/{slug}:
+    get:
+      tags:
+      - rooms
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get data for a room
+      description:
+        Gets the room data for the specified room. This will cause the server
+        to flag an inactive room as active, unless the room is closed.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/roomData"
+        404:
+          $ref: "#/components/responses/errorNotFound"
+  /rooms/{slug}/authorize:
+    post:
+      tags:
+      - rooms
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get an authorization token for a room
+      description:
+        Creates an authorization session with the websocket server for the
+        specified room.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description:
+                    The room password. Required for rooms that are password
+                    protected, unless the logged in user has special
+                    authorization for the game.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  authToken:
+                    $ref: "#/components/schemas/roomSocketAuthToken"
+        403:
+          $ref: "#/components/responses/errorForbidden"
+        404:
+          $ref: "#/components/responses/errorNotFound"
