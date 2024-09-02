@@ -11,6 +11,7 @@ import {
 import { gameForSlug, goalCount } from '../../database/games/Games';
 import { chunk } from '../../util/Array';
 import { logInfo, logWarn } from '../../Logger';
+import { handleAction } from './actions/Actions';
 
 const MIN_ROOM_GOALS_REQUIRED = 25;
 const rooms = Router();
@@ -214,21 +215,9 @@ rooms.post('/:slug/authorize', (req, res) => {
     res.status(200).send({ authToken: token });
 });
 
-interface ActionResultBase {
-    code: number;
-}
-
-interface ActionResultError extends ActionResultBase {
-    message: string;
-}
-
-interface ActionResult<T> extends ActionResultBase {
-    value: T;
-}
-
 rooms.post<{ slug: string; action: string }>(
     '/:slug/actions/:action(*)',
-    (req, res) => {
+    async (req, res) => {
         const { slug, action } = req.params;
 
         if (!req.session.user) {
@@ -256,7 +245,12 @@ rooms.post<{ slug: string; action: string }>(
             return;
         }
 
-        const result = handleAction(room, action, req.session.user);
+        const result = await handleAction(
+            room,
+            action,
+            req.session.user,
+            authToken,
+        );
 
         res.status(result.code);
         if ('message' in result) {
@@ -266,25 +260,5 @@ rooms.post<{ slug: string; action: string }>(
         }
     },
 );
-
-const handleAction = (
-    room: Room,
-    action: string,
-    user: string,
-): ActionResult<unknown> | ActionResultError => {
-    switch (action) {
-        case 'racetime/create':
-            return {
-                code: 200,
-                value: { url: '' },
-            };
-        default:
-            room.logInfo('Unknown action request');
-            return {
-                code: 400,
-                message: 'Unknown action',
-            };
-    }
-};
 
 export default rooms;
