@@ -122,6 +122,51 @@ components:
         JWT representing authorization to access a specific room. Room
         authorization tokens encapsulate both the authorized user's identity
         within the room, as well as what permissions they have within the room.
+    game:
+      type: object
+      description: Represents the high level information for a single bingo game
+      required:
+        - name
+        - slug
+        - owners
+        - moderators
+        - racetimeBeta
+      properties:
+        name:
+          type: string
+          description: The full name of the game
+        slug:
+          type: string
+          description: The game's unique, short name used for URLs
+        coverImage:
+          type: string
+          description:
+            URL to the game's cover image displayed on the website. May link
+            externally
+        owners:
+          type: array
+          description: The owners of the game
+          items:
+            $ref: "#/components/schemas/user"
+        moderators:
+          type: array
+          description: The moderators of the game
+          items:
+            $ref: "#/components/schemas/user"
+        enableSRLv5:
+          type: boolean
+          description: If the game is enabled for SRLv5 board generation
+        racetimeBeta:
+          type: boolean
+          description:
+            \[TEMPORARY\] Flag indicating if the game has opted in to the
+            racetime.gg integration beta program
+        racetimeCategory:
+          type: string
+          description: The slug of the connected racetime category
+        racetimeGoal:
+          type: string
+          description: The name of the connected racetime goal
 paths:
   /me:
     get:
@@ -294,3 +339,76 @@ paths:
           $ref: "#/components/responses/errorForbidden"
         404:
           $ref: "#/components/responses/errorNotFound"
+  /games:
+    get:
+      summary: Get all games
+      description: Gets the full list of games.
+      tags:
+      - games
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/game"
+    post:
+      summary: Create a new game
+      description:
+        Creates a new game from the specified data. Requires a login session,
+        and can only be called from the website. The user in the login session
+        will be made the owner of the game.
+      tags:
+        - games
+      security:
+        - cookieAuthentication: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - slug
+              properties:
+                name:
+                  type: string
+                  description: The name of the new game
+                slug:
+                  type: string
+                  description: The slug of the new game
+                coverImage:
+                  type: string
+                  description: Link to the cover image of the new game
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        400:
+          $ref: "#/components/responses/errorBadRequest"
+        401:
+          $ref: "#/components/responses/errorUnauthorized"
+        500:
+          $ref: "#/components/responses/errorServer"
+  /games/{slug}:
+    get:
+      summary: Get a single game
+      description: Gets data for a single game
+      tags:
+        - games
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        404:
+          $ref: "#/components/responses/errorNotFound"
+      
+                  
