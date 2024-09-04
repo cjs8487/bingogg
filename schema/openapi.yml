@@ -167,6 +167,37 @@ components:
         racetimeGoal:
           type: string
           description: The name of the connected racetime goal
+    goal:
+      type: object
+      description:
+        Represents a single goal for a game.
+      properties:
+        id:
+          type: string
+          description: The goal's unique internal identifier
+        goal:
+          type: string
+          description:
+            The goals primary text. Typically a short blurb stating the object
+            of the goal
+        description:
+          type: string
+          description:
+            Long form description of the goal. Usually used to explain
+            additional, detailed information about the task and how to
+            accomplish it
+        difficultly:
+          type: number
+          description:
+            Difficulty rating of the goal. Meaning depends on the generator the
+            goal was designed for. For SRLv5, this is a number 1-25
+        categories:
+          type: array
+          items:
+            type: string
+          description:
+            List of category types that the goal belongs to. Used by generators
+            to prevent overly-synergistic lines
 paths:
   /me:
     get:
@@ -401,6 +432,13 @@ paths:
       description: Gets data for a single game
       tags:
         - games
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: The slug of the desired game
+          schema:
+            type: string
       responses:
         200:
           description: OK
@@ -410,5 +448,76 @@ paths:
                 $ref: "#/components/schemas/game"
         404:
           $ref: "#/components/responses/errorNotFound"
+    post:
+      summary: Update a game
+      description:
+        Update the data for an existing game
+      tags:
+        - games
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: The slug of the desired game
+          schema:
+            type: string
+      security:
+        - cookieAuthentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        400:
+          $ref: "#/components/responses/errorBadRequest"
+  /games/{slug}/goals:
+    get:
+      summary: Get goals for a game
+      description:
+        Get the list of all goals for a game
+      tags:
+        - games
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: The slug of the desired game
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/goal"
+    post:
+      summary: Create a new goal
+      description:
+        Creates a new goal belonging to the specified game
+      tags:
+        - games
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: The slug of the desired game
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/goal"
+        400:
+          $ref: "#/components/responses/errorBadRequest"
+
+
       
                   
