@@ -15,7 +15,7 @@ components:
       description:
         Authentication is handled via session and cookies. Endpoints
         protected by this authentication method are only available to requests
-        made by the website.
+        made by the website, unless they list another form of authorization.
       type: apiKey
       in: cookie
       name: connect.sid
