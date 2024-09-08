@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../../context/UserContext';
 import FormikTextField from '../../../components/input/FormikTextField';
 import { Box, Button, Link, Paper, Typography } from '@mui/material';
+import { login } from '../../../actions/Session';
 
 export default function Login() {
     const router = useRouter();
@@ -40,14 +41,7 @@ export default function Login() {
                 <Formik
                     initialValues={{ username: '', password: '' }}
                     onSubmit={async ({ username, password }) => {
-                        const res = await fetch('/api/auth/login', {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ username, password }),
-                        });
+                        const res = await login(username, password);
                         if (!res.ok) {
                             if (res.status === 403) {
                                 setError('Incorrect username or password.');

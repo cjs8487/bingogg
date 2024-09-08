@@ -10,6 +10,7 @@ import {
 import { User } from '../types/User';
 import { useRouter } from 'next/navigation';
 import { alertError } from '../lib/Utils';
+import { logout } from '../actions/Session';
 
 interface UserContext {
     loggedIn: boolean;
@@ -42,8 +43,8 @@ export const UserContextProvider = ({ children }: React.PropsWithChildren) => {
         }
         setCheckDone(true);
     }, []);
-    const logout = useCallback(async () => {
-        const res = await fetch('api/logout', { method: 'POST' });
+    const doLogout = useCallback(async () => {
+        const res = await logout();
         if (!res.ok) {
             if (res.status === 500) {
                 alertError(
@@ -66,7 +67,9 @@ export const UserContextProvider = ({ children }: React.PropsWithChildren) => {
     }
 
     return (
-        <UserContext.Provider value={{ loggedIn, user, checkSession, logout }}>
+        <UserContext.Provider
+            value={{ loggedIn, user, checkSession, logout: doLogout }}
+        >
             {children}
         </UserContext.Provider>
     );

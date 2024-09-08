@@ -8,6 +8,7 @@ import { UserContext } from '../../../context/UserContext';
 import { alertError } from '../../../lib/Utils';
 import FormikTextField from '../../../components/input/FormikTextField';
 import { Box, Button, Link, Paper, Typography } from '@mui/material';
+import { register } from '../../../actions/Registration';
 
 const validationSchema = yup.object({
     email: yup
@@ -119,19 +120,9 @@ export default function Register() {
                     validationSchema={validationSchema}
                     validateOnChange={false}
                     onSubmit={async ({ email, username, password }) => {
-                        const res = await fetch('/api/registration/register', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                email,
-                                username,
-                                password,
-                            }),
-                        });
+                        const res = await register(email, username, password);
                         if (!res.ok) {
-                            const error = await res.text();
+                            const error = res.message;
                             alertError(
                                 `Unable to submit registration - ${error}`,
                             );
