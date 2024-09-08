@@ -9,7 +9,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'bingo.gg',
+    title: 'PlayBingo',
     description: 'The next generation of gaming bingo',
 };
 

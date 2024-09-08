@@ -27,7 +27,7 @@ export default function Login() {
         >
             <Paper sx={{ px: 8, py: 4 }}>
                 <Box paddingBottom={2} textAlign="center">
-                    <Typography variant="h4">Login to bingo.gg</Typography>
+                    <Typography variant="h4">Login to PlayBingo</Typography>
                     <Typography variant="caption" color="text.secondary">
                         No login is required to play bingo.
                     </Typography>

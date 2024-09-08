@@ -11,7 +11,7 @@ export default function ColorSelect() {
     const colors = ['blue', 'red', 'orange', 'green', 'purple'];
 
     const [storedCustomColor, setStoredCustomColor] = useLocalStorage(
-        'bingogg.customcolor',
+        'PlayBingo.customcolor',
         '',
     );
 

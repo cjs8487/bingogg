@@ -19,7 +19,7 @@ export default function DesktopMenu() {
                     textTransform: 'none',
                 }}
             >
-                bingo.gg
+                PlayBingo
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Box display="flex">

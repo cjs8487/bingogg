@@ -7,14 +7,14 @@ export default function Privacy() {
                 Privacy Policy
             </Typography>
             <Typography sx={{ pb: 1.5 }}>
-                Welcome to bingo.gg! Your privacy is important to us, and we are
-                committed to protecting the personal information that you share
-                with us. This Privacy Policy outlines how we collect, use, and
-                safeguard your information when you visit our website.
+                Welcome to PlayBingo! Your privacy is important to us, and we
+                are committed to protecting the personal information that you
+                share with us. This Privacy Policy outlines how we collect, use,
+                and safeguard your information when you visit our website.
             </Typography>
             <Typography sx={{ pb: 3 }}>
-                By choosing to use bingo.gg, you agree to the collection and use
-                of information in relation with this policy. The Personal
+                By choosing to use PlayBingo, you agree to the collection and
+                use of information in relation with this policy. The Personal
                 Information that we collect are used for providing and improving
                 our service. We will not use or share your information with
                 anyone except as described in this Privacy Policy.
@@ -56,10 +56,10 @@ export default function Privacy() {
             </Typography>
             <Typography variant="h5">Cookies</Typography>
             <Typography sx={{ pb: 3 }}>
-                bingo.gg uses cookies to enhance your experience on our website.
-                You may choose to disable cookies through your browser settings,
-                but please note that some features of the site may not function
-                properly without them.
+                PlayBingo uses cookies to enhance your experience on our
+                website. You may choose to disable cookies through your browser
+                settings, but please note that some features of the site may not
+                function properly without them.
             </Typography>
             <Typography variant="h5">Third-Party Links</Typography>
             <Typography sx={{ pb: 3 }}>
@@ -80,8 +80,8 @@ export default function Privacy() {
                 If you have any questions or concerns regarding our Privacy
                 Policy, please contact us at{' '}
                 <a href="mailto:staff@bingothon.com">staff@bingothon.com</a>.
-                Thank you for choosing bingo.gg! Enjoy your game in a secure and
-                private environment.
+                Thank you for choosing PlayBingo! Enjoy your game in a secure
+                and private environment.
             </Typography>
         </Container>
     );

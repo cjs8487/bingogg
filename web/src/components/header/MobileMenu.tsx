@@ -66,7 +66,7 @@ export default function MobileMenu() {
                     textDecoration: 'none',
                 }}
             >
-                bingo.gg
+                PlayBingo
             </Typography>
             <Box flexGrow={1} />
         </>

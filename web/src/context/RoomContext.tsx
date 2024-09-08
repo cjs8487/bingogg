@@ -407,9 +407,9 @@ export function RoomContextProvider({ slug, children }: RoomContextProps) {
                 // load a cached token and use it if present
                 const storedToken = localStorage.getItem(`authToken-${slug}`);
                 const tempNickname = localStorage.getItem(
-                    'bingogg.temp.nickname',
+                    'PlayBingo.temp.nickname',
                 );
-                localStorage.removeItem('bingogg.temp.nickname');
+                localStorage.removeItem('PlayBingo.temp.nickname');
                 if (storedToken) {
                     setAuthToken(storedToken);
                     if (tempNickname) {

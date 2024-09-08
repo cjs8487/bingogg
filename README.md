@@ -1,13 +1,13 @@
-# bingo.gg
+# PlayBingo
 *The new way to bingo*
 
-bingo.gg is a video game bingo hosting service designed to modernize, streamline, and improve the functionality provided by [Bingosync](https://bingosync.com), and add new features to improve the bingo experience.
+PlayBingo is a video game bingo hosting service designed to modernize, streamline, and improve the functionality provided by [Bingosync](https://bingosync.com), and add new features to improve the bingo experience.
 
 ## What is video game bingo?
 Video game bingo is a subset of the larger speedrun community, where rather than aiming to simply complete the game, runners aim to complete a set of goals within the game. These goals vary from game to game, and generally games have many more goals than needed to fill a bingo board, creating a unique experience every time you play.
 
 ## Setup
-bingo.gg consists of two main core modules - the api module and the web module.
+PlayBingo consists of two main core modules - the api module and the web module.
 The api module can be run independently, but many features are unavailable
 without accessing the api via a client. The web module requires the api module
 for most of its functionality.
@@ -15,10 +15,10 @@ for most of its functionality.
 ### Requirements
 - Node.js version 18 or higher
 - A Postgres server
-  - bingo.gg is only tested against Postgres, though it should also work with MySQL
+  - PlayBingo is only tested against Postgres, though it should also work with MySQL
 
 ### Environment Variables
-bingo.gg requires several environment variables to be specified in order to function.
+PlayBingo requires several environment variables to be specified in order to function.
 
 #### Required
 ##### API
@@ -52,13 +52,13 @@ bingo.gg requires several environment variables to be specified in order to func
 4. Run `npm run dev` to start the development server
 
 ## Modules
-bingo.gg consists of several modules, which divide the functionality between platforms, hosts, etc.
+PlayBingo consists of several modules, which divide the functionality between platforms, hosts, etc.
 
 ### API
 The API module is the primary server module, providing the public facing API for the application as well as the database interface. The API module also contains the websocket layer.
 
 ### Web
-The web module is bingo.gg's primary client. It provides the web interface through which the majority of users interact with the service.
+The web module is PlayBingo's primary client. It provides the web interface through which the majority of users interact with the service.
 
 ### Schema
 The schema module contains json typeschema definitions for the project along with compiled TypeScript definitions for the schemas. The types are also available on npm in the `@bingogg/types` package.

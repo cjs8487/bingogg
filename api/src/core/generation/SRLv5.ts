@@ -74,7 +74,7 @@ function difficulty(i: number, seed: number) {
 
 /**
  * An adapted implementation of Bingosync's SRLv5 generator, built with for
- * modern JavaScript/TypeScript standards and typed for the bingo.gg model.
+ * modern JavaScript/TypeScript standards and typed for the PlayBingo model.
  *
  * @param goals List of goals to generate the board from
  * @param seedIn Optional starting seed for the PRNG

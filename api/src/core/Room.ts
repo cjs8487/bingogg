@@ -44,7 +44,7 @@ export enum BoardGenerationMode {
 }
 
 /**
- * Represents a room in the bingo.gg service. A room is container for a single
+ * Represents a room in the PlayBingo service. A room is container for a single
  * "game" of bingo, containing the board, game state, history, and all other
  * game level data.
  */
