@@ -91,6 +91,14 @@ export default function Header() {
                                 </ListItemIcon>
                                 <ListItemText>Profile</ListItemText>
                             </MenuItem>
+                            {user.staff && (
+                                <MenuItem component={NextLink} href="/staff">
+                                    <ListItemIcon>
+                                        <Person />
+                                    </ListItemIcon>
+                                    <ListItemText>Staff Dashboard</ListItemText>
+                                </MenuItem>
+                            )}
                             <Divider />
                             <MenuItem onClick={handleLogout}>
                                 <ListItemIcon>

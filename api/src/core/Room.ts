@@ -116,7 +116,7 @@ export default class Room {
                     break;
             }
         } catch {
-            logError(`Failed to generate board for for room ${this.slug}`);
+            this.logError(`Failed to generate board`);
             return;
         }
 
@@ -505,16 +505,16 @@ export default class Room {
     //#endregion
 
     //#region Logging
-    logInfo(message: string) {
-        logInfo(`[${this.slug}] ${message}`);
+    logInfo(message: string, metadata?: { [k: string]: string }) {
+        logInfo(message, { room: this.slug, ...metadata });
     }
 
-    logWarn(message: string) {
-        logWarn(`[${this.slug}] ${message}`);
+    logWarn(message: string, metadata?: { [k: string]: string }) {
+        logWarn(message, { room: this.slug, ...metadata });
     }
 
-    logError(message: string) {
-        logError(`[${this.slug}] ${message}`);
+    logError(message: string, metadata?: { [k: string]: string }) {
+        logError(message, { room: this.slug, ...metadata });
     }
     //#endregion
 }

@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import session from 'express-session';
 import { port, sessionSecret, testing } from './Environment';
-import { logDebug, logInfo } from './Logger';
+import { logDebug, logger, logInfo } from './Logger';
 import { allRooms, roomWebSocketServer } from './core/RoomServer';
 import { disconnect } from './database/Database';
 import api from './routes/api';
@@ -38,13 +38,23 @@ app.use(
     }),
 );
 
+// request logger
 app.use((req, res, next) => {
-    // res.header('Access-Control-Allow-Origin', clientUrl);
-    // res.header('Access-Control-Allow-Headers', 'Content-Type');
-    // res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-    // res.header('Access-Control-Allow-Credentials', 'true');
+    const profiler = logger.startTimer();
+    res.on('finish', () => {
+        profiler.done({
+            message: `${req.method} ${req.path} ${res.statusCode}`,
+            method: req.method,
+            path: req.path,
+            sessionId: req.sessionID,
+            userAgent: req.get('User-Agent') ?? '',
+            ip: req.ip ?? '',
+            statusCode: res.statusCode,
+        });
+    });
     next();
 });
+
 app.use(bodyParser.json());
 
 app.use('/api', api);
@@ -54,6 +64,7 @@ const server = app.listen(port, () => {
 });
 
 server.on('upgrade', (req, socket, head) => {
+    logInfo('[websocket] Client initiating protocol upgrade');
     if (!req.url) {
         socket.destroy();
         return;
@@ -68,12 +79,15 @@ server.on('upgrade', (req, socket, head) => {
     if (target === 'socket') {
         const room = allRooms.get(slug);
         if (!room) {
+            socket.destroy();
             return;
         }
         roomWebSocketServer.handleUpgrade(req, socket, head, (ws) => {
             roomWebSocketServer.emit('connection', ws, req);
+            logInfo(`Successfully upgraded connection for ${slug}`);
         });
     } else {
+        logInfo('[websocket] Unknown upgrade path');
         socket.destroy();
     }
 });
