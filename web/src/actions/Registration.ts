@@ -1,3 +1,4 @@
+'use server';
 import { actionFetch } from './ActionUtils';
 
 export async function register(
