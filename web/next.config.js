@@ -9,6 +9,9 @@ const nextConfig = {
     },
     env: {
         version
+    },
+    experimental: {
+        instrumentationHook: true,
     }
 };
 

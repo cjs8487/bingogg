@@ -1,5 +1,4 @@
 'use server';
-import { actionFetch } from './ActionUtils';
 
 export async function register(
     email: string,
@@ -10,7 +9,7 @@ export async function register(
         status: number;
     } & ({ ok: false; message: string } | { ok: true })
 > {
-    const res = await actionFetch('/api/registration/register', {
+    const res = await fetch('/api/registration/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

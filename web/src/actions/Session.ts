@@ -1,9 +1,7 @@
 'use server';
 
-import { actionFetch } from './ActionUtils';
-
 export async function login(username: string, password: string) {
-    const res = await actionFetch(`/api/auth/login`, {
+    const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {},
@@ -17,7 +15,7 @@ export async function login(username: string, password: string) {
 }
 
 export async function logout() {
-    const res = await actionFetch('api/logout', { method: 'POST' });
+    const res = await fetch('api/logout', { method: 'POST' });
 
     return {
         ok: res.ok,
