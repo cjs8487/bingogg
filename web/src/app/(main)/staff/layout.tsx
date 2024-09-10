@@ -7,10 +7,12 @@ import { useUserContext } from '../../../context/UserContext';
 
 interface StaffDashboardLayoutProps {
     logs: ReactNode;
+    tokens: ReactNode;
 }
 
 export default function StaffDashboardLayout({
     logs,
+    tokens,
 }: StaffDashboardLayoutProps) {
     const { user, loggedIn } = useUserContext();
 
@@ -23,7 +25,7 @@ export default function StaffDashboardLayout({
         notFound();
     }
 
-    const tabs = ['Logs'];
+    const tabs = ['Logs', 'Tokens'];
 
     return (
         <Container
@@ -47,6 +49,9 @@ export default function StaffDashboardLayout({
                 </Box>
                 <TabPanel value="Logs" sx={{ flexGrow: 1 }}>
                     {logs}
+                </TabPanel>
+                <TabPanel value="Tokens" sx={{ flexGrow: 1 }}>
+                    {tokens}
                 </TabPanel>
             </TabContext>
         </Container>

@@ -10,6 +10,7 @@ import registration from './registration/Registration';
 import rooms from './rooms/Rooms';
 import users from './users/Users';
 import { readFile } from 'fs/promises';
+import tokens from './auth/ApiTokens';
 
 const api = Router();
 
@@ -22,6 +23,7 @@ api.use('/users', users);
 api.use('/connect', connect);
 api.use('/oauth', oauth);
 api.use('/connection', connection);
+api.use('/tokens', tokens);
 
 api.get('/me', async (req, res) => {
     if (!req.session.user) {

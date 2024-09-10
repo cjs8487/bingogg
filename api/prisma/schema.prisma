@@ -113,6 +113,15 @@ model RoomAction {
   roomId  String
 }
 
+model ApiToken {
+  id        String    @id @unique @default(cuid())
+  name      String    @unique
+  token     String    @unique
+  active    Boolean   @default(true)
+  createdOn DateTime  @default(now())
+  revokedOn DateTime?
+}
+
 enum RoomActionType {
   JOIN
   LEAVE
