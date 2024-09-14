@@ -7,6 +7,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import Footer from '../../components/footer/Footer';
 import Header from '../../components/header/Header';
 
+const realFetch = globalThis.fetch;
+globalThis.fetch = async (path: URL | RequestInfo, init?: RequestInit) => {
+    const res = await realFetch(path, {
+        ...init,
+        headers: {
+            ...(init?.headers ?? {}),
+            'Content-Type': 'application/json',
+        },
+    });
+    return res;
+};
+
 export default function CoreLayout({ children }: { children: ReactNode }) {
     return (
         <Box

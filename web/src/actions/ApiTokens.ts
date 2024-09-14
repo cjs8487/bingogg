@@ -48,6 +48,7 @@ export async function revokeToken(id: string) {
         method: 'DELETE',
     });
 
+    revalidatePath('/staff');
     return {
         ok: res.ok,
         status: res.status,
