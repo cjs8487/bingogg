@@ -1,4 +1,3 @@
-import { createToken } from '../../../../actions/ApiTokens';
 import { getFullUrl } from '../../../../lib/Utils';
 import CreateTokenForm from './CreateTokenForm';
 import TokenTable from './TokenTable';
@@ -8,10 +7,11 @@ export interface ApiToken {
     name: string;
     active: boolean;
     token: string;
+    revokedOn?: string;
 }
 
 async function getTokens(): Promise<ApiToken[]> {
-    const res = await fetch(getFullUrl('/api/tokens'));
+    const res = await fetch('/api/tokens');
     if (!res.ok) {
         return [];
     }
