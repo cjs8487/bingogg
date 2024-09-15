@@ -1,7 +1,9 @@
 'use server';
 
+import { serverFetch } from '../app/ServerUtils';
+
 export async function login(username: string, password: string) {
-    const res = await fetch(`/api/auth/login`, {
+    const res = await serverFetch(`/api/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {},
@@ -15,7 +17,7 @@ export async function login(username: string, password: string) {
 }
 
 export async function logout() {
-    const res = await fetch('api/logout', { method: 'POST' });
+    const res = await serverFetch('api/logout', { method: 'POST' });
 
     return {
         ok: res.ok,

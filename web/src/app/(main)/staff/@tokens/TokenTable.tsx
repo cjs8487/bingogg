@@ -15,6 +15,7 @@ import {
     deactivateToken,
     revokeToken,
 } from '../../../../actions/ApiTokens';
+import CreateTokenForm from './CreateTokenForm';
 
 interface TokenTableProps {
     tokens: ApiToken[];
@@ -76,6 +77,11 @@ export default function TokenTable({ tokens }: TokenTableProps) {
                             </TableCell>
                         </TableRow>
                     ))}
+                    <TableRow>
+                        <TableCell colSpan={4}>
+                            <CreateTokenForm />
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>

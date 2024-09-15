@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { serverFetch } from '../app/ServerUtils';
 
 export async function createToken(name: string) {
-    const res = await fetch('/api/tokens', {
+    const res = await serverFetch('/api/tokens', {
         method: 'POST',
         body: JSON.stringify({
             name,
@@ -18,7 +19,7 @@ export async function createToken(name: string) {
 }
 
 export async function deactivateToken(id: string) {
-    const res = await fetch(`/api/tokens/${id}`, {
+    const res = await serverFetch(`/api/tokens/${id}`, {
         method: 'POST',
         body: JSON.stringify({ active: false }),
     });
@@ -31,7 +32,7 @@ export async function deactivateToken(id: string) {
 }
 
 export async function activateToken(id: string) {
-    const res = await fetch(`/api/tokens/${id}`, {
+    const res = await serverFetch(`/api/tokens/${id}`, {
         method: 'POST',
         body: JSON.stringify({ active: true }),
     });
@@ -44,7 +45,7 @@ export async function activateToken(id: string) {
 }
 
 export async function revokeToken(id: string) {
-    const res = await fetch(`/api/tokens/${id}`, {
+    const res = await serverFetch(`/api/tokens/${id}`, {
         method: 'DELETE',
     });
 

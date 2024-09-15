@@ -1,5 +1,4 @@
-import { getFullUrl } from '../../../../lib/Utils';
-import CreateTokenForm from './CreateTokenForm';
+import { serverFetch } from '../../../ServerUtils';
 import TokenTable from './TokenTable';
 
 export interface ApiToken {
@@ -11,7 +10,7 @@ export interface ApiToken {
 }
 
 async function getTokens(): Promise<ApiToken[]> {
-    const res = await fetch('/api/tokens');
+    const res = await serverFetch('/api/tokens');
     if (!res.ok) {
         return [];
     }
@@ -24,7 +23,6 @@ export default async function Keys() {
     return (
         <>
             <TokenTable tokens={tokens} />
-            <CreateTokenForm />
         </>
     );
 }
