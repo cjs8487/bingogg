@@ -10,7 +10,7 @@ export default async function Home() {
             <Box flexGrow={1}>
                 <Box mt={2} pb={4}>
                     <Typography variant="h3" textAlign="center">
-                        Welcome to bingo.gg
+                        Welcome to PlayBingo
                     </Typography>
                     <Typography
                         variant="subtitle1"

@@ -123,7 +123,10 @@ export default function RoomCreateForm() {
                     return;
                 }
                 const { slug, authToken } = await res.json();
-                localStorage.setItem('bingogg.temp.nickname', values.nickname);
+                localStorage.setItem(
+                    'PlayBingo.temp.nickname',
+                    values.nickname,
+                );
                 localStorage.setItem(`authToken-${slug}`, authToken);
                 router.push(`/rooms/${slug}`);
             }}

@@ -73,7 +73,7 @@ siteAuth.post('/forgotPassword', async (req, res) => {
     }
 
     const resetToken = await initiatePasswordReset(user.id);
-    sendHtmlEmail(user.email, 'bingo.gg Password Reset', 'ForgotPassword', {
+    sendHtmlEmail(user.email, 'PlayBingo Password Reset', 'ForgotPassword', {
         username,
         resetLink: `${urlBase}/resetpassword?token=${resetToken.token}`,
     });

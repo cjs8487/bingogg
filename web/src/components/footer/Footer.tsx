@@ -10,7 +10,7 @@ import { Box, IconButton, Link, Paper, Typography } from '@mui/material';
 import NextLink from 'next/link';
 
 const icons: { icon: IconDefinition; url: string }[] = [
-    { icon: faGithub, url: 'https://github.com/cjs8487/bingogg' },
+    { icon: faGithub, url: 'https://github.com/cjs8487/PlayBingo' },
     { icon: faPatreon, url: 'https://www.patreon.com/Bingothon' },
     { icon: faTwitter, url: 'https://twitter.com/bingothon' },
     { icon: faDiscord, url: 'https://discord.bingothon.com' },
@@ -55,7 +55,7 @@ function LargeFooter() {
                 </Typography>
             </Box>
             <Typography variant="caption">
-                bingo.gg v{process.env.version}
+                PlayBingo v{process.env.version}
             </Typography>
         </Box>
     );
@@ -107,7 +107,7 @@ function SmallFooter() {
                     </Link>
                 </Box>
                 <Typography variant="caption">
-                    bingo.gg v{process.env.version}
+                    PlayBingo v{process.env.version}
                 </Typography>
             </Box>
         </Box>
