@@ -41,11 +41,12 @@ app.use(
 // request logger
 app.use((req, res, next) => {
     const profiler = logger.startTimer();
+    const path = req.path;
     res.on('finish', () => {
         profiler.done({
-            message: `${req.method} ${req.path} ${res.statusCode}`,
+            message: `${req.method} ${path} ${res.statusCode}`,
             method: req.method,
-            path: req.path,
+            path,
             sessionId: req.sessionID,
             userAgent: req.get('User-Agent') ?? '',
             ip: req.ip ?? '',
