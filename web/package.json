@@ -21,7 +21,6 @@
         "@mui/lab": "^5.0.0-alpha.170",
         "@mui/material": "^5.16.4",
         "@mui/material-nextjs": "^5.16.4",
-        "axios": "^1.7.7",
         "formik": "^2.4.5",
         "luxon": "^3.4.4",
         "next": "14.2.5",
