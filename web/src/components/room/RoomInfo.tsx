@@ -1,8 +1,9 @@
-import { Card, CardActionArea, CardContent, Typography, Button } from '@mui/material';
+import { Card, CardActionArea, CardContent, Typography, Button, Link } from '@mui/material';
 import { useCallback, useContext, useState } from 'react';
 import { RoomContext } from '../../context/RoomContext';
 import ConnectionState from './ConnectionState';
 import RoomControlDialog from './RoomControlDialog';
+import NextLink from 'next/link';
 
 export default function RoomInfo() {
     const { roomData } = useContext(RoomContext);
@@ -22,11 +23,6 @@ export default function RoomInfo() {
         );
     }
 
-    const handleStreamButtonClick = () => {
-        // Redirect to the stream page by rendering a link element
-        window.location.href = `/rooms/${roomData.slug}/stream`; // Redirect using href
-    };
-
     return (
         <>
             <Card>
@@ -42,8 +38,20 @@ export default function RoomInfo() {
                 </CardActionArea>
             </Card>
 
-            <Button variant="contained" color="primary" onClick={handleStreamButtonClick} sx={{ mt: 2 }}>
-                Stream Board
+            {/* Add a button to view only the board */}
+            <Button 
+                variant="contained" 
+                color="secondary" 
+                sx={{ mt: 2, ml: 2, color: 'white' }} // Ensure text is white
+            >
+                <Link 
+                    component={NextLink} 
+                    href={`/rooms/${roomData.slug}/board`} 
+                    underline="none" 
+                    sx={{ color: 'white' }} // Ensure link text is also white
+                >
+                    Streamer Mode / Board Only
+                </Link>
             </Button>
 
             <RoomControlDialog show={showControlModal} close={close} />
