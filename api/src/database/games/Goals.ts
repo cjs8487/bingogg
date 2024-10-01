@@ -63,6 +63,22 @@ export const deleteGoal = async (id: string) => {
     }
 };
 
+export const deleteAllGoals = async (gameSlug: string) => {
+    try {
+        await prisma.goal.deleteMany({
+            where: { game: { slug: gameSlug } },
+        });
+        return true;
+    } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            logError(`Database Known Client error - ${e.message}`);
+        } else {
+            logError('An unknown error occurred while attempting a database operation');
+        }
+        return false;
+    }
+};
+
 type GoalInput = {
     goal: string;
     description?: string;

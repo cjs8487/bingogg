@@ -9,14 +9,18 @@ import {
     IconButton,
     Switch,
     Typography,
+    DialogActions,
+    TextField
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useGoalManagerContext } from '../../../context/GoalManagerContext';
 import Dialog, { DialogRef } from '../../Dialog';
+import SnackbarNotifier, { SnackbarRef } from '../../SnackbarNotifier';
 import GoalEditor from './GoalEditor';
 import GoalUpload from './GoalUpload';
 import Search from './Search';
 import GoalList from './GoalList';
+import axios from 'axios';
 
 export default function GoalManagement() {
     const {
@@ -35,8 +39,32 @@ export default function GoalManagement() {
     const { showDetails } = settings;
 
     const [goalUploadOpen, setGoalUploadOpen] = useState(false);
+    const [loading, setLoading] = useState(false); // State to manage loading during deletion
+    const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
+    const settingsDialogRef = useRef<DialogRef>(null); // Settings dialog
+    const deleteDialogRef = useRef<DialogRef>(null); // Delete confirmation dialog
+    const snackbarRef = useRef<SnackbarRef>(null); // Snackbar notifier
 
-    const dialogRef = useRef<DialogRef>(null);
+    // Function to handle deleting all goals
+    const deleteAllGoals = async () => {
+        if (deleteConfirmationText !== "DELETE") {
+            snackbarRef.current?.notify("You must write 'DELETE' to confirm.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await axios.delete(`/api/goals/game/${slug}/delete-all`);
+            snackbarRef.current?.notify('All goals deleted successfully');
+            mutateGoals(); // Optionally refresh the goal list if needed
+        } catch (error) {
+            console.error('Error deleting all goals:', error);
+            snackbarRef.current?.notify('Failed to delete all goals');
+        } finally {
+            setLoading(false);
+            deleteDialogRef.current?.close(); // Close the dialog after the operation
+        }
+    };
 
     return (
         <>
@@ -69,7 +97,7 @@ export default function GoalManagement() {
                         >
                             Upload Goals
                         </Button>
-                        <IconButton onClick={() => dialogRef.current?.open()}>
+                        <IconButton onClick={() => settingsDialogRef.current?.open()}>
                             <Settings />
                         </IconButton>
                     </Box>
@@ -128,8 +156,23 @@ export default function GoalManagement() {
                         slug={slug}
                     />
                 </Box>
+                {canModerate && (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '100%', mt: 3 }}>
+                        <Button
+                            onClick={() => deleteDialogRef.current?.open()} // Opens delete confirmation dialog
+                            disabled={loading}
+                            color="error"
+                            variant="contained"
+                            sx={{ maxWidth: '200px' }}
+                        >
+                            {loading ? 'Deleting...' : 'Delete All Goals'}
+                        </Button>
+                    </Box>
+                )}
             </Box>
-            <Dialog ref={dialogRef}>
+
+            {/* Settings Dialog */}
+            <Dialog ref={settingsDialogRef}>
                 <DialogTitle>Goal Manager Settings</DialogTitle>
                 <DialogContent>
                     <FormControlLabel
@@ -149,6 +192,40 @@ export default function GoalManagement() {
                     />
                 </DialogContent>
             </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog ref={deleteDialogRef}>
+                <DialogTitle>Confirm Delete All Goals</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        To confirm deletion of all goals, type <strong>DELETE</strong> below:
+                    </Typography>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Type DELETE to confirm"
+                        fullWidth
+                        variant="outlined"
+                        value={deleteConfirmationText}
+                        onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => deleteDialogRef.current?.close()} color="primary">
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={deleteAllGoals}
+                        color="error"
+                        disabled={deleteConfirmationText !== "DELETE" || loading}
+                    >
+                        {loading ? 'Deleting...' : 'Confirm Delete'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Snackbar Notifier */}
+            <SnackbarNotifier ref={snackbarRef} />
         </>
     );
 }

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isModerator } from '../../database/games/Games';
-import { deleteGoal, editGoal, gameForGoal } from '../../database/games/Goals';
+import { deleteGoal, deleteAllGoals, editGoal, gameForGoal } from '../../database/games/Goals';
 import upload from './Upload';
 
 const goals = Router();
@@ -74,6 +74,31 @@ goals.delete('/:id', async (req, res) => {
         return;
     }
     res.sendStatus(200);
+});
+
+// Route to delete all goals for a game
+goals.delete('/game/:slug/delete-all', async (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug } = req.params;
+
+    // Check if user is a moderator
+    if (!(await isModerator(slug, req.session.user))) {
+        res.sendStatus(403);
+        return;
+    }
+
+    const success = await deleteAllGoals(slug);
+
+    if (!success) {
+        res.status(500).send('Failed to delete all goals');
+        return;
+    }
+
+    res.status(200).send('All goals deleted successfully');
 });
 
 goals.use('/upload', upload);
