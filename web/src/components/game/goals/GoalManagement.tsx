@@ -20,7 +20,6 @@ import GoalEditor from './GoalEditor';
 import GoalUpload from './GoalUpload';
 import Search from './Search';
 import GoalList from './GoalList';
-import axios from 'axios';
 
 export default function GoalManagement() {
     const {
@@ -54,7 +53,14 @@ export default function GoalManagement() {
 
         try {
             setLoading(true);
-            await axios.delete(`/api/goals/game/${slug}/delete-all`);
+            const response = await fetch(`/api/games/${slug}/delete-all-goals`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete all goals');
+            }
+
             snackbarRef.current?.notify('All goals deleted successfully');
             mutateGoals(); // Optionally refresh the goal list if needed
         } catch (error) {
