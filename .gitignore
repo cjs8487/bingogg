@@ -42,3 +42,5 @@ next-env.d.ts
 *.log
 *-audit.json
 *.log.gz
+
+docker-compose.yaml
