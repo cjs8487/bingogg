@@ -63,10 +63,10 @@ export default function GamePage({
         >
             <Box display="flex">
                 <Box position="fixed" mr={4}>
-                    {gameData.coverImage && (
-                        <Image src={gameData.coverImage} alt="" fill />
+                    {gameData.metadata?.coverImage && (
+                        <Image src={gameData.metadata?.coverImage} alt="" fill />
                     )}
-                    {!gameData.coverImage && (
+                    {!gameData.metadata?.coverImage && (
                         <div>
                             <div>{slug}</div>
                         </div>
