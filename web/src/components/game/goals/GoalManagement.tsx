@@ -15,7 +15,6 @@ import {
 import { useRef, useState } from 'react';
 import { useGoalManagerContext } from '../../../context/GoalManagerContext';
 import Dialog, { DialogRef } from '../../Dialog';
-import SnackbarNotifier, { SnackbarRef } from '../../SnackbarNotifier';
 import GoalEditor from './GoalEditor';
 import GoalUpload from './GoalUpload';
 import Search from './Search';
@@ -42,30 +41,29 @@ export default function GoalManagement() {
     const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
     const settingsDialogRef = useRef<DialogRef>(null); // Settings dialog
     const deleteDialogRef = useRef<DialogRef>(null); // Delete confirmation dialog
-    const snackbarRef = useRef<SnackbarRef>(null); // Snackbar notifier
 
     // Function to handle deleting all goals
     const deleteAllGoals = async () => {
         if (deleteConfirmationText !== "DELETE") {
-            snackbarRef.current?.notify("You must write 'DELETE' to confirm.");
+            // Handle failure silently
             return;
         }
-
+    
         try {
             setLoading(true);
             const response = await fetch(`/api/games/${slug}/delete-all-goals`, {
                 method: 'DELETE',
             });
-
+    
             if (!response.ok) {
-                throw new Error('Failed to delete all goals');
+                // Handle failure silently
+                return;
             }
-
-            snackbarRef.current?.notify('All goals deleted successfully');
-            mutateGoals(); // Optionally refresh the goal list if needed
+    
+            // Refresh the goal list if needed
+            mutateGoals(); 
         } catch (error) {
-            console.error('Error deleting all goals:', error);
-            snackbarRef.current?.notify('Failed to delete all goals');
+            // Handle failure silently
         } finally {
             setLoading(false);
             deleteDialogRef.current?.close(); // Close the dialog after the operation
@@ -230,8 +228,6 @@ export default function GoalManagement() {
                 </DialogActions>
             </Dialog>
 
-            {/* Snackbar Notifier */}
-            <SnackbarNotifier ref={snackbarRef} />
         </>
     );
 }
