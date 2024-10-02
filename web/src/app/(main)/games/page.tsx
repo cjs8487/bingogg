@@ -70,13 +70,12 @@ export default function Games() {
                             href={`/games/${game.slug}`}
                             LinkComponent={Link}
                         >
-                            {game.coverImage && (
+                            {game.metadata?.coverImage ? (
                                 <CardMedia
                                     component="img"
-                                    image={game.coverImage}
+                                    image={game.metadata.coverImage}
                                 />
-                            )}
-                            {!game.coverImage && (
+                            ) : (
                                 <Box
                                     sx={{
                                         position: 'relative',
@@ -106,12 +105,21 @@ export default function Games() {
                                 <Typography
                                     variant="h6"
                                     textAlign="center"
-                                    // pt={2}
                                 >
                                     {game.name}
+                                    {game.metadata?.year && (
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{ ml: 1 }} // Adds a small margin between the name and year
+                                        >
+                                            ({game.metadata.year})
+                                        </Typography>
+                                    )}
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
+
                     </Card>
                 ))}
             </Masonry>

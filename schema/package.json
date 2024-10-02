@@ -8,7 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "json-schema-to-typescript": "^13.1.1"
+    "json-schema-to-typescript": "^13.1.2"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",

@@ -45,21 +45,60 @@ model Variant {
 }
 
 model Game {
-  id               String    @id @unique @default(cuid())
+  id               String        @id @unique @default(cuid())
   name             String
-  slug             String    @unique
-  coverImage       String?
+  slug             String        @unique
   variants         Variant[]
   goals            Goal[]
-  owners           User[]    @relation("GameOwners")
-  moderators       User[]    @relation("GameModerators")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  enableSRLv5      Boolean   @default(false)
+  owners           User[]        @relation("GameOwners")
+  moderators       User[]        @relation("GameModerators")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  enableSRLv5      Boolean       @default(false)
   rooms            Room[]
   racetimeCategory String?
   racetimeGoal     String?
-  racetimeBeta     Boolean   @default(false)
+  racetimeBeta     Boolean       @default(false)
+  metadata         GameMetadata? @relation("GameToMetadata")
+  metadataId       String?       @unique
+}
+
+model GameMetadata {
+  id         String              @id @unique @default(cuid())
+  coverImage String?
+  year       Int?
+  genre      MetadataToGenre[]    // Now a relation to GameGenre
+  platforms  MetadataToPlatform[]
+  game       Game                @relation("GameToMetadata", fields: [gameId], references: [id])
+  gameId     String              @unique
+}
+
+model GamePlatform {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  metadata    MetadataToPlatform[]
+}
+
+model GameGenre {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  metadata    MetadataToGenre[]
+}
+
+model MetadataToPlatform {
+  id             String        @id @default(cuid())
+  gameMetadataId String
+  gamePlatformId String
+  gameMetadata   GameMetadata  @relation(fields: [gameMetadataId], references: [id], onDelete: Cascade)
+  gamePlatform   GamePlatform  @relation(fields: [gamePlatformId], references: [id], onDelete: Cascade)
+}
+
+model MetadataToGenre {
+  id          String        @id @default(cuid())
+  gameMetadataId String
+  gameGenreId   String
+  gameMetadata GameMetadata  @relation(fields: [gameMetadataId], references: [id], onDelete: Cascade)
+  gameGenre    GameGenre     @relation(fields: [gameGenreId], references: [id], onDelete: Cascade)
 }
 
 model User {

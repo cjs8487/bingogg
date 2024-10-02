@@ -7,26 +7,29 @@ import {
     MenuItem,
     Select,
     Typography,
+    Chip,
+    OutlinedInput,
+    SelectChangeEvent,
 } from '@mui/material';
 import {
-    ErrorMessage,
-    Field,
     Form,
     Formik,
     useField,
     useFormikContext,
 } from 'formik';
-import { useAsync } from 'react-use';
+import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { alertError } from '../../lib/Utils';
 import { Game } from '../../types/Game';
 import HoverIcon from '../HoverIcon';
 import FormikSwitch from '../input/FormikSwitch';
 import FormikTextField from '../input/FormikTextField';
+import FormikApiSelectAutocomplete from '../input/FormikApiSelectFieldAutocomplete';
+import { useAsync } from 'react-use';
 
 async function validateRacetimeCategory(value: string) {
     if (value) {
-        const res = await fetch(`http://localhost:8000/${value}/data`);
+        const res = await fetch(`/api/games/${value}/data`);
         if (!res.ok) {
             return 'Invalid slug';
         }
@@ -103,6 +106,40 @@ interface GameSettingsProps {
 }
 
 export default function GameSettings({ gameData }: GameSettingsProps) {
+    const [platforms, setPlatforms] = useState<string[]>([]);
+    const [genres, setGenres] = useState<string[]>([]);
+    const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
+        gameData.metadata?.platforms || []
+    );
+    const [selectedGenres, setSelectedGenres] = useState<string[]>(
+        gameData.metadata?.genre || []
+    );
+
+    useEffect(() => {
+        const fetchPlatforms = async () => {
+            const res = await fetch('/api/games/platforms');
+            if (res.ok) {
+                const data = await res.json();
+                setPlatforms(data.map((platform: { name: string }) => platform.name));
+            } else {
+                console.error('Failed to fetch platforms');
+            }
+        };
+
+        const fetchGenres = async () => {
+            const res = await fetch('/api/games/genres');
+            if (res.ok) {
+                const data = await res.json();
+                setGenres(data.map((genre: { name: string }) => genre.name));
+            } else {
+                console.error('Failed to fetch genres');
+            }
+        };
+
+        fetchPlatforms();
+        fetchGenres();
+    }, []);
+
     return (
         <div>
             <Typography variant="h5" align="center">
@@ -111,30 +148,22 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
             <Formik
                 initialValues={{
                     name: gameData.name,
-                    coverImage: gameData.coverImage,
-                    enableSRLv5: gameData.enableSRLv5,
+                    metadata: {
+                        coverImage: gameData.metadata?.coverImage || '',
+                        year: gameData.metadata?.year || '',
+                        genre: selectedGenres,
+                        platforms: selectedPlatforms,
+                    },
                     racetimeCategory: gameData.racetimeCategory,
                     racetimeGoal: gameData.racetimeGoal,
                 }}
-                onSubmit={async ({
-                    name,
-                    coverImage,
-                    enableSRLv5,
-                    racetimeCategory,
-                    racetimeGoal,
-                }) => {
+                onSubmit={async (values) => {
                     const res = await fetch(`/api/games/${gameData.slug}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            name,
-                            coverImage,
-                            enableSRLv5,
-                            racetimeCategory,
-                            racetimeGoal,
-                        }),
+                        body: JSON.stringify(values),
                     });
                     if (!res.ok) {
                         const error = await res.text();
@@ -144,44 +173,42 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
                     mutate(`/api/games/${gameData.slug}`);
                 }}
             >
-                <Form>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        justifyItems="center"
-                        rowGap={2}
-                        pt={2}
-                    >
-                        <FormikTextField
-                            id="game-name"
-                            name="name"
-                            label="Name"
-                        />
+                {({ values, setFieldValue }) => (
+                    <Form>
+                    <Box display="flex" flexDirection="column" justifyItems="center" rowGap={2} pt={2}>
+                        <FormikTextField id="game-name" name="name" label="Name" />
                         <FormikTextField
                             id="game-cover-image"
-                            name="coverImage"
+                            name="metadata.coverImage"
                             label="Cover Image"
                         />
-                        <Box display="flex" alignItems="center">
-                            <FormikSwitch
-                                id="game-srlv5-generation-switch"
-                                label="Enable SRLv5 Board Generation"
-                                name="enableSRLv5"
-                            />
-                            <HoverIcon icon={<Info />}>
-                                <Typography variant="caption">
-                                    SRLv5 generation requires goals to have a
-                                    difficulty value assigned to them in order
-                                    to be used in generation. The generator uses
-                                    the difficulty value to balance each row,
-                                    column, and diagonal, by having the
-                                    difficulty of goals in each sum to the same
-                                    value. It also tries to minimize synergy
-                                    between goals in the same line by minimizing
-                                    the category overlap.
-                                </Typography>
-                            </HoverIcon>
-                        </Box>
+                        <FormikTextField
+                            id="game-year"
+                            name="metadata.year"
+                            label="Year"
+                            type="number"
+                        />
+
+                        {/* Platforms */}
+                        <FormikApiSelectAutocomplete
+                            id="game-platforms"
+                            name="metadata.platforms"
+                            label="Platforms"
+                            api="/api/games/platforms"
+                            autocomplete={true}
+                            multiple={true}
+                        />
+
+                        {/* Genres */}
+                        <FormikApiSelectAutocomplete
+                            id="game-genres"
+                            name="metadata.genre"
+                            label="Genres"
+                            api="/api/games/genres"
+                            autocomplete={true}
+                            multiple={true}
+                        />
+
                         {gameData.racetimeBeta && <RacetimeSettings />}
                         <Box pt={1} display="flex">
                             <Box flexGrow={1} />
@@ -195,6 +222,7 @@ export default function GameSettings({ gameData }: GameSettingsProps) {
                         </Box>
                     </Box>
                 </Form>
+                )}
             </Formik>
         </div>
     );

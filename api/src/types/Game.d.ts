@@ -11,7 +11,12 @@
 export interface Game {
   name: string;
   slug: string;
-  coverImage?: string;
+  metadata?: {
+    coverImage?: string;
+    year?: number;
+    genre?: string[];
+    platforms?: string[];
+  };
   owners?: User[];
   moderators?: User[];
   enableSRLv5?: boolean;
