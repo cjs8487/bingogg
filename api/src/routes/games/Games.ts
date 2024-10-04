@@ -15,7 +15,7 @@ import {
     updateRacetimeGoal,
     updateSRLv5Enabled,
 } from '../../database/games/Games';
-import { createGoal, goalsForGame, deleteAllGameGoals } from '../../database/games/Goals';
+import { createGoal, goalsForGame, deleteAllGoalsForGame } from '../../database/games/Goals';
 import { getUser, getUsersEligibleToModerateGame } from '../../database/Users';
 
 const games = Router();
@@ -285,7 +285,7 @@ games.get('/:slug/permissions', async (req, res) => {
     });
 });
 
-games.delete('/:slug/delete-all-goals', async (req, res) => {
+games.delete('/:slug/deleteAllGoals', async (req, res) => {
     if (!req.session.user) {
         res.sendStatus(401);
         return;
@@ -299,7 +299,7 @@ games.delete('/:slug/delete-all-goals', async (req, res) => {
         return;
     }
 
-    const success = await deleteAllGameGoals(slug);
+    const success = await deleteAllGoalsForGame(slug);
 
     if (!success) {
         res.status(500).send('Failed to delete all goals');

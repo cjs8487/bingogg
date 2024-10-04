@@ -94,7 +94,7 @@ export const gameForGoal = async (goalId: string) => {
     return goal?.game;
 }
 
-export const deleteAllGameGoals = async (gameSlug: string) => {
+export const deleteAllGoalsForGame = async (gameSlug: string) => {
     try {
         await prisma.goal.deleteMany({
             where: { game: { slug: gameSlug } },
