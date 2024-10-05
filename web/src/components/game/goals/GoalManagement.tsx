@@ -1,22 +1,16 @@
 import Settings from '@mui/icons-material/Settings';
 import UploadIcon from '@mui/icons-material/Upload';
-import {
-    Box,
-    Button,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    IconButton,
-    Switch,
-    Typography,
-} from '@mui/material';
-import { useRef, useState } from 'react';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import { useRef, useState, ReactNode } from 'react';
 import { useGoalManagerContext } from '../../../context/GoalManagerContext';
 import Dialog, { DialogRef } from '../../Dialog';
 import GoalEditor from './GoalEditor';
 import GoalUpload from './GoalUpload';
 import Search from './Search';
 import GoalList from './GoalList';
+import { SettingsDialogContent } from '@/components/input/SettingsDialogContent';
+import { DeleteConfirmationDialogContent } from '@/components/input/DeleteConfirmationDialogContent';
+import { notifyMessage } from '@/lib/Utils';
 
 export default function GoalManagement() {
     const {
@@ -32,11 +26,53 @@ export default function GoalManagement() {
         newGoal,
         setNewGoal,
     } = useGoalManagerContext();
-    const { showDetails } = settings;
 
     const [goalUploadOpen, setGoalUploadOpen] = useState(false);
-
+    const [loading, setLoading] = useState(false);
+    const [dialogContent, setDialogContent] = useState<ReactNode>(null);
     const dialogRef = useRef<DialogRef>(null);
+
+    const openSettingsDialog = () => {
+        setDialogContent(
+            <SettingsDialogContent
+                showDetails={settings.showDetails}
+                setShowDetails={(value) =>
+                    setSettings({ ...settings, showDetails: value })
+                }
+            />,
+        );
+        dialogRef.current?.open();
+    };
+
+    const openDeleteConfirmationDialog = () => {
+        setDialogContent(
+            <DeleteConfirmationDialogContent
+                onConfirm={deleteAllGoals}
+                onCancel={() => dialogRef.current?.close()}
+                loading={loading}
+            />,
+        );
+        dialogRef.current?.open();
+    };
+
+    const deleteAllGoals = async () => {
+        if (!dialogRef.current) return;
+
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/games/${slug}/deleteAllGoals`, {
+                method: 'DELETE',
+            });
+            if (response.ok) notifyMessage('All goals deleted successfully');
+            else notifyMessage('Failed to delete all goals');
+        } catch (error) {
+            // TODO: error handler
+        } finally {
+            mutateGoals();
+            setLoading(false);
+            dialogRef.current?.close();
+        }
+    };
 
     return (
         <>
@@ -62,14 +98,21 @@ export default function GoalManagement() {
                     </Typography>
                     <Box sx={{ position: 'absolute', right: 0 }}>
                         <Button
-                            onClick={() => {
-                                setGoalUploadOpen(true);
-                            }}
+                            onClick={() => setGoalUploadOpen(true)}
                             startIcon={<UploadIcon />}
                         >
                             Upload Goals
                         </Button>
-                        <IconButton onClick={() => dialogRef.current?.open()}>
+                        {canModerate && (
+                            <Button
+                                onClick={openDeleteConfirmationDialog}
+                                color="error"
+                                sx={{ maxWidth: '200px' }}
+                            >
+                                Delete All Goals
+                            </Button>
+                        )}
+                        <IconButton onClick={openSettingsDialog}>
                             <Settings />
                         </IconButton>
                     </Box>
@@ -82,20 +125,8 @@ export default function GoalManagement() {
                         {goals.length} total goals, {shownGoals.length} shown
                     </Typography>
                 </Box>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexGrow: 1,
-                        columnGap: 5,
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexGrow: 1,
-                            maxWidth: '33%',
-                        }}
-                    >
+                <Box sx={{ display: 'flex', flexGrow: 1, columnGap: 5 }}>
+                    <Box sx={{ display: 'flex', flexGrow: 1, maxWidth: '33%' }}>
                         <GoalList />
                     </Box>
                     <Box sx={{ flexGrow: 1, maxWidth: '67%' }}>
@@ -122,33 +153,14 @@ export default function GoalManagement() {
                     </Box>
                     <GoalUpload
                         isOpen={goalUploadOpen}
-                        close={() => {
-                            setGoalUploadOpen(false);
-                        }}
+                        close={() => setGoalUploadOpen(false)}
                         slug={slug}
                     />
                 </Box>
             </Box>
-            <Dialog ref={dialogRef}>
-                <DialogTitle>Goal Manager Settings</DialogTitle>
-                <DialogContent>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                defaultChecked
-                                value={showDetails}
-                                onChange={(event) =>
-                                    setSettings({
-                                        ...settings,
-                                        showDetails: event.target.checked,
-                                    })
-                                }
-                            />
-                        }
-                        label="Display additional information in goal list"
-                    />
-                </DialogContent>
-            </Dialog>
+
+            {/* Unified Dialog */}
+            <Dialog ref={dialogRef}>{dialogContent}</Dialog>
         </>
     );
 }

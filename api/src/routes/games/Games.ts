@@ -15,7 +15,7 @@ import {
     updateRacetimeGoal,
     updateSRLv5Enabled,
 } from '../../database/games/Games';
-import { createGoal, goalsForGame } from '../../database/games/Goals';
+import { createGoal, goalsForGame, deleteAllGoalsForGame } from '../../database/games/Goals';
 import { getUser, getUsersEligibleToModerateGame } from '../../database/Users';
 
 const games = Router();
@@ -283,6 +283,30 @@ games.get('/:slug/permissions', async (req, res) => {
         isOwner: await isOwner(slug, req.session.user),
         canModerate: await isModerator(slug, req.session.user),
     });
+});
+
+games.delete('/:slug/deleteAllGoals', async (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug } = req.params;
+
+    // Check if user is a moderator
+    if (!(await isModerator(slug, req.session.user))) {
+        res.sendStatus(403);
+        return;
+    }
+
+    const success = await deleteAllGoalsForGame(slug);
+
+    if (!success) {
+        res.status(500).send('Failed to delete all goals');
+        return;
+    }
+
+    res.status(200).send('All goals deleted successfully');
 });
 
 export default games;
