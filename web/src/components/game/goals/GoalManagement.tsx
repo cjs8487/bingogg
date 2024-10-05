@@ -1,11 +1,6 @@
 import Settings from '@mui/icons-material/Settings';
 import UploadIcon from '@mui/icons-material/Upload';
-import {
-    Box,
-    Button,
-    IconButton,
-    Typography,
-} from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import { useRef, useState, ReactNode } from 'react';
 import { useGoalManagerContext } from '../../../context/GoalManagerContext';
 import Dialog, { DialogRef } from '../../Dialog';
@@ -39,10 +34,12 @@ export default function GoalManagement() {
 
     const openSettingsDialog = () => {
         setDialogContent(
-            <SettingsDialogContent 
+            <SettingsDialogContent
                 showDetails={settings.showDetails}
-                setShowDetails={(value) => setSettings({ ...settings, showDetails: value })}
-            />
+                setShowDetails={(value) =>
+                    setSettings({ ...settings, showDetails: value })
+                }
+            />,
         );
         dialogRef.current?.open();
     };
@@ -53,7 +50,7 @@ export default function GoalManagement() {
                 onConfirm={deleteAllGoals}
                 onCancel={() => dialogRef.current?.close()}
                 loading={loading}
-            />
+            />,
         );
         dialogRef.current?.open();
     };
@@ -63,7 +60,9 @@ export default function GoalManagement() {
 
         try {
             setLoading(true);
-            const response = await fetch(`/api/games/${slug}/deleteAllGoals`, { method: 'DELETE' });
+            const response = await fetch(`/api/games/${slug}/deleteAllGoals`, {
+                method: 'DELETE',
+            });
             if (response.ok) notifyMessage('All goals deleted successfully');
             else notifyMessage('Failed to delete all goals');
         } catch (error) {
@@ -77,15 +76,42 @@ export default function GoalManagement() {
 
     return (
         <>
-            <Box sx={{ display: 'flex', flexGrow: 1, flexDirection: 'column', rowGap: 3, maxWidth: '100%' }}>
-                <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    flexDirection: 'column',
+                    rowGap: 3,
+                    maxWidth: '100%',
+                }}
+            >
+                <Box
+                    sx={{
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
                     <Typography variant="h5" align="center">
                         Goal Management
                     </Typography>
                     <Box sx={{ position: 'absolute', right: 0 }}>
-                        <Button onClick={() => setGoalUploadOpen(true)} startIcon={<UploadIcon />}>
+                        <Button
+                            onClick={() => setGoalUploadOpen(true)}
+                            startIcon={<UploadIcon />}
+                        >
                             Upload Goals
                         </Button>
+                        {canModerate && (
+                            <Button
+                                onClick={openDeleteConfirmationDialog}
+                                color="error"
+                                sx={{ maxWidth: '200px' }}
+                            >
+                                Delete All Goals
+                            </Button>
+                        )}
                         <IconButton onClick={openSettingsDialog}>
                             <Settings />
                         </IconButton>
@@ -125,21 +151,16 @@ export default function GoalManagement() {
                             />
                         )}
                     </Box>
-                    <GoalUpload isOpen={goalUploadOpen} close={() => setGoalUploadOpen(false)} slug={slug} />
+                    <GoalUpload
+                        isOpen={goalUploadOpen}
+                        close={() => setGoalUploadOpen(false)}
+                        slug={slug}
+                    />
                 </Box>
-                {canModerate && (
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '100%', mt: 3 }}>
-                        <Button onClick={openDeleteConfirmationDialog} color="error" variant="contained" sx={{ maxWidth: '200px' }}>
-                            Delete All Goals
-                        </Button>
-                    </Box>
-                )}
             </Box>
 
             {/* Unified Dialog */}
-            <Dialog ref={dialogRef}>
-                {dialogContent}
-            </Dialog>
+            <Dialog ref={dialogRef}>{dialogContent}</Dialog>
         </>
     );
 }
