@@ -23,19 +23,27 @@ export default function Games() {
     const { loggedIn } = useContext(UserContext);
 
     const {
-        data: games,
+        data: gameList,
         isLoading,
         error,
         mutate,
     } = useApi<Game[]>('/api/games');
 
-    if (!games || isLoading) {
+    if (!gameList || isLoading) {
         return null;
     }
 
     if (error) {
         return 'Unable to load game list.';
     }
+
+    const games = gameList?.sort((a, b) => {
+        if (a.favorited === b.favorited) {
+            return a.name.localeCompare(b.name);
+        }
+        return a.favorited ? -1 : 1;
+    });
+    console.log(games);
 
     return (
         <Box flexGrow={1}>
