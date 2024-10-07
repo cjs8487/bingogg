@@ -10,11 +10,12 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { mutate } from 'swr';
 import CardHiddenActions from '../../../components/CardHiddenActions';
 import { Game } from '../../../types/Game';
-import { useTimeout, useTimeoutFn } from 'react-use';
+import { useUserContext } from '../../../context/UserContext';
 
 interface IGameCardProps {
     game: Game;
@@ -24,14 +25,32 @@ export default function GameCard({
     game: { slug, favorited, coverImage, name },
     index,
 }: IGameCardProps) {
+    const { loggedIn } = useUserContext();
+
     const [hasRendered, setHasRendered] = useState(false);
 
+    const [localFavorites, setLocalFavorites] = useLocalStorage<string[]>(
+        'playbingo-favorites',
+        [],
+    );
+
     const toggleFavorite = useCallback(async () => {
-        await fetch(`/api/games/${slug}/favorite`, {
-            method: favorited ? 'DELETE' : 'POST',
-        });
-        mutate('/api/games');
-    }, [slug, favorited]);
+        if (!loggedIn) {
+            if (localFavorites?.includes(slug)) {
+                setLocalFavorites((curr) => curr?.filter((s) => s === slug));
+            } else {
+                setLocalFavorites((curr) => {
+                    curr?.push(slug);
+                    return curr;
+                });
+            }
+        } else {
+            await fetch(`/api/games/${slug}/favorite`, {
+                method: favorited ? 'DELETE' : 'POST',
+            });
+            mutate('/api/games');
+        }
+    }, [slug, favorited, loggedIn, localFavorites, setLocalFavorites]);
 
     useTimeoutFn(
         () => {

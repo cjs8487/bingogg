@@ -7,11 +7,17 @@ import { useContext } from 'react';
 import { UserContext } from '../../../context/UserContext';
 import { useApi } from '../../../lib/Hooks';
 import GameCard from '../rooms/GameCard';
+import { useLocalStorage } from 'react-use';
 
 export default function Games() {
     const { loggedIn } = useContext(UserContext);
 
     const { data: gameList, isLoading, error } = useApi<Game[]>('/api/games');
+
+    const [localFavorites] = useLocalStorage<string[]>(
+        'playbingo-favorites',
+        [],
+    );
 
     if (!gameList || isLoading) {
         return null;
@@ -21,12 +27,20 @@ export default function Games() {
         return 'Unable to load game list.';
     }
 
-    const games = gameList?.sort((a, b) => {
-        if (a.favorited === b.favorited) {
-            return a.name.localeCompare(b.name);
-        }
-        return a.favorited ? -1 : 1;
-    });
+    const games = gameList
+        .map((game) => {
+            return {
+                ...game,
+                favorited:
+                    game.favorited || localFavorites?.includes(game.slug),
+            };
+        })
+        .sort((a, b) => {
+            if (a.favorited === b.favorited) {
+                return a.name.localeCompare(b.name);
+            }
+            return a.favorited ? -1 : 1;
+        });
 
     return (
         <Box flexGrow={1}>
