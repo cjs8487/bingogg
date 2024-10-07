@@ -4,24 +4,30 @@ import {
     addOwners,
     allGames,
     createGame,
+    favoriteGame,
     gameForSlug,
     isModerator,
     isOwner,
     removeModerator,
     removeOwner,
+    unfavoriteGame,
     updateGameCover,
     updateGameName,
     updateRacetimeCategory,
     updateRacetimeGoal,
     updateSRLv5Enabled,
 } from '../../database/games/Games';
-import { createGoal, goalsForGame, deleteAllGoalsForGame } from '../../database/games/Goals';
+import {
+    createGoal,
+    goalsForGame,
+    deleteAllGoalsForGame,
+} from '../../database/games/Goals';
 import { getUser, getUsersEligibleToModerateGame } from '../../database/Users';
 
 const games = Router();
 
 games.get('/', async (req, res) => {
-    const result = await allGames();
+    const result = await allGames(req.session.user);
     res.status(200).json(result);
 });
 
@@ -50,11 +56,11 @@ games.post('/', async (req, res) => {
         return;
     }
     const result = await createGame(name, slug, coverImage, [req.session.user]);
-    if(!result) {
+    if (!result) {
         res.status(500).send('Failed to create game');
-        return
+        return;
     }
-    if ('statusCode' in result)  {
+    if ('statusCode' in result) {
         res.status(result.statusCode).send(result.message);
         return;
     }
@@ -307,6 +313,30 @@ games.delete('/:slug/deleteAllGoals', async (req, res) => {
     }
 
     res.status(200).send('All goals deleted successfully');
+});
+
+games.post('/:slug/favorite', (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug } = req.params;
+    favoriteGame(slug, req.session.user);
+
+    res.sendStatus(200);
+});
+
+games.delete('/:slug/favorite', (req, res) => {
+    if (!req.session.user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const { slug } = req.params;
+    unfavoriteGame(slug, req.session.user);
+
+    res.sendStatus(200);
 });
 
 export default games;

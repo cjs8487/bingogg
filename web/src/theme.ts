@@ -1,5 +1,6 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
+import zIndex from '@mui/material/styles/zIndex';
 import { Roboto } from 'next/font/google';
 
 const roboto = Roboto({
@@ -45,6 +46,19 @@ const theme = createTheme({
         MuiBadge: {
             defaultProps: {
                 color: 'primary',
+            },
+        },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    '& .hidden-controls': {
+                        display: 'none',
+                        position: 'absolute',
+                    },
+                    '&:hover .hidden-controls': {
+                        display: 'flex',
+                    },
+                },
             },
         },
     },

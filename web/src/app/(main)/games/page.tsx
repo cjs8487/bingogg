@@ -1,9 +1,8 @@
 'use client';
-import Link from 'next/link';
 import { Game } from '@/types/Game';
-import { useApi } from '../../../lib/Hooks';
-import { useContext } from 'react';
-import { UserContext } from '../../../context/UserContext';
+import Star from '@mui/icons-material/Star';
+import StarBorder from '@mui/icons-material/StarBorder';
+import Masonry from '@mui/lab/Masonry';
 import {
     Box,
     Button,
@@ -11,15 +10,24 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
-    Container,
+    IconButton,
     Typography,
 } from '@mui/material';
-import Masonry from '@mui/lab/Masonry';
+import Link from 'next/link';
+import { useContext } from 'react';
+import CardHiddenActions from '../../../components/CardHiddenActions';
+import { UserContext } from '../../../context/UserContext';
+import { useApi } from '../../../lib/Hooks';
 
 export default function Games() {
     const { loggedIn } = useContext(UserContext);
 
-    const { data: games, isLoading, error } = useApi<Game[]>('/api/games');
+    const {
+        data: games,
+        isLoading,
+        error,
+        mutate,
+    } = useApi<Game[]>('/api/games');
 
     if (!games || isLoading) {
         return null;
@@ -66,6 +74,25 @@ export default function Games() {
                             animationFillMode: 'backwards',
                         }}
                     >
+                        <CardHiddenActions align="right">
+                            <IconButton
+                                onClick={async () => {
+                                    await fetch(
+                                        `/api/games/${game.slug}/favorite`,
+                                        {
+                                            method: game.favorited
+                                                ? 'DELETE'
+                                                : 'POST',
+                                        },
+                                    );
+
+                                    mutate();
+                                }}
+                            >
+                                {game.favorited && <Star />}
+                                {!game.favorited && <StarBorder />}
+                            </IconButton>
+                        </CardHiddenActions>
                         <CardActionArea
                             href={`/games/${game.slug}`}
                             LinkComponent={Link}
@@ -103,11 +130,7 @@ export default function Games() {
                                 </Box>
                             )}
                             <CardContent>
-                                <Typography
-                                    variant="h6"
-                                    textAlign="center"
-                                    // pt={2}
-                                >
+                                <Typography variant="h6" textAlign="center">
                                     {game.name}
                                 </Typography>
                             </CardContent>
