@@ -28,6 +28,7 @@
         "react-color": "^2.19.3",
         "react-cookie-consent": "^9.0.0",
         "react-dom": "^18",
+        "react-error-boundary": "^4.0.13",
         "react-toastify": "^10.0.4",
         "react-use": "^17.4.3",
         "react-use-websocket": "^4.5.0",

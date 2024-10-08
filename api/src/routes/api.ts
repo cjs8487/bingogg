@@ -28,7 +28,7 @@ api.get('/me', async (req, res) => {
         res.sendStatus(401);
         return;
     }
-    const user = await getUser(req.session.user);
+    const user = await getUser(req.session.user, true);
     if (!user) {
         res.sendStatus(403);
         return;

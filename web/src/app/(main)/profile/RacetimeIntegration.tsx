@@ -3,11 +3,18 @@ import { use } from 'react';
 import { alertError } from '../../../lib/Utils';
 import { redirect } from 'next/navigation';
 import { Box, Button, Link, Typography } from '@mui/material';
+import { RacetimeConnection } from '../../../types/RoomData';
 
-async function checkRacetimeStatus() {
+interface RacetimeConnectionStatus {
+    hasRacetimeConnection: boolean;
+    racetimeUser: string;
+}
+
+async function checkRacetimeStatus(): Promise<
+    RacetimeConnectionStatus | false
+> {
     const res = await fetch('/api/connection/racetime');
     if (!res.ok) {
-        alertError('Unable to retrieve racetime connection data.');
         return false;
     }
     const data = await res.json();
@@ -15,18 +22,20 @@ async function checkRacetimeStatus() {
 }
 
 export default function RacetimeIntegration() {
-    const { hasRacetimeConnection, racetimeUser } = use(checkRacetimeStatus());
+    const result = use(checkRacetimeStatus());
+
+    if (!result) {
+        return null;
+    }
+
+    const { hasRacetimeConnection, racetimeUser } = result;
 
     return (
         <div>
             <Typography variant="h6">racetime.gg</Typography>
             {!hasRacetimeConnection && (
                 <Box display="flex" alignItems="center">
-                    <Link
-                        href={`/api/connect/racetime`}
-                        component={NextLink}
-                        className="rounded-md bg-black px-2 py-1"
-                    >
+                    <Link href={`/api/connect/racetime`} component={NextLink}>
                         Connect to racetime.gg
                     </Link>
                 </Box>
@@ -36,7 +45,6 @@ export default function RacetimeIntegration() {
                     <Typography>Connected as {racetimeUser}</Typography>
                     <Button
                         color="error"
-                        className="rounded-md bg-red-500 px-1 py-0.5 text-xs"
                         onClick={async () => {
                             const res = await fetch(
                                 '/api/connection/disconnect/racetime',

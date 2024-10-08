@@ -56,7 +56,7 @@ export const getSiteAuth = async (username: string) => {
     return user;
 };
 
-export const getUser = async (id: string) => {
+export const getUser = async (id: string, includeEmail?: boolean) => {
     const user = await prisma.user.findUnique({
         select: {
             id: true,
@@ -65,6 +65,7 @@ export const getUser = async (id: string) => {
             connections: {
                 select: { service: true },
             },
+            email: !!includeEmail,
         },
         where: { id },
     });
@@ -78,6 +79,7 @@ export const getUser = async (id: string) => {
         )
             ? true
             : false,
+        email: user.email,
     };
 };
 

@@ -6,6 +6,7 @@
     "properties": {
         "id": {"type": "string"},
         "username": {"type": "string"},
+        "email": {"type": "string"},
         "staff": {"type": "boolean"},
         "racetimeConnected": { "type": "boolean" }
     }

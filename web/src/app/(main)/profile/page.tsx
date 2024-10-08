@@ -7,6 +7,7 @@ import Link from 'next/link';
 import RacetimeIntegration from './RacetimeIntegration';
 import { Box, Button, Container, Typography } from '@mui/material';
 import FormikTextField from '../../../components/input/FormikTextField';
+import { ErrorBoundary } from 'react-error-boundary';
 
 export default function ProfilePage() {
     const { user, loggedIn } = useContext(UserContext);
@@ -28,7 +29,10 @@ export default function ProfilePage() {
             <Typography variant="h5" mb={1}>
                 Account Info
             </Typography>
-            <Formik initialValues={{}} onSubmit={() => {}}>
+            <Formik
+                initialValues={{ username: user.username, email: user.email }}
+                onSubmit={() => {}}
+            >
                 <Form>
                     <Box display="flex" flexDirection="column" rowGap={1}>
                         <FormikTextField
@@ -69,9 +73,17 @@ export default function ProfilePage() {
                 <Typography variant="h5" mb={1}>
                     Integrations
                 </Typography>
-                <Suspense>
-                    <RacetimeIntegration />
-                </Suspense>
+                <ErrorBoundary
+                    fallback={
+                        <Typography>
+                            Unable to load integration data.
+                        </Typography>
+                    }
+                >
+                    <Suspense>
+                        <RacetimeIntegration />
+                    </Suspense>
+                </ErrorBoundary>
             </Box>
         </Container>
     );
