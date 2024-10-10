@@ -10,7 +10,7 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { mutate } from 'swr';
 import CardHiddenActions from '../../../components/CardHiddenActions';
@@ -20,29 +20,28 @@ import { useUserContext } from '../../../context/UserContext';
 interface IGameCardProps {
     game: Game;
     index: number;
+    localFavorites?: string[];
+    setLocalFavorites: Dispatch<SetStateAction<string[] | undefined>>;
 }
 export default function GameCard({
     game: { slug, favorited, coverImage, name },
     index,
+    localFavorites,
+    setLocalFavorites,
 }: IGameCardProps) {
     const { loggedIn } = useUserContext();
 
     const [hasRendered, setHasRendered] = useState(false);
 
-    const [localFavorites, setLocalFavorites] = useLocalStorage<string[]>(
-        'playbingo-favorites',
-        [],
-    );
-
     const toggleFavorite = useCallback(async () => {
         if (!loggedIn) {
             if (localFavorites?.includes(slug)) {
-                setLocalFavorites((curr) => curr?.filter((s) => s === slug));
+                const vals = localFavorites.filter((s) => s !== slug);
+                setLocalFavorites(vals);
             } else {
-                setLocalFavorites((curr) => {
-                    curr?.push(slug);
-                    return curr;
-                });
+                const vals = localFavorites?.slice();
+                vals?.push(slug);
+                setLocalFavorites(vals);
             }
         } else {
             await fetch(`/api/games/${slug}/favorite`, {

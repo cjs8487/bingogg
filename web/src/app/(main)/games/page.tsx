@@ -14,7 +14,7 @@ export default function Games() {
 
     const { data: gameList, isLoading, error } = useApi<Game[]>('/api/games');
 
-    const [localFavorites] = useLocalStorage<string[]>(
+    const [localFavorites, setLocalFavorites] = useLocalStorage<string[]>(
         'playbingo-favorites',
         [],
     );
@@ -71,7 +71,13 @@ export default function Games() {
                 sx={{ px: 2 }}
             >
                 {games.map((game, index) => (
-                    <GameCard key={game.slug} game={game} index={index} />
+                    <GameCard
+                        key={game.slug}
+                        game={game}
+                        index={index}
+                        localFavorites={localFavorites}
+                        setLocalFavorites={setLocalFavorites}
+                    />
                 ))}
             </Masonry>
         </Box>
