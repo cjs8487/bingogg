@@ -11,6 +11,7 @@
         "owners": {"type": "array", "items": {"$ref": "./User.json"}},
         "moderators": {"type": "array", "items": {"$ref": "./User.json"}},
         "favorited": {"type": "boolean"},
+        "isMod": {"type": "boolean"},
         "enableSRLv5": {"type": "boolean"},
         "racetimeBeta": {"type": "boolean"},
         "racetimeCategory": {"type": "string"},

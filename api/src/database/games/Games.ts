@@ -3,7 +3,12 @@ import { logError } from '../../Logger';
 import { prisma } from '../Database';
 
 export const allGames = async (user?: string) => {
-    const games = await prisma.game.findMany();
+    const games = await prisma.game.findMany({
+        include: {
+            owners: { select: { id: true } },
+            moderators: { select: { id: true } },
+        },
+    });
     if (user) {
         const favorites = (
             await prisma.user.findUnique({
@@ -14,6 +19,7 @@ export const allGames = async (user?: string) => {
         return games.map((game) => ({
             ...game,
             favorited: favorites?.includes(game.id),
+            isMod: isModerator(game.slug, user),
         }));
     }
     return games.map((game) => ({ ...game, favorite: false }));
