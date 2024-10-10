@@ -60,6 +60,7 @@ model Game {
   racetimeCategory String?
   racetimeGoal     String?
   racetimeBeta     Boolean   @default(false)
+  usersFavorited   User[]    @relation("GameFavorites")
 }
 
 model User {
@@ -73,6 +74,7 @@ model User {
   ownedGames     Game[]         @relation("GameOwners")
   moderatedGames Game[]         @relation("GameModerators")
   resetToken     PasswordReset?
+  favoritedGames Game[]         @relation("GameFavorites")
 }
 
 model PasswordReset {

@@ -1,33 +1,46 @@
 'use client';
-import Link from 'next/link';
 import { Game } from '@/types/Game';
-import { useApi } from '../../../lib/Hooks';
+import Masonry from '@mui/lab/Masonry';
+import { Box, Button, Typography } from '@mui/material';
+import Link from 'next/link';
 import { useContext } from 'react';
 import { UserContext } from '../../../context/UserContext';
-import {
-    Box,
-    Button,
-    Card,
-    CardActionArea,
-    CardContent,
-    CardMedia,
-    Container,
-    Typography,
-} from '@mui/material';
-import Masonry from '@mui/lab/Masonry';
+import { useApi } from '../../../lib/Hooks';
+import GameCard from '../rooms/GameCard';
+import { useLocalStorage } from 'react-use';
 
 export default function Games() {
     const { loggedIn } = useContext(UserContext);
 
-    const { data: games, isLoading, error } = useApi<Game[]>('/api/games');
+    const { data: gameList, isLoading, error } = useApi<Game[]>('/api/games');
 
-    if (!games || isLoading) {
+    const [localFavorites, setLocalFavorites] = useLocalStorage<string[]>(
+        'playbingo-favorites',
+        [],
+    );
+
+    if (!gameList || isLoading) {
         return null;
     }
 
     if (error) {
         return 'Unable to load game list.';
     }
+
+    const games = gameList
+        .map((game) => {
+            return {
+                ...game,
+                favorited:
+                    game.favorited || localFavorites?.includes(game.slug),
+            };
+        })
+        .sort((a, b) => {
+            if (a.favorited === b.favorited) {
+                return a.name.localeCompare(b.name);
+            }
+            return a.favorited ? -1 : 1;
+        });
 
     return (
         <Box flexGrow={1}>
@@ -58,61 +71,13 @@ export default function Games() {
                 sx={{ px: 2 }}
             >
                 {games.map((game, index) => (
-                    <Card
+                    <GameCard
                         key={game.slug}
-                        sx={{
-                            animation: '1.5s 1 slidein',
-                            animationDelay: `${1 + index * 0.1}s`,
-                            animationFillMode: 'backwards',
-                        }}
-                    >
-                        <CardActionArea
-                            href={`/games/${game.slug}`}
-                            LinkComponent={Link}
-                        >
-                            {game.coverImage && (
-                                <CardMedia
-                                    component="img"
-                                    image={game.coverImage}
-                                />
-                            )}
-                            {!game.coverImage && (
-                                <Box
-                                    sx={{
-                                        position: 'relative',
-                                        display: 'flex',
-                                        border: '1px',
-                                        pt: '80%',
-                                        boxShadow: 'inset 0 0 12px',
-                                    }}
-                                >
-                                    <Typography
-                                        sx={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            top: 0,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                    >
-                                        {game.slug}
-                                    </Typography>
-                                </Box>
-                            )}
-                            <CardContent>
-                                <Typography
-                                    variant="h6"
-                                    textAlign="center"
-                                    // pt={2}
-                                >
-                                    {game.name}
-                                </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
+                        game={game}
+                        index={index}
+                        localFavorites={localFavorites}
+                        setLocalFavorites={setLocalFavorites}
+                    />
                 ))}
             </Masonry>
         </Box>

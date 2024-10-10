@@ -14,6 +14,7 @@ export interface Game {
   coverImage?: string;
   owners?: User[];
   moderators?: User[];
+  favorited?: boolean;
   enableSRLv5?: boolean;
   racetimeBeta?: boolean;
   racetimeCategory?: string;

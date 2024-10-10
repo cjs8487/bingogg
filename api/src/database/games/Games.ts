@@ -2,12 +2,24 @@ import { Prisma } from '@prisma/client';
 import { logError } from '../../Logger';
 import { prisma } from '../Database';
 
-export const allGames = () => {
-    return prisma.game.findMany();
+export const allGames = async (user?: string) => {
+    const games = await prisma.game.findMany();
+    if (user) {
+        const favorites = (
+            await prisma.user.findUnique({
+                select: { favoritedGames: { select: { id: true } } },
+                where: { id: user },
+            })
+        )?.favoritedGames.map((game) => game.id);
+        return games.map((game) => ({
+            ...game,
+            favorited: favorites?.includes(game.id),
+        }));
+    }
+    return games.map((game) => ({ ...game, favorite: false }));
 };
 
 export const gameForSlug = (slug: string) => {
-    // noinspection TypeScriptValidateJSTypes
     return prisma.game.findUnique({
         where: { slug },
         include: {
@@ -45,10 +57,13 @@ export const createGame = async (
     } catch (error: unknown) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2002') {
-                return {statusCode: 400, message: "Game with this slug already exists"}
+                return {
+                    statusCode: 400,
+                    message: 'Game with this slug already exists',
+                };
             }
             logError(`Database Known Client error - ${error.message}`);
-            return {statusCode: 500, message: "Database error"}
+            return { statusCode: 500, message: 'Database error' };
         }
         logError(`Database Unknown error - ${error}`);
     }
@@ -59,14 +74,14 @@ export const deleteGame = (slug: string) => {
 };
 
 export const goalCount = async (slug: string) => {
-    const game = await gameForSlug(slug)
+    const game = await gameForSlug(slug);
     if (!game) {
         return -1;
     }
     return prisma.goal.count({
-        where: {gameId: game.id}
+        where: { gameId: game.id },
     });
-}
+};
 
 export const updateGameName = (slug: string, name: string) => {
     return prisma.game.update({ where: { slug }, data: { name } });
@@ -156,4 +171,18 @@ export const isModerator = async (slug: string, user: string) => {
             },
         })) > 0
     );
+};
+
+export const favoriteGame = async (slug: string, user: string) => {
+    return prisma.user.update({
+        where: { id: user },
+        data: { favoritedGames: { connect: { slug } } },
+    });
+};
+
+export const unfavoriteGame = async (slug: string, user: string) => {
+    return prisma.user.update({
+        where: { id: user },
+        data: { favoritedGames: { disconnect: { slug } } },
+    });
 };
