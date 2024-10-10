@@ -47,6 +47,17 @@ export default function Games() {
 
         return curr;
     }, gamesBase);
+    Object.values(games).forEach((list) =>
+        list.sort((a, b) => {
+            if (
+                (a.favorited || localFavorites?.includes(a.slug)) ===
+                (b.favorited || localFavorites?.includes(b.slug))
+            ) {
+                return a.name.localeCompare(b.name);
+            }
+            return a.favorited ? -1 : 1;
+        }),
+    );
 
     return (
         <Box flexGrow={1} px={2}>
