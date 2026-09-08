@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { collectDefaultMetrics, Histogram, Registry } from 'prom-client';
+import { collectDefaultMetrics, Gauge, Histogram, Registry } from 'prom-client';
+import { allRooms } from '../core/RoomServer';
 
 export const metricsRouter = Router();
 const registry = new Registry();
@@ -30,6 +31,15 @@ export const bodySizeHistogram = new Histogram({
     ],
     labelNames: ['method'],
     registers: [registry],
+});
+
+export const roomCounter = new Gauge({
+    name: 'rooms_total',
+    help: 'Total number of rooms',
+    registers: [registry],
+    collect() {
+        this.set(allRooms.size)
+    }
 });
 
 // Insert any other metrics we might want
