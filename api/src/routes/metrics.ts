@@ -42,6 +42,18 @@ export const roomCounter = new Gauge({
     }
 });
 
+export const connectionCounter = new Gauge({
+    name: 'connections_total',
+    help: 'Total number of active websocket connections',
+    registers: [registry],
+    labelNames: ['room'],
+    collect() {
+        allRooms.forEach(room => {
+            this.labels(room.slug).set(room.players.values().reduce((sum, player) => sum + (player.connections.size), 0));
+        })
+    }
+});
+
 // Insert any other metrics we might want
 
 metricsRouter.get('/', async (req, res) => {
