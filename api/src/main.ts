@@ -10,12 +10,9 @@ import { disconnect } from './database/Database';
 import mediaServer from './media/MediaServer';
 import api from './routes/api';
 import { healthCheckRouter } from './routes/healthCheck';
-import {
-    bodySizeHistogram,
-    metricsRouter,
-    requestDurationHistogram,
-} from './routes/metrics';
+import { metricsRouter } from './routes/metrics';
 import { closeSessionDatabase, sessionStore } from './util/Session';
+import metrics from './metrics';
 
 declare module 'express-session' {
     interface SessionData {
@@ -42,18 +39,7 @@ app.use(bodyParser.json());
 
 // Tracking duration of requests
 app.use((req, res, next) => {
-    const stopTimer = requestDurationHistogram.startTimer();
-    if (req.body) {
-        const bodySize = Buffer.byteLength(JSON.stringify(req.body));
-        bodySizeHistogram.observe({ method: req.method }, bodySize);
-    }
-    res.on('finish', () => {
-        stopTimer({
-            route: req.route ? req.route.path : req.path,
-            method: req.method,
-            status_code: res.statusCode,
-        });
-    });
+    metrics.http.observeRequest(req, res);
     next();
 });
 
