@@ -1,4 +1,4 @@
-import { RoomAction } from '@playbingo/types';
+import { RoomAction, ServerMessage } from '@playbingo/types';
 import { WebSocketServer } from 'ws';
 import {
     createRoomToken,
@@ -8,6 +8,7 @@ import {
 import { roomCleanupInterval } from '../Environment';
 import { logInfo, logWarn } from '../Logger';
 import Room from './Room';
+import metrics from '../metrics';
 
 export const roomWebSocketServer: WebSocketServer = new WebSocketServer({
     noServer: true,
@@ -25,18 +26,42 @@ const cleanupInterval = setInterval(() => {
 }, roomCleanupInterval);
 
 roomWebSocketServer.on('connection', (ws, req) => {
+    let isConnected = false;
+    let isJoined = false;
     if (!req.url) {
         ws.send(JSON.stringify({ action: 'unauthorized' }));
         ws.close();
         return;
     }
+
     const segments = req.url.split('/');
     segments.shift(); // remove leading empty segment
     const [, slug] = segments;
 
+    const room = allRooms.get(slug);
+    if (!room) {
+        metrics.websocket.messageSent(slug, 'unauthorized');
+        ws.send(JSON.stringify({ action: 'unauthorized' }));
+        ws.close();
+        return;
+    }
+
+    const stopConnectiontimer = metrics.websocket.websocketOpened(slug);
+    isConnected = true;
+
+    const sendWsMessage = (
+        message: ServerMessage | { action: string } | string,
+    ) => {
+        const action = typeof message === 'string' ? message : message.action;
+        metrics.websocket.messageSent(slug, action);
+        ws.send(
+            typeof message === 'string' ? message : JSON.stringify(message),
+        );
+    };
+
     // create timeout for uninitialized connections
     const timeout = setTimeout(() => {
-        ws.send(JSON.stringify({ action: 'unauthorized' }));
+        sendWsMessage({ action: 'unauthorized' });
         ws.close();
     }, 60 * 1000);
 
@@ -57,57 +82,64 @@ roomWebSocketServer.on('connection', (ws, req) => {
         const messageString = message.toString();
 
         if (messageString === 'ping') {
-            ws.send('pong');
+            metrics.websocket.messageReceived(slug, 'ping');
+            sendWsMessage('pong');
             // pingTimeout.refresh();
             return;
         }
 
         const action: RoomAction = JSON.parse(messageString);
+        const stopProcessingTimer = metrics.websocket.messageReceived(
+            slug,
+            action.action,
+        );
         const payload = verifyRoomToken(action.authToken, slug);
         if (!payload) {
-            ws.send(JSON.stringify({ action: 'unauthorized' }));
+            sendWsMessage({ action: 'unauthorized' });
+            stopProcessingTimer({ room: slug, action: action.action });
             return;
         }
         const room = allRooms.get(payload.roomSlug);
         if (!room) {
-            ws.send(JSON.stringify({ action: 'unauthorized' }));
+            sendWsMessage({ action: 'unauthorized' });
+            stopProcessingTimer({ room: slug, action: action.action });
             return;
         }
         if (action.action === 'join') {
             clearTimeout(timeout);
-            ws.send(JSON.stringify(room.handleJoin(action, payload, ws)));
+            sendWsMessage(room.handleJoin(action, payload, ws));
         }
 
         // helpers
         if (!hasPermission(action.action, payload)) {
-            return ws.send(JSON.stringify({ action: 'forbidden' }));
+            sendWsMessage({ action: 'forbidden' });
+            stopProcessingTimer({ room: slug, action: action.action });
+            return;
         }
 
         switch (action.action) {
             case 'leave':
-                ws.send(
-                    JSON.stringify(
-                        room.handleLeave(action, payload, action.authToken),
-                    ),
+                sendWsMessage(
+                    room.handleLeave(action, payload, action.authToken),
                 );
                 ws.close();
                 break;
             case 'mark':
                 const markResult = room.handleMark(action, payload);
                 if (markResult) {
-                    ws.send(JSON.stringify(markResult));
+                    sendWsMessage(markResult);
                 }
                 break;
             case 'unmark':
                 const unmarkResult = room.handleUnmark(action, payload);
                 if (unmarkResult) {
-                    ws.send(JSON.stringify(unmarkResult));
+                    sendWsMessage(unmarkResult);
                 }
                 break;
             case 'chat':
                 const chatResult = room.handleChat(action, payload);
                 if (chatResult) {
-                    ws.send(JSON.stringify(chatResult));
+                    sendWsMessage(chatResult);
                 }
                 break;
             case 'changeColor':
@@ -116,7 +148,7 @@ roomWebSocketServer.on('connection', (ws, req) => {
                     payload,
                 );
                 if (changeColorResult) {
-                    ws.send(JSON.stringify(changeColorResult));
+                    sendWsMessage(changeColorResult);
                 }
                 break;
             case 'newCard':
@@ -170,6 +202,7 @@ roomWebSocketServer.on('connection', (ws, req) => {
                 room.handleSetChatEnabled(action);
                 break;
         }
+        stopProcessingTimer({ room: slug, action: action.action });
     });
     ws.on('close', (code, reason) => {
         // cleanup
@@ -187,6 +220,9 @@ roomWebSocketServer.on('connection', (ws, req) => {
             logWarn(
                 'Received a close frame for a websocket connection, but there was no matching socket associated with a room',
             );
+        }
+        if (isConnected) {
+            metrics.websocket.websocketClosed(slug, code, stopConnectiontimer);
         }
     });
 });

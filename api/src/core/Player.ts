@@ -8,6 +8,7 @@ import { OPEN, WebSocket } from 'ws';
 import { RoomTokenPayload } from '../auth/RoomAuth';
 import { computeRevealedMask, rowColToMask } from '../util/RoomUtils';
 import Room from './Room';
+import metrics from '../metrics';
 
 /**
  * Represents a player connected to a room. While largely just a data class, this
@@ -198,6 +199,10 @@ export default class Player {
 
         this.connections.forEach((socket) => {
             if (socket.readyState === OPEN) {
+                metrics.websocket.messageSent(
+                    this.room.slug,
+                    finalMessage.action,
+                );
                 socket.send(
                     JSON.stringify({
                         ...finalMessage,
