@@ -16,6 +16,7 @@ import {
     GoalPlacementRestriction,
 } from './GoalPlacementRestriction';
 import { shuffle } from '../../util/Array';
+import metrics from '../../metrics';
 
 export type LayoutCell = Extract<
     GeneratorSettings['boardLayout'],
@@ -133,6 +134,17 @@ export class BoardGenerator {
     }
 
     generateBoard() {
+        const finishGeneration = metrics.generation.cardGenerationStarted();
+        let successful = false;
+        try {
+            this.generateBoardInternal();
+            successful = true;
+        } finally {
+            finishGeneration(successful);
+        }
+    }
+
+    private generateBoardInternal() {
         // get the goal list to be used in generation
         this.pruneGoalList();
         this.transformGoals();
