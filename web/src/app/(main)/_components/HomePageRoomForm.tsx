@@ -192,7 +192,38 @@ export default function HomePageRoomForm() {
                             />
                         </AccordionDetails>
                     </Accordion>
-                    <Button type="submit">Create Room</Button>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 2,
+                            width: '100%',
+                        }}
+                    >
+                        <Box sx={{ flexGrow: 1 }} />
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 2,
+                            }}
+                        >
+                            <Button
+                                type="submit"
+                                color="secondary"
+                                // variant="outlined"
+                            >
+                                Create Room and Spectate
+                            </Button>
+
+                            <Button
+                                type="submit"
+                                color="success"
+                                // variant="outlined"
+                                // sx={{ flexGrow: 1 }}
+                            >
+                                Create Room
+                            </Button>
+                        </Box>
+                    </Box>
                 </Box>
             )}
         </Formik>
