@@ -3,7 +3,7 @@ import { Router } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { rm } from 'fs/promises';
 import path from 'path';
-import { isOwner, slugForMedia } from '../database/games/Games';
+import { getGameCover, isOwner, slugForMedia } from '../database/games/Games';
 import { logError } from '../Logger';
 
 const BYTE_CONVERSION = 1024;
@@ -150,6 +150,16 @@ mediaServer.delete(':workflow/:id', async (req, res) => {
     }
 
     res.sendStatus(200);
+});
+
+mediaServer.get('/gameCover/:slug', async (req, res) => {
+    const { slug } = req.params;
+    const cover = await getGameCover(slug);
+    if (cover) {
+        res.redirect(`/media/game/${cover}`);
+    } else {
+        res.sendStatus(404);
+    }
 });
 
 export default mediaServer;
