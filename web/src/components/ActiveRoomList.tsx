@@ -3,6 +3,7 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
+    Grid,
     List,
     ListItem,
     Typography,
@@ -37,9 +38,9 @@ export default async function ActiveRoomList() {
     }
 
     return (
-        <List>
+        <Grid container spacing={2} sx={{ maxHeight: '100%' }}>
             {rooms.map((room) => (
-                <ListItem key={room.slug}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, xl: 6 }} key={room.slug}>
                     <Card>
                         <CardActionArea
                             href={`/rooms/${room.slug}`}
@@ -58,7 +59,7 @@ export default async function ActiveRoomList() {
                                     objectFit: 'cover',
                                 }}
                             />
-                            <CardContent>
+                            <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography variant="h5">
                                     {room.name}
                                 </Typography>
@@ -69,8 +70,8 @@ export default async function ActiveRoomList() {
                             </CardContent>
                         </CardActionArea>
                     </Card>
-                </ListItem>
+                </Grid>
             ))}
-        </List>
+        </Grid>
     );
 }
