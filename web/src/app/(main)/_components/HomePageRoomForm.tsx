@@ -206,20 +206,11 @@ export default function HomePageRoomForm() {
                                 gap: 2,
                             }}
                         >
-                            <Button
-                                type="submit"
-                                color="secondary"
-                                // variant="outlined"
-                            >
+                            <Button type="submit" color="secondary">
                                 Create Room and Spectate
                             </Button>
 
-                            <Button
-                                type="submit"
-                                color="success"
-                                // variant="outlined"
-                                // sx={{ flexGrow: 1 }}
-                            >
+                            <Button type="submit" color="success">
                                 Create Room
                             </Button>
                         </Box>

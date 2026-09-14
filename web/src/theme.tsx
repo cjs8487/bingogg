@@ -42,7 +42,7 @@ const theme = createTheme({
             main: '#ffb703',
         },
         secondary: {
-            main: '#4cc9f0',
+            main: '#627fbe',
         },
         info: {
             main: '#a66cff',
@@ -147,6 +147,7 @@ const theme = createTheme({
         MuiLink: {
             defaultProps: {
                 component: LinkBehavior,
+                color: 'secondary',
             } as LinkProps,
         },
         MuiButtonBase: {

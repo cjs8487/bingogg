@@ -47,9 +47,10 @@ export default function Login({ useRouterBack }: LoginProps) {
                         color: 'text.secondary',
                         textAlign: 'center',
                         mb: 2,
+                        ml: 2,
                     }}
                 >
-                    Login is never required to play bingo.
+                    No login is required to play.
                 </Typography>
                 <Box sx={{ p: 2 }}>
                     <Box
@@ -69,7 +70,7 @@ export default function Login({ useRouterBack }: LoginProps) {
                             }}
                         >
                             <SportsEsports
-                                color="primary"
+                                color="secondary"
                                 fontSize="large"
                                 sx={{ mr: 1, mt: 0.5 }}
                             />
@@ -103,7 +104,7 @@ export default function Login({ useRouterBack }: LoginProps) {
                             }}
                         >
                             <Hub
-                                color="primary"
+                                color="secondary"
                                 fontSize="large"
                                 sx={{ mr: 1, mt: 0.5 }}
                             />
@@ -136,7 +137,7 @@ export default function Login({ useRouterBack }: LoginProps) {
                             }}
                         >
                             <Sync
-                                color="primary"
+                                color="secondary"
                                 fontSize="large"
                                 sx={{ mr: 1, mt: 0.5 }}
                             />
@@ -170,7 +171,7 @@ export default function Login({ useRouterBack }: LoginProps) {
                             }}
                         >
                             <Lock
-                                color="primary"
+                                color="secondary"
                                 fontSize="large"
                                 sx={{ mr: 1, mt: 0.5 }}
                             />
@@ -188,9 +189,8 @@ export default function Login({ useRouterBack }: LoginProps) {
                                     variant="body2"
                                     color="text.secondary"
                                 >
-                                    Quickly rejoin rooms that you are already a
-                                    part of without needing to re-enter the
-                                    password
+                                    Quickly rejoin rooms that you're already a
+                                    part of without re-entering the password
                                 </Typography>
                             </Box>
                         </Box>
@@ -283,14 +283,12 @@ export default function Login({ useRouterBack }: LoginProps) {
                             Forgot password?
                         </Link>
                     </Box>
-                    <Button type="submit" variant="outlined" color="success">
+                    <Button type="submit" variant="contained" color="info">
                         Log In
                     </Button>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                        New to PlayBingo?{' '}
-                        <Link href="/register">Create an account</Link>
-                    </Typography>
+                    <Button type="button" variant="outlined" color="secondary">
+                        Register
+                    </Button>
                 </Box>
             </Formik>
         </Box>

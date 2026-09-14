@@ -26,7 +26,7 @@ export default function LoginPage() {
                 flexGrow: 1,
             }}
         >
-            <Paper sx={{ px: 8, py: 4 }}>
+            <Paper>
                 <Login />
             </Paper>
         </Container>
