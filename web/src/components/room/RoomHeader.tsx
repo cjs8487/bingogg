@@ -17,8 +17,6 @@ export default function RoomHeader() {
 
     const theme = useTheme();
 
-    const [collapsed, setCollapsed] = useState(false);
-    const canCollapse = useMediaQuery(theme.breakpoints.up('lg'));
     const isXSmall = useMediaQuery(theme.breakpoints.only('xs'));
 
     if (!roomData) {
@@ -40,7 +38,7 @@ export default function RoomHeader() {
                 <Timer />
             </Box>
         );
-    } else if (canCollapse && collapsed) {
+    } else {
         portalContent = (
             <Box
                 sx={{
@@ -49,7 +47,6 @@ export default function RoomHeader() {
                     columnGap: 1,
                 }}
             >
-                <ConnectionState collapsed />
                 <Box
                     sx={{
                         position: 'absolute',
@@ -61,116 +58,13 @@ export default function RoomHeader() {
                 >
                     <Timer />
                 </Box>
-                {canCollapse && (
-                    <Button
-                        sx={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: '50%',
-                            transform: 'translateX(-50%) translateY(-50%)',
-                        }}
-                        variant="contained"
-                        color="accent"
-                        size="small"
-                        onClick={() => setCollapsed(false)}
-                    >
-                        <ExpandMore fontSize="small" />
-                    </Button>
-                )}
-            </Box>
-        );
-    } else {
-        portalContent = (
-            <Box
-                sx={{
-                    position: 'relative',
-                    gridColumn: '1 / -1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    px: 3,
-                    py: 1,
-                    borderTop: 1,
-                    borderColor: 'divider',
-                }}
-            >
-                <Box sx={{ flexGrow: 1 }} className="grow">
-                    <Typography variant="h5" className="mb-0.5 text-lg">
-                        {roomData.name}
-                    </Typography>
-                    <Typography
-                        variant="subtitle1"
-                        className="mb-1.5 flex text-xs"
-                    >
-                        <div>
-                            {roomData.game} ({roomData.variant})
-                        </div>
-                    </Typography>
-                    <Box
-                        sx={{ display: 'flex', alignItems: 'center' }}
-                        className="flex text-xs"
-                    >
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                borderRight: 1,
-                                borderColor: 'divider',
-                                pr: 1,
-                                mr: 1,
-                            }}
-                        >
-                            {roomData.slug}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                borderRight: 1,
-                                borderColor: 'divider',
-                                pr: 1,
-                                mr: 1,
-                            }}
-                        >
-                            {roomData.mode}
-                        </Typography>
-                        <Typography variant="body2">{roomData.seed}</Typography>
-                    </Box>
-                </Box>
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        textAlign: 'center',
-                    }}
-                >
-                    <Timer />
-                </Box>
-                <ConnectionState />
-                {canCollapse && (
-                    <Button
-                        sx={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: '50%',
-                            transform: 'translateX(-50%) translateY(-50%)',
-                        }}
-                        variant="contained"
-                        color="accent"
-                        size="small"
-                        onClick={() => setCollapsed(true)}
-                    >
-                        <ExpandLess fontSize="small" />
-                    </Button>
-                )}
             </Box>
         );
     }
 
     return (
         <Portal
-            container={() =>
-                document.getElementById(
-                    collapsed ? 'collapsed-header-slot' : 'global-header',
-                )
-            }
+            container={() => document.getElementById('collapsed-header-slot')}
         >
             {portalContent}
         </Portal>

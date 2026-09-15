@@ -34,8 +34,6 @@ export default function RoomChat() {
                 gap: 1,
                 p: 1,
                 borderTopLeftRadius: 0,
-                backgroundColor: (theme) =>
-                    alpha(theme.palette.background.paper, 0.5),
             }}
         >
             {roomData?.chatEnabled ? (
