@@ -141,6 +141,8 @@ function RoomXs() {
                 <Board />
             </Box>
             <Paper sx={{ p: 1.5, mb: 1 }}>
+                <RoomInfo />
+                <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <PlayerList />
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <SettingsPanel />
@@ -182,6 +184,8 @@ function RoomSm() {
             </Box>
             <Box sx={{ display: 'flex', height: '100%', gap: 1 }}>
                 <Paper sx={{ p: 1.5, width: '50%' }}>
+                    <RoomInfo />
+                    <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                     <PlayerList />
                     <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                     <SettingsPanel />
@@ -228,6 +232,8 @@ function RoomMd() {
                 <Board />
             </Box>
             <Paper sx={{ display: 'flex', flexDirection: 'column', p: 1.5 }}>
+                <RoomInfo />
+                <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <PlayerList />
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <SettingsPanel />
@@ -238,10 +244,7 @@ function RoomMd() {
                     <TimerControls />
                 </Box>
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
-                <Box
-                    sx={{ position: 'relative', height: '100%' }}
-                    className="relative h-full"
-                >
+                <Box sx={{ position: 'relative', height: '100%' }}>
                     <RoomChat />
                 </Box>
             </Paper>
@@ -262,7 +265,19 @@ function RoomLg() {
             }}
         >
             <Paper sx={{ p: 1.5 }}>
-                <PlayerList />
+                <RoomInfo />
+                <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
+                <Box
+                    sx={{
+                        maxHeight: 250,
+                        overflowY: 'auto',
+                        width: '100%',
+                        pr: 1,
+                        pt: 1,
+                    }}
+                >
+                    <PlayerList />
+                </Box>
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <SettingsPanel />
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
@@ -305,32 +320,7 @@ function RoomXl() {
             }}
         >
             <Paper sx={{ p: 1.5 }}>
-                <Box sx={{ flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Typography variant="h5">{roomData.name}</Typography>
-                        <Box sx={{ flexgrow: 1 }} />
-                        <ConnectionState />
-                    </Box>
-                    <Typography variant="subtitle1">
-                        <div>
-                            {roomData.game} ({roomData.variant})
-                        </div>
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography
-                            variant="subtitle2"
-                            sx={{
-                                borderRight: 1,
-                                borderColor: 'divider',
-                                pr: 1,
-                                mr: 1,
-                            }}
-                        >
-                            {roomData.mode}
-                        </Typography>
-                        <Typography variant="body2">{roomData.seed}</Typography>
-                    </Box>
-                </Box>
+                <RoomInfo />
                 <Box sx={{ my: 2, border: 1, borderColor: 'divider' }} />
                 <Box
                     sx={{

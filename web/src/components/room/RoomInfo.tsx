@@ -1,23 +1,10 @@
-import {
-    Box,
-    Card,
-    CardActionArea,
-    CardContent,
-    Typography,
-} from '@mui/material';
-import { useCallback, useContext, useState } from 'react';
+import { Box, Card, CardContent, Typography } from '@mui/material';
+import { useContext } from 'react';
 import { RoomContext } from '../../context/RoomContext';
 import ConnectionState from './ConnectionState';
-import RoomControlDialog from './RoomControlDialog';
 
 export default function RoomInfo() {
     const { roomData } = useContext(RoomContext);
-
-    const [showControlModal, setShowControlModal] = useState(false);
-
-    const close = useCallback(() => {
-        setShowControlModal(false);
-    }, []);
 
     if (!roomData) {
         return (
@@ -30,39 +17,31 @@ export default function RoomInfo() {
     }
 
     return (
-        <>
-            <Card>
-                <CardActionArea
-                    onClick={() => {
-                        setShowControlModal(true);
+        <Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+                <Typography variant="h5">{roomData.name}</Typography>
+                <Box sx={{ flexGrow: 1 }} />
+                <ConnectionState />
+            </Box>
+            <Typography variant="subtitle1">
+                <div>
+                    {roomData.game} ({roomData.variant})
+                </div>
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                    variant="subtitle2"
+                    sx={{
+                        borderRight: 1,
+                        borderColor: 'divider',
+                        pr: 1,
+                        mr: 1,
                     }}
                 >
-                    <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h5">{roomData.name}</Typography>
-                        <Typography>{roomData.game}</Typography>
-                        <Typography component="div" variant="caption">
-                            {roomData.slug}
-                        </Typography>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                gap: 1,
-                                mt: 1,
-                                mb: 2,
-                            }}
-                        >
-                            <Typography>{roomData.variant}</Typography>
-                            <Box sx={{ borderLeft: 1 }} />
-                            <Typography>{roomData.mode}</Typography>
-                            <Box sx={{ borderLeft: 1 }} />
-                            <Typography>Seed: {roomData.seed}</Typography>
-                        </Box>
-                        <ConnectionState />
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            <RoomControlDialog show={showControlModal} close={close} />
-        </>
+                    {roomData.mode}
+                </Typography>
+                <Typography variant="body2">{roomData.seed}</Typography>
+            </Box>
+        </Box>
     );
 }
