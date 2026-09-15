@@ -20,9 +20,7 @@ export default function PlayerList() {
                 <Box
                     key={player.id}
                     sx={{
-                        p: 1,
                         mb: 1,
-                        borderLeft: 6,
                         borderColor: player.color,
                         boxShadow: `0 0 6px ${player.color}`,
                         display: 'flex',
@@ -30,19 +28,40 @@ export default function PlayerList() {
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Typography sx={{ flexGrow: 1 }}>
-                        {player.nickname}
-                    </Typography>
-                    <PlayerRaceSummary
-                        raceHandler={roomData.raceHandler}
-                        player={player}
-                    />
-                    {player.monitor && (
-                        <Sword
-                            fontSize="small"
-                            sx={{ color: 'green', ml: 2 }}
+                    <Box
+                        sx={{
+                            alignSelf: 'stretch',
+                            display: 'flex',
+                            alignItems: 'center',
+                            backgroundColor: player.color,
+                            mr: 1,
+                            px: 1.5,
+                        }}
+                    >
+                        <Typography>{player.goalCount}</Typography>
+                    </Box>
+                    <Box
+                        sx={{
+                            p: 1,
+                            display: 'flex',
+                            flexGrow: 1,
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Typography sx={{ flexGrow: 1 }}>
+                            {player.nickname}
+                        </Typography>
+                        <PlayerRaceSummary
+                            raceHandler={roomData.raceHandler}
+                            player={player}
                         />
-                    )}
+                        {player.monitor && (
+                            <Sword
+                                fontSize="small"
+                                sx={{ color: 'green', ml: 2 }}
+                            />
+                        )}
+                    </Box>
                 </Box>
             ))}
         </>
