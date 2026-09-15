@@ -132,6 +132,9 @@ const baseTheme = createTheme({
             defaultProps: {
                 component: LinkBehavior,
                 color: 'secondary',
+                sx: {
+                    textDecoration: 'none',
+                },
             } as LinkProps,
         },
         MuiButtonBase: {
