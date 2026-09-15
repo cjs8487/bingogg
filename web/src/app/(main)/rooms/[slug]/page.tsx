@@ -1,26 +1,15 @@
 'use client';
 import Board from '@/components/board/Board';
-import PlayerInfo from '@/components/room/PlayerInfo';
 import RoomChat from '@/components/room/RoomChat';
 import RoomInfo from '@/components/room/RoomInfo';
 import RoomLogin from '@/components/room/RoomLogin';
-import Timer from '@/components/room/timer/Timer';
 import TimerControls from '@/components/room/timer/TimerControls';
 import TimingMethodSelector from '@/components/room/timer/TimingMethodSelector';
 import { ConnectionStatus, useRoomContext } from '@/context/RoomContext';
-import {
-    alpha,
-    Box,
-    Dialog,
-    DialogContent,
-    Paper,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogContent, Paper, Typography } from '@mui/material';
 import PlayerList from '../../../../components/room/PlayerList';
 import RoomHeader from '../../../../components/room/RoomHeader';
 import SettingsPanel from '../../../../components/room/SettingsPanel';
-import ConnectionState from '../../../../components/room/ConnectionState';
 
 export default function Room() {
     const { connectionStatus, roomData } = useRoomContext();
