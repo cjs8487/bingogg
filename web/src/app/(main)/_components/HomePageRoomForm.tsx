@@ -76,7 +76,7 @@ export default function HomePageRoomForm() {
                 router.push(`/rooms/${slug}`);
             }}
         >
-            {({ values: { exploration } }) => (
+            {({ values: { exploration }, setFieldValue, submitForm }) => (
                 <Box
                     component={Form}
                     sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
@@ -133,11 +133,6 @@ export default function HomePageRoomForm() {
                                     id="hide-card"
                                     name="hideCard"
                                     label="Hide card initially?"
-                                />
-                                <FormikSwitch
-                                    id="spectator-mode"
-                                    name="spectator"
-                                    label="Join as a spectator?"
                                 />
                             </Box>
                             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -206,11 +201,26 @@ export default function HomePageRoomForm() {
                                 gap: 2,
                             }}
                         >
-                            <Button type="submit" color="secondary">
-                                Create Room and Spectate
+                            <Button
+                                type="button"
+                                color="secondary"
+                                onClick={async () => {
+                                    await setFieldValue('spectator', true);
+                                    await submitForm();
+                                }}
+                            >
+                                Create As Spectator
                             </Button>
 
-                            <Button type="submit">Create Room</Button>
+                            <Button
+                                type="button"
+                                onClick={async () => {
+                                    await setFieldValue('spectator', false);
+                                    await submitForm();
+                                }}
+                            >
+                                Create Room
+                            </Button>
                         </Box>
                     </Box>
                 </Box>
