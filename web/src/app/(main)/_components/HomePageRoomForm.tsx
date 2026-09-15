@@ -119,7 +119,7 @@ export default function HomePageRoomForm() {
                     <GameModeSelector />
                     <Accordion className="bg-surface">
                         <AccordionSummary expandIcon={<ArrowDropDown />}>
-                            <Typography>Additional Settings</Typography>
+                            <Typography>Advanced Settings</Typography>
                         </AccordionSummary>
                         <AccordionDetails
                             sx={{
