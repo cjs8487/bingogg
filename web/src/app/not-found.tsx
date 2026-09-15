@@ -215,7 +215,7 @@ export default function NotFound() {
                                                     width: '100%',
                                                     height: '100%',
                                                     backgroundColor:
-                                                        'primary.dark',
+                                                        'accent.dark',
                                                 }}
                                             />
                                         )}

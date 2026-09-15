@@ -5,9 +5,25 @@ import { Lato, Nunito } from 'next/font/google';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { forwardRef } from 'react';
 
+declare module '@mui/material/styles' {
+    interface Palette {
+        accent: Palette['primary'];
+    }
+
+    interface PaletteOptions {
+        accent?: PaletteOptions['primary'];
+    }
+}
+
 declare module '@mui/material/Paper' {
     interface PaperPropsVariantOverrides {
         borderless: true;
+    }
+}
+
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        accent: true;
     }
 }
 
@@ -31,7 +47,7 @@ const LinkBehavior = forwardRef<HTMLAnchorElement, NextLinkProps>(
     },
 );
 
-const theme = createTheme({
+const baseTheme = createTheme({
     palette: {
         mode: 'dark',
         background: {
@@ -39,13 +55,10 @@ const theme = createTheme({
             paper: '#211035',
         },
         primary: {
-            main: '#ffb703',
+            main: '#a66cff',
         },
         secondary: {
             main: '#627fbe',
-        },
-        info: {
-            main: '#a66cff',
         },
         success: {
             main: '#85bb65',
@@ -115,35 +128,6 @@ const theme = createTheme({
                 transitionDuration: 500,
             },
         },
-        MuiBadge: {
-            defaultProps: {
-                color: 'primary',
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    boxShadow: '0 16px 36px rgba(0, 0, 0, 0.35)',
-                    variants: [
-                        {
-                            props: { variant: 'outlined' },
-                            style: {
-                                border: '2px solid rgba(255, 183, 3, 0.25)',
-                            },
-                        },
-                        {
-                            props: { variant: 'borderless' },
-                            style: {
-                                border: 'none',
-                            },
-                        },
-                    ],
-                },
-            },
-            defaultProps: {
-                variant: 'outlined',
-            },
-        },
         MuiLink: {
             defaultProps: {
                 component: LinkBehavior,
@@ -174,6 +158,40 @@ const theme = createTheme({
     },
     shape: {
         borderRadius: 14,
+    },
+});
+
+const theme = createTheme(baseTheme, {
+    palette: {
+        accent: baseTheme.palette.augmentColor({ color: { main: '#ffb703' } }),
+    },
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                //@ts-ignore
+                root: ({ theme }) =>
+                    theme.unstable_sx({
+                        boxShadow: '0 16px 36px rgba(0, 0, 0, 0.35)',
+                        variants: [
+                            {
+                                props: { variant: 'outlined' },
+                                style: {
+                                    // border: '2px solid rgba(255, 183, 3, 0.25)',
+                                },
+                            },
+                            {
+                                props: { variant: 'borderless' },
+                                style: {
+                                    border: 'none',
+                                },
+                            },
+                        ],
+                    }),
+            },
+            defaultProps: {
+                variant: 'outlined',
+            },
+        },
     },
 });
 

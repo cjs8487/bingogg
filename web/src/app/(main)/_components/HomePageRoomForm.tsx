@@ -210,9 +210,7 @@ export default function HomePageRoomForm() {
                                 Create Room and Spectate
                             </Button>
 
-                            <Button type="submit" color="success">
-                                Create Room
-                            </Button>
+                            <Button type="submit">Create Room</Button>
                         </Box>
                     </Box>
                 </Box>

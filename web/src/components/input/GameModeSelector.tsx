@@ -76,7 +76,11 @@ function BingoModeConfig() {
             <Typography variant="subtitle2" sx={{ mb: 1, color: 'white' }}>
                 Win Condition
             </Typography>
-            <ButtonGroup size="small" color="primary" sx={{ flexWrap: 'wrap' }}>
+            <ButtonGroup
+                size="small"
+                color="secondary"
+                sx={{ flexWrap: 'wrap' }}
+            >
                 {winConditions.map((condition) => (
                     <Button
                         key={condition.name}
@@ -123,15 +127,6 @@ function BlackoutModeConfig() {
                             )
                         }
                         onBlur={handleBlur}
-                        sx={{
-                            '& .MuiSwitch-switchBase.Mui-checked': {
-                                color: 'white',
-                            },
-                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track':
-                                {
-                                    backgroundColor: 'rgba(255,255,255,0.3)',
-                                },
-                        }}
                     />
                 }
                 label={<Typography>Lockout</Typography>}
@@ -184,10 +179,10 @@ function GameModeButton({
                     textTransform: 'none',
                     bgcolor: (theme) =>
                         isSelected
-                            ? alpha(theme.palette.primary.main, 0.1)
+                            ? alpha(theme.palette.secondary.main, 0.1)
                             : theme.palette.background.paper,
                     opacity: isSelected ? 1 : 0.8,
-                    borderColor: isSelected ? 'primary.main' : 'divider',
+                    borderColor: isSelected ? 'secondary.main' : 'divider',
                     '&:hover': isSelected
                         ? {}
                         : {

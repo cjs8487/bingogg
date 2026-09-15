@@ -115,7 +115,7 @@ export default function Rooms() {
                 ))}
             </Box>
             <Fab
-                color="primary"
+                color="accent"
                 aria-label="add"
                 sx={{
                     position: 'absolute',

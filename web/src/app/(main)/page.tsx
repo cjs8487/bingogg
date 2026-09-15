@@ -63,8 +63,7 @@ export default async function Home() {
                     <Card
                         sx={{
                             textAlign: 'center',
-                            px: 2,
-                            pt: 2,
+                            p: 2,
                             width: '100%',
                         }}
                     >

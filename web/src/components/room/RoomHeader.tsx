@@ -70,6 +70,7 @@ export default function RoomHeader() {
                             transform: 'translateX(-50%) translateY(-50%)',
                         }}
                         variant="contained"
+                        color="accent"
                         size="small"
                         onClick={() => setCollapsed(false)}
                     >
@@ -152,6 +153,7 @@ export default function RoomHeader() {
                             transform: 'translateX(-50%) translateY(-50%)',
                         }}
                         variant="contained"
+                        color="accent"
                         size="small"
                         onClick={() => setCollapsed(true)}
                     >

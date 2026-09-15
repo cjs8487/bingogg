@@ -41,7 +41,7 @@ export const DeleteConfirmationDialogContent: React.FC<
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel} color="primary" disabled={loading}>
+                <Button onClick={onCancel} color="accent" disabled={loading}>
                     Cancel
                 </Button>
                 <Button

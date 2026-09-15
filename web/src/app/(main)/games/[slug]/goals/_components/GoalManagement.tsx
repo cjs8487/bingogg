@@ -103,7 +103,7 @@ export default function GoalManagement() {
                                     <Button
                                         onClick={() => setGoalCodeOpen(true)}
                                         startIcon={<CodeIcon />}
-                                        color="info"
+                                        color="secondary"
                                     >
                                         Code
                                     </Button>

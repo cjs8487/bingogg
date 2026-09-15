@@ -283,10 +283,15 @@ export default function Login({ useRouterBack }: LoginProps) {
                             Forgot password?
                         </Link>
                     </Box>
-                    <Button type="submit" variant="contained" color="info">
+                    <Button type="submit" variant="contained" color="primary">
                         Log In
                     </Button>
-                    <Button type="button" variant="outlined" color="secondary">
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        color="secondary"
+                        href="/register"
+                    >
                         Register
                     </Button>
                 </Box>

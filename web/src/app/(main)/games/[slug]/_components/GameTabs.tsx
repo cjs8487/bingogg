@@ -111,7 +111,7 @@ export default function GameTabs({
                                 textTransform: 'uppercase',
                                 fontSize: '0.875rem',
                                 fontWeight: 500,
-                                color: 'primary.main',
+                                color: 'accent.main',
                                 pointerEvents: 'none',
                                 cursor: 'default',
                                 userSelect: 'none',
