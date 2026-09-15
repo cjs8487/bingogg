@@ -132,7 +132,7 @@ export default function HomePageRoomForm() {
                                 <FormikSwitch
                                     id="hide-card"
                                     name="hideCard"
-                                    label="Hide card"
+                                    label="Hide card initially?"
                                 />
                                 <FormikSwitch
                                     id="spectator-mode"
