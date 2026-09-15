@@ -16,6 +16,8 @@ export default function SettingsPanel() {
         toggleCounters,
         showGoalDetails,
         toggleGoalDetails,
+        showImages,
+        toggleImages,
         regenerateCard,
         connectedPlayer,
         setChatEnabled,
@@ -52,6 +54,19 @@ export default function SettingsPanel() {
                         />
                     }
                     label="Show All Goal Details"
+                />
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={showImages}
+                            onChange={(e) => {
+                                if (e.target.checked !== showImages) {
+                                    toggleImages();
+                                }
+                            }}
+                        />
+                    }
+                    label="Show Images"
                 />
                 {connectedPlayer?.monitor && (
                     <>
