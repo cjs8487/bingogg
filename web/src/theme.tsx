@@ -171,7 +171,7 @@ const theme = createTheme(baseTheme, {
     components: {
         MuiCard: {
             styleOverrides: {
-                //@ts-ignore
+                //@ts-expect-error no-implicit-any
                 root: ({ theme }) =>
                     theme.unstable_sx({
                         boxShadow: '0 16px 36px rgba(0, 0, 0, 0.35)',

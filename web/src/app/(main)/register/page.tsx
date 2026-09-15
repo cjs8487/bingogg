@@ -177,7 +177,7 @@ export default function Register() {
                                             variant="caption"
                                             color={
                                                 password.length >= 8
-                                                    ? 'success.main'
+                                                    ? 'success'
                                                     : ''
                                             }
                                             sx={{
@@ -198,7 +198,7 @@ export default function Register() {
                                             variant="caption"
                                             color={
                                                 password.match(/[a-z]+/)
-                                                    ? 'success.main'
+                                                    ? 'success'
                                                     : ''
                                             }
                                             sx={{
@@ -219,7 +219,7 @@ export default function Register() {
                                             variant="caption"
                                             color={
                                                 password.match(/[A-Z]+/)
-                                                    ? 'success.main'
+                                                    ? 'success'
                                                     : ''
                                             }
                                             sx={{
@@ -240,7 +240,7 @@ export default function Register() {
                                             variant="caption"
                                             color={
                                                 password.match(/[0-9]+/)
-                                                    ? 'success.main'
+                                                    ? 'success'
                                                     : ''
                                             }
                                             sx={{
@@ -263,7 +263,7 @@ export default function Register() {
                                                 password.match(
                                                     /[*.!@$%^&(){}[\]:;<>,.?/~_+\-=|\\]+/,
                                                 )
-                                                    ? 'success.main'
+                                                    ? 'success'
                                                     : ''
                                             }
                                             sx={{
